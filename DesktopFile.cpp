@@ -59,7 +59,7 @@ void DesktopFile::populate()
 string DesktopFile::getID(string line)
 { char readChars[line.size() + 1] = {'\0'};
   char c = '\0';
-  int counter = 0;
+  unsigned int counter = 0;
 
   while (counter < line.size())
   { c = line[counter];
@@ -76,7 +76,7 @@ string DesktopFile::getSingleValue(string line)
   string value;
   char c = '\0';
   bool startFilling = false;
-  int counter = 0;
+  unsigned int counter = 0;
   int fillCounter = 0;
 
   while (counter < line.size())
@@ -105,7 +105,7 @@ vector<string> DesktopFile::getMultiValue(string line)
   int counter = 0;
   int fillCounter = 0;
 
-  for (int x = 0; x < line.size(); x++)
+  for (unsigned int x = 0; x < line.size(); x++)
   { c = line[x];
     if (startFilling && c != ';') 
     { readChars[fillCounter] = c;

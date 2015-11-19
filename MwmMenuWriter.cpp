@@ -16,7 +16,7 @@ void MwmMenuWriter::printHandler()
   const char *usedCats[sizeof(validCatsArr) / sizeof(validCatsArr[0])] = {"\0"};
   int usedCounter = 0;
 
-  for (int x = 0; x < sizeof(validCatsArr) / sizeof(validCatsArr[0]); x++)
+  for (unsigned int x = 0; x < sizeof(validCatsArr) / sizeof(validCatsArr[0]); x++)
   { vector< pair<int,string> > positions = getPositionsPerCat(validCatsArr[x]);
     if (!positions.empty()) 
     { writeMwmCategoryMenu(positions, validCatsArr[x]);
@@ -29,8 +29,8 @@ void MwmMenuWriter::printHandler()
 }
 
 bool sortPairs(pair<int,string> p1, pair<int,string> p2)
-{ for (int x = 0; x < p1.second.size(); x++) p1.second[x] = toupper(p1.second[x]);
-  for (int x = 0; x < p2.second.size(); x++) p2.second[x] = toupper(p2.second[x]);
+{ for (unsigned int x = 0; x < p1.second.size(); x++) p1.second[x] = toupper(p1.second[x]);
+  for (unsigned int x = 0; x < p2.second.size(); x++) p2.second[x] = toupper(p2.second[x]);
   if (p1.second < p2.second) return true;
   else return false;
 }
@@ -51,7 +51,7 @@ vector< pair<int,string> > MwmMenuWriter::getPositionsPerCat(string category)
 }
 
 int MwmMenuWriter::getLongestNameLength()
-{ int longest = 0;
+{ unsigned int longest = 0;
 
   for (int x = 0; x < filesLength; x++)
     if (this->files[x]->name.size() > longest) longest = this->files[x]->name.size();

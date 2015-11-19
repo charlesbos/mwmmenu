@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     }
   }
 
-  MwmMenuWriter *writer = new MwmMenuWriter(files, counter, menuName);
+  new MwmMenuWriter(files, counter, menuName);
 
   return 0;
 }
