@@ -40,12 +40,14 @@ int main(int argc, char *argv[])
   dirent *f;
   for (int x = 0; x < NUMBER_OF_DIRS; x++)
   { DIR *d = opendir(appdirs[x].c_str());
-    while ((f = readdir(d)) != NULL)
-    { string file = f->d_name;
-      string fullPath = appdirs[x] + file;
-      if (fullPath.find(".desktop") != string::npos)
-      { paths.push_back(fullPath);
-        counter++;
+    if (d != NULL)
+    { while ((f = readdir(d)) != NULL)
+      { string file = f->d_name;
+        string fullPath = appdirs[x] + file;
+        if (fullPath.find(".desktop") != string::npos)
+        { paths.push_back(fullPath);
+          counter++;
+        }
       }
     }
   }
