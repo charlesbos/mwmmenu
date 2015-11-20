@@ -107,11 +107,14 @@ void MwmMenuWriter::writeMwmCategoryMenu(vector< pair<int,string> > positions, s
 /* This function writes the main menu to the console. The main menu contains only
  * only references to the used category menus */
 void MwmMenuWriter::writeMwmMainMenu(string menuName, const char *usedCats[], int catNumber)
-{ int longest = getLongestNameLength();
+{ if (catNumber > 0)
+  { int longest = getLongestNameLength();
 
-  cout << "Menu " << menuName << endl << "{" << endl;
-  cout << "\t" << setw(longest) << left << menuName << "\t\t" << "f.title" << endl;
-  for (int x = 0; x < catNumber; x++)
-    cout << "\t" << setw(longest) << left << usedCats[x] << "\t\t" << "f.menu  " << usedCats[x] << endl;
-  cout << "}" << endl << endl;
+    cout << "Menu " << menuName << endl << "{" << endl;
+    cout << "\t" << setw(longest) << left << menuName << "\t\t" << "f.title" << endl;
+    for (int x = 0; x < catNumber; x++)
+      cout << "\t" << setw(longest) << left << usedCats[x] << "\t\t" << "f.menu  " << usedCats[x] << endl;
+    cout << "}" << endl << endl;
+  }
+  else cout << "We couldn't find any desktop entries. Sorry." << endl;
 }
