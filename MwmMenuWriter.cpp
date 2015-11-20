@@ -10,6 +10,10 @@ MwmMenuWriter::MwmMenuWriter(DesktopFile **files, int filesLength, string menuNa
   printHandler();
 }
 
+/* This function calls the other functions to group the desktop entries by category
+ * and then print out each menu. It then calls the function to write the main menu
+ * which should contain entries for all the category menus used (but not the ones 
+ * not used) */
 void MwmMenuWriter::printHandler()
 { const char *validCatsArr[] = {"Development", "Education", "Game", "Graphics", "Multimedia", "Network",
                                 "Office", "Other", "Science", "Settings", "System", "Utility"};
@@ -18,7 +22,7 @@ void MwmMenuWriter::printHandler()
 
   for (unsigned int x = 0; x < sizeof(validCatsArr) / sizeof(validCatsArr[0]); x++)
   { vector< pair<int,string> > positions = getPositionsPerCat(validCatsArr[x]);
-    if (!positions.empty()) 
+    if (!positions.empty()) //Ignore any categories that do not have any entries associated
     { writeMwmCategoryMenu(positions, validCatsArr[x]);
       usedCats[usedCounter] = validCatsArr[x];
       usedCounter++;
@@ -28,6 +32,9 @@ void MwmMenuWriter::printHandler()
   writeMwmMainMenu(menuName, usedCats, usedCounter);
 }
 
+/* This function is used by the sort function to sort the menu entries for each category
+ * by name (which is the second half of the pair. All chars are converted to upper case
+ * to avoid lower case being treated as greater */
 bool sortPairs(pair<int,string> p1, pair<int,string> p2)
 { for (unsigned int x = 0; x < p1.second.size(); x++) p1.second[x] = toupper(p1.second[x]);
   for (unsigned int x = 0; x < p2.second.size(); x++) p2.second[x] = toupper(p2.second[x]);
@@ -35,11 +42,16 @@ bool sortPairs(pair<int,string> p1, pair<int,string> p2)
   else return false;
 }
 
+/* This function is used to determine which entries should be printed for a given category.
+ * It returns a vector of pairs where each pair contains the index of the DesktopFile
+ * object in the DesktopFi;e array and the name of the entry. The name is collected only so
+ * that we can alphabetically sort the menu entries */
 vector< pair<int,string> > MwmMenuWriter::getPositionsPerCat(string category)
 { vector< pair<int,string> > positions;
 
   for (int x = 0; x < filesLength; x++)
-  { if (find(this->files[x]->categories.begin(), this->files[x]->categories.end(), category) != this->files[x]->categories.end()
+  { //If the entry matches the category, add it but if NoDisplay is true, then don't
+    if (find(this->files[x]->categories.begin(), this->files[x]->categories.end(), category) != this->files[x]->categories.end()
       && this->files[x]->nodisplay != true)
     { pair<int,string> p(x, this->files[x]->name);
       positions.push_back(p);
@@ -50,6 +62,8 @@ vector< pair<int,string> > MwmMenuWriter::getPositionsPerCat(string category)
   return positions;
 }
 
+/* This function is used to get the length of the longest entry name so that we can
+ * neatly format the menu output */
 int MwmMenuWriter::getLongestNameLength()
 { unsigned int longest = 0;
 
@@ -59,6 +73,7 @@ int MwmMenuWriter::getLongestNameLength()
   return longest;
 }
 
+//This function writes the menu for a given category to the console
 void MwmMenuWriter::writeMwmCategoryMenu(vector< pair<int,string> > positions, string category)
 { int longest = getLongestNameLength();
 
@@ -69,6 +84,8 @@ void MwmMenuWriter::writeMwmCategoryMenu(vector< pair<int,string> > positions, s
   cout << "}" << endl << endl;
 }
 
+/* This function writes the main menu to the console. The main menu contains only
+ * only references to the used category menus */
 void MwmMenuWriter::writeMwmMainMenu(string menuName, const char *usedCats[], int catNumber)
 { int longest = getLongestNameLength();
 

@@ -5,7 +5,7 @@
 #include "DesktopFile.h"
 #include "MwmMenuWriter.h"
 
-#define NUMBER_OF_DIRS 3
+#define NUMBER_OF_DIRS 3 //If more search dirs are added, increase by 1 for each dir
 
 void usage()
 { cout << "mwmmenu - a program to produce application menus for the MWM window manager." << endl << endl;
@@ -20,7 +20,8 @@ void usage()
 }
 
 int main(int argc, char *argv[])
-{ string homedir = getenv("HOME");
+{ //Handle args
+  string homedir = getenv("HOME");
   string menuName;
   for (int x = 0; x < argc; x++)
   { if (strcmp(argv[x], "-h") == 0 || strcmp(argv[x], "--help") == 0)
@@ -31,6 +32,7 @@ int main(int argc, char *argv[])
   }
   if (menuName.size() == 0) menuName = "Applications";
 
+  //Get string vector of paths to .desktop files
   vector<string> paths;
   paths.reserve(300);
   int counter = 0;
@@ -52,16 +54,21 @@ int main(int argc, char *argv[])
     }
   }
 
+  //Create array of DesktopFile, using each path in the paths vector
   DesktopFile *files[counter];
   counter = 0;
   for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
   { DesktopFile *df = new DesktopFile((*it).c_str());
+    /* If a name or exec wasn't found we cannot add an entry to our menu so ignore
+     * these objects */
     if (df->name != "\0" && df->exec != "\0")
     { files[counter] = df;
       counter++;
     }
   }
 
+  //Create MwmMenuWriter object, passing it the array of DesktopFile
+  //This object will cause the menus to be printed
   new MwmMenuWriter(files, counter, menuName);
 
   return 0;
