@@ -56,7 +56,7 @@ void DesktopFile::populate()
     { started = true;
       continue;
     }
-    /* If we get another line beginning with [, it probably means we've found then
+    /* If we get another line beginning with [, it probably means we've found
      * a desktop action as opposed to a desktop entry. We should break here 
      * to avoid the entry data being overwritten with action data */
     if (id[0] == '[' && started == true) break;
