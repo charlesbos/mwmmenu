@@ -98,9 +98,9 @@ void MwmMenuWriter::writeMwmCategoryMenu(vector< pair<int,string> > positions, s
 { int longest = getLongestNameLength();
 
   cout << "Menu " << category << endl << "{" << endl;
-  cout << "\t" << setw(longest) << left << category << "\t\t" << "f.title" << endl;
+  cout << "\t" << setw(longest) << left << category << "\t" << "f.title" << endl;
   for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-    cout << "\t" << setw(longest) << left << files[it->first]->name << "\t\t" << "f.exec " << files[it->first]->exec << endl;
+    cout << "\t" << setw(longest) << left << files[it->first]->name << "\t" << "f.exec " << files[it->first]->exec << endl;
   cout << "}" << endl << endl;
 }
 
@@ -111,9 +111,9 @@ void MwmMenuWriter::writeMwmMainMenu(string menuName, const char *usedCats[], in
   { int longest = getLongestNameLength();
 
     cout << "Menu " << menuName << endl << "{" << endl;
-    cout << "\t" << setw(longest) << left << menuName << "\t\t" << "f.title" << endl;
+    cout << "\t" << setw(longest) << left << menuName << "\t" << "f.title" << endl;
     for (int x = 0; x < catNumber; x++)
-      cout << "\t" << setw(longest) << left << usedCats[x] << "\t\t" << "f.menu  " << usedCats[x] << endl;
+      cout << "\t" << setw(longest) << left << usedCats[x] << "\t" << "f.menu  " << usedCats[x] << endl;
     cout << "}" << endl << endl;
   }
   else cout << "We couldn't find any desktop entries. Sorry." << endl;
