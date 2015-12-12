@@ -72,7 +72,7 @@ vector< pair<int,string> > MwmMenuWriter::getPositionsPerCat(string category)
   for (int x = 0; x < filesLength; x++)
   { //If the entry matches the category, add it but if NoDisplay is true, then don't
     if (find(this->files[x]->categories.begin(), this->files[x]->categories.end(), category) != this->files[x]->categories.end()
-      && this->files[x]->nodisplay != true)
+      && this->files[x]->nodisplay != true && this->files[x]->onlyShowIn != true)
     { pair<int,string> p(x, this->files[x]->name);
       positions.push_back(p);
     }

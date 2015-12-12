@@ -31,6 +31,7 @@ DesktopFile::DesktopFile(const char *filename)
   this->exec = "\0";
   this->categories = vector<string>();
   this->nodisplay = false; //Always assume entries are displayed unless entry specifies otherwise
+  this->onlyShowIn = false; //Assume false but if we find OnlyShowIn make it true
   if (!dfile); //If we cannot open the file, do nothing. The object will keep its initial values
   else
   { populate();
@@ -84,6 +85,7 @@ void DesktopFile::populate()
       if (strcmp(value.c_str(), "True") == 0 || strcmp(value.c_str(), "true") == 0)
         this->nodisplay = true;
     }
+    if (strcmp(id.c_str(), "OnlyShowIn") == 0) this->onlyShowIn = true;
   }
 }
 

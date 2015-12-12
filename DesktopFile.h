@@ -37,6 +37,7 @@ class DesktopFile
     string exec;
     vector<string> categories;
     bool nodisplay;
+    bool onlyShowIn;
 
   private:
     ifstream dfile;
