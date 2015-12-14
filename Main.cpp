@@ -37,18 +37,27 @@ void usage()
   cout << "Options:" << endl;
   cout << "  -h, --help: show this dialogue" << endl;
   cout << "  -n: name used for the main menu - by default, use 'Applications'" << endl;
+  cout << "  -o: display entries with the OnlyShowIn key, false by default" << endl;
 }
 
 int main(int argc, char *argv[])
 { //Handle args
   string homedir = getenv("HOME");
   string menuName;
+  bool displayOSI = false;
   for (int x = 0; x < argc; x++)
   { if (strcmp(argv[x], "-h") == 0 || strcmp(argv[x], "--help") == 0)
     { usage();
       return 0; 
     }
-    if (strcmp(argv[x], "-n") == 0) menuName = argv[x + 1];
+    if (strcmp(argv[x], "-n") == 0) 
+    { menuName = argv[x + 1];
+      continue;
+    }
+    if (strcmp(argv[x], "-o") == 0)
+    { displayOSI = true;
+      continue;
+    }
   }
   if (menuName.size() == 0) menuName = "Applications";
 
@@ -78,7 +87,7 @@ int main(int argc, char *argv[])
   DesktopFile *files[counter];
   counter = 0;
   for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
-  { DesktopFile *df = new DesktopFile((*it).c_str());
+  { DesktopFile *df = new DesktopFile((*it).c_str(), displayOSI);
     /* If a name or exec wasn't found we cannot add an entry to our menu so ignore
      * these objects */
     if (df->name != "\0" && df->exec != "\0")

@@ -25,7 +25,7 @@
 
 DesktopFile::DesktopFile() {}
 
-DesktopFile::DesktopFile(const char *filename) 
+DesktopFile::DesktopFile(const char *filename, bool displayOSI) 
 { dfile.open(filename);
   this->name = "\0";
   this->exec = "\0";
@@ -34,7 +34,7 @@ DesktopFile::DesktopFile(const char *filename)
   this->onlyShowIn = false; //Assume false but if we find OnlyShowIn make it true
   if (!dfile); //If we cannot open the file, do nothing. The object will keep its initial values
   else
-  { populate();
+  { populate(displayOSI);
     close();
   }
 }
@@ -43,7 +43,7 @@ void DesktopFile::close() { dfile.close(); }
 
 /* This function fetches the required values (Name, Exec, Categories and NoDisplay)
  * and then assigns the results to the appropriate instance variables */
-void DesktopFile::populate()
+void DesktopFile::populate(bool displayOSI)
 { string line;
   bool started = false;
 
@@ -85,7 +85,8 @@ void DesktopFile::populate()
       if (strcmp(value.c_str(), "True") == 0 || strcmp(value.c_str(), "true") == 0)
         this->nodisplay = true;
     }
-    if (strcmp(id.c_str(), "OnlyShowIn") == 0) this->onlyShowIn = true;
+    if (!displayOSI)
+      if (strcmp(id.c_str(), "OnlyShowIn") == 0) this->onlyShowIn = true;
   }
 }
 
