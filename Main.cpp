@@ -23,7 +23,7 @@
 #include <dirent.h>
 #include <string.h>
 #include "DesktopFile.h"
-#include "MwmMenuWriter.h"
+#include "MenuWriter.h"
 
 #define NUMBER_OF_DIRS 3 //If more search dirs are added, increase by 1 for each dir
 
@@ -32,12 +32,16 @@ void usage()
   cout << "The menus will be printed out into the console. To use them, paste them into" << endl;
   cout << "your ~/.mwmrc file and then add an entry for the main menu into the root menu" << endl;
   cout << "defined in ~/.mwmrc" << endl << endl;
+  cout << "The MWM menus should also be compatible with TWM." << endl << endl;
+  cout << "Support for FVWM is now also available and other window managers may be" << endl;
+  cout << "supported at a later date." << endl << endl;
   cout << "Usage:" << endl;
   cout << "  mwmmenu [OPTIONS]" << endl << endl;
   cout << "Options:" << endl;
   cout << "  -h, --help: show this dialogue" << endl;
   cout << "  -n: name used for the main menu - by default, use 'Applications'" << endl;
   cout << "  -o: display entries with the OnlyShowIn key, false by default" << endl;
+  cout << "  -fvwm: produce menus for FVWM instead of MWM/TWM" << endl;
 }
 
 int main(int argc, char *argv[])
@@ -45,6 +49,7 @@ int main(int argc, char *argv[])
   string homedir = getenv("HOME");
   string menuName;
   bool displayOSI = false;
+  string windowmanager = "MWM";
   for (int x = 0; x < argc; x++)
   { if (strcmp(argv[x], "-h") == 0 || strcmp(argv[x], "--help") == 0)
     { usage();
@@ -56,6 +61,10 @@ int main(int argc, char *argv[])
     }
     if (strcmp(argv[x], "-o") == 0)
     { displayOSI = true;
+      continue;
+    }
+    if (strcmp(argv[x], "-fvwm") == 0) 
+    { windowmanager = "FVWM";
       continue;
     }
   }
@@ -98,7 +107,7 @@ int main(int argc, char *argv[])
 
   //Create MwmMenuWriter object, passing it the array of DesktopFile
   //This object will cause the menus to be printed
-  new MwmMenuWriter(files, counter, menuName);
+  new MenuWriter(files, counter, menuName, windowmanager);
 
   return 0;
 }

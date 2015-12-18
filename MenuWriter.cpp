@@ -21,12 +21,13 @@
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
-#include "MwmMenuWriter.h"
+#include "MenuWriter.h"
 
-MwmMenuWriter::MwmMenuWriter(DesktopFile **files, int filesLength, string menuName)
+MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager)
 { this->files = files;
   this->filesLength = filesLength;
   this->menuName = menuName;
+  this->windowmanager = windowmanager;
   printHandler();
 }
 
@@ -34,22 +35,37 @@ MwmMenuWriter::MwmMenuWriter(DesktopFile **files, int filesLength, string menuNa
  * and then print out each menu. It then calls the function to write the main menu
  * which should contain entries for all the category menus used (but not the ones 
  * not used) */
-void MwmMenuWriter::printHandler()
+void MenuWriter::printHandler()
 { const char *validCatsArr[] = {"Development", "Education", "Game", "Graphics", "Multimedia", "Network",
                                 "Office", "Other", "Science", "Settings", "System", "Utility"};
   const char *usedCats[sizeof(validCatsArr) / sizeof(validCatsArr[0])] = {"\0"};
   int usedCounter = 0;
+  int wmID = getWmID(windowmanager);
 
   for (unsigned int x = 0; x < sizeof(validCatsArr) / sizeof(validCatsArr[0]); x++)
   { vector< pair<int,string> > positions = getPositionsPerCat(validCatsArr[x]);
     if (!positions.empty()) //Ignore any categories that do not have any entries associated
-    { writeMwmCategoryMenu(positions, validCatsArr[x]);
+    { switch(wmID)
+      { case 0 :
+          writeMwmCategoryMenu(positions, validCatsArr[x]);
+          break;
+        case 1 :
+          writeFvwmCategoryMenu(positions, validCatsArr[x]);
+          break;
+      }
       usedCats[usedCounter] = validCatsArr[x];
       usedCounter++;
     }
   }
 
-  writeMwmMainMenu(menuName, usedCats, usedCounter);
+  switch (wmID)
+  { case 0 :
+      writeMwmMainMenu(menuName, usedCats, usedCounter);
+      break;
+    case 1:
+      writeFvwmMainMenu(menuName, usedCats, usedCounter);
+      break;
+  }
 }
 
 /* This function is used by the sort function to sort the menu entries for each category
@@ -66,7 +82,7 @@ bool sortPairs(pair<int,string> p1, pair<int,string> p2)
  * It returns a vector of pairs where each pair contains the index of the DesktopFile
  * object in the DesktopFi;e array and the name of the entry. The name is collected only so
  * that we can alphabetically sort the menu entries */
-vector< pair<int,string> > MwmMenuWriter::getPositionsPerCat(string category)
+vector< pair<int,string> > MenuWriter::getPositionsPerCat(string category)
 { vector< pair<int,string> > positions;
 
   for (int x = 0; x < filesLength; x++)
@@ -84,7 +100,7 @@ vector< pair<int,string> > MwmMenuWriter::getPositionsPerCat(string category)
 
 /* This function is used to get the length of the longest entry name so that we can
  * neatly format the menu output */
-int MwmMenuWriter::getLongestNameLength()
+int MenuWriter::getLongestNameLength()
 { unsigned int longest = 0;
 
   for (int x = 0; x < filesLength; x++)
@@ -93,8 +109,15 @@ int MwmMenuWriter::getLongestNameLength()
   return longest;
 }
 
-//This function writes the menu for a given category to the console
-void MwmMenuWriter::writeMwmCategoryMenu(vector< pair<int,string> > positions, string category)
+/* Return an integer identifying which window manager, menus should be produced
+ * for. Return of 0 indicates MWM */
+int MenuWriter::getWmID(string windowmanager)
+{ if (windowmanager == "FVWM") return 1;
+  else return 0;
+}
+
+//Write MWM category menu
+void MenuWriter::writeMwmCategoryMenu(vector< pair<int,string> > positions, string category)
 { int longest = getLongestNameLength();
 
   cout << "Menu " << category << endl << "{" << endl;
@@ -104,9 +127,8 @@ void MwmMenuWriter::writeMwmCategoryMenu(vector< pair<int,string> > positions, s
   cout << "}" << endl << endl;
 }
 
-/* This function writes the main menu to the console. The main menu contains only
- * only references to the used category menus */
-void MwmMenuWriter::writeMwmMainMenu(string menuName, const char *usedCats[], int catNumber)
+//Write MWM main menu
+void MenuWriter::writeMwmMainMenu(string menuName, const char *usedCats[], int catNumber)
 { if (catNumber > 0)
   { int longest = getLongestNameLength();
 
@@ -115,6 +137,29 @@ void MwmMenuWriter::writeMwmMainMenu(string menuName, const char *usedCats[], in
     for (int x = 0; x < catNumber; x++)
       cout << "\t" << setw(longest) << left << usedCats[x] << "\t" << "f.menu  " << usedCats[x] << endl;
     cout << "}" << endl << endl;
+  }
+  else cout << "We couldn't find any desktop entries. Sorry." << endl;
+}
+
+//Write FVWM category menu
+void MenuWriter::writeFvwmCategoryMenu(vector< pair<int,string> > positions, string category)
+{ int longest = getLongestNameLength();
+
+  cout << "AddToMenu " << category << "\t\t" << category << " Title" << endl;
+  for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
+    cout << "+\t\t" << setw(longest) << left << files[it->first]->name << "\t" << "Exec " << files[it->first]->exec << endl;
+  cout << endl;
+}
+
+//Write FVWM main menu
+void MenuWriter::writeFvwmMainMenu(string menuName, const char *usedCats[], int catNumber)
+{ if (catNumber > 0)
+  { int longest = getLongestNameLength();
+
+    cout << "AddToMenu " << menuName << "\t\t" << menuName << " Title" << endl;
+    for (int x = 0; x < catNumber; x++)
+      cout << "+\t\t" << setw(longest) << left << usedCats[x] << "\t" << "Popup  " << usedCats[x] << endl;
+    cout << endl;
   }
   else cout << "We couldn't find any desktop entries. Sorry." << endl;
 }

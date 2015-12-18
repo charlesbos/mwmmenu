@@ -1,2 +1,7 @@
 # mwmmenu
-A utility to create menus for the Motif Window Manager (MWM) based on freedesktop.org desktop entry files
+A utility to create application menus from freedesktop.org desktop entry files
+
+The following window managers are supported:
+* MWM (Motif Window Manager)
+* TWM
+* FVWM

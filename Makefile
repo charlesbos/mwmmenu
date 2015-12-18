@@ -2,7 +2,7 @@ CC = g++
 CXXFLAGS = -Wall
 
 all: 
-	$(CC) $(CXXFLAGS) Main.cpp DesktopFile.cpp MwmMenuWriter.cpp -o mwmmenu
+	$(CC) $(CXXFLAGS) Main.cpp DesktopFile.cpp MenuWriter.cpp -o mwmmenu
 
 clean:
-	if [ -f mwmmenu ]; then rm mwmmenu ; fi
+	if [ -f mwmmenu ]; then rm mwmmenu; fi

@@ -18,28 +18,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MWM_MENU_WRITER_H_
-#define _MWM_MENU_WRITER_H_
+#ifndef _MENU_WRITER_H_
+#define _MENU_WRITER_H_
 
 #include <fstream>
 #include "DesktopFile.h"
 
-class MwmMenuWriter
+class MenuWriter
 { public:
-    MwmMenuWriter(DesktopFile **files, int filesLength, string menuName);
+    MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager);
 
   private:
     DesktopFile **files;
     int filesLength;
     string menuName;
+    string windowmanager;
 
     void printHandler();
 
     vector< pair<int,string> > getPositionsPerCat(string category);
     int getLongestNameLength();
 
+    int getWmID(string windowmanager);
+
     void writeMwmCategoryMenu(vector< pair<int,string> > positions, string category);
     void writeMwmMainMenu(string menuName, const char *usedCats[], int catNumber);
+    void writeFvwmCategoryMenu(vector< pair<int,string> > positions, string category);
+    void writeFvwmMainMenu(string menuName, const char *usedCats[], int catNumber);
 };
 
 #endif
