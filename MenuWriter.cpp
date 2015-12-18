@@ -123,7 +123,7 @@ void MenuWriter::writeMwmCategoryMenu(vector< pair<int,string> > positions, stri
   cout << "Menu " << category << endl << "{" << endl;
   cout << "\t" << setw(longest) << left << category << "\t" << "f.title" << endl;
   for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-    cout << "\t" << setw(longest) << left << files[it->first]->name << "\t" << "f.exec " << files[it->first]->exec << endl;
+    cout << "\t" << setw(longest) << left << files[it->first]->name << "\t" << "f.exec " << '"' << files[it->first]->exec << '"' << endl;
   cout << "}" << endl << endl;
 }
 

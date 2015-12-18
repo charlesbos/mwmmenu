@@ -66,7 +66,7 @@ void DesktopFile::populate(bool displayOSI)
       continue;
     }
     if (strcmp(id.c_str(), "Exec") == 0)
-    { this->exec = '"' + getSingleValue(line) + '"';
+    { this->exec = getSingleValue(line);
       continue;
     }
     if (strcmp(id.c_str(), "Categories") == 0)
