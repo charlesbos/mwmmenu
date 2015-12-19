@@ -175,7 +175,7 @@ void MenuWriter::writeFvwmCategoryMenu(vector< pair<int,string> > positions, str
   for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
   { if (useIcons && files[it->first]->icon != "\0") entryName = '"' + files[it->first]->name + " %" + files[it->first]->icon + "%" + '"';
     else entryName = '"' + files[it->first]->name + '"';
-    entryExec = '"' + files[it->first]->exec + '"';
+    entryExec = files[it->first]->exec;
     cout << "+\t\t" << setw(longest) << left << entryName << "\t" << "Exec " << entryExec << endl;
   }
   cout << endl;
