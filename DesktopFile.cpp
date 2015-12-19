@@ -19,7 +19,6 @@
  */
 
 #include <algorithm>
-#include <iostream>
 #include <set>
 #include <string.h>
 #include "DesktopFile.h"
