@@ -22,10 +22,12 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <string.h>
+#include "boost/filesystem.hpp"
 #include "DesktopFile.h"
 #include "MenuWriter.h"
 
 #define NUMBER_OF_DIRS 3 //If more search dirs are added, increase by 1 for each dir
+#define NUMBER_OF_ICON_DIRS 3 //Likewise, increase for each search dir
 
 void usage()
 { cout << "mwmmenu - a program to produce application menus for the MWM window manager." << endl << endl;
@@ -41,7 +43,49 @@ void usage()
   cout << "  -h, --help: show this dialogue" << endl;
   cout << "  -n: name used for the main menu - by default, use 'Applications'" << endl;
   cout << "  -o: display entries with the OnlyShowIn key, false by default" << endl;
+  cout << "  -i: use icons with menu entries, only compatible with some window managers" << endl;
   cout << "  -fvwm: produce menus for FVWM instead of MWM/TWM" << endl;
+}
+
+//Function that attempts to get the user icon theme from ~/.gtkrc-2.0
+string getIconTheme(string homedir)
+{ ifstream themefile;
+  string path = homedir + "/.gtkrc-2.0";
+  string id = "gtk-icon-theme-name";
+  themefile.open(path.c_str());
+  if (!themefile) return "\0";
+  else
+  { string line;
+    char c = '\0';
+    unsigned int counter = 0;
+    while (!themefile.eof())
+    { getline(themefile, line);
+      char readChars[line.size() + 1] = {'\0'};
+      while (counter < line.size())
+      { c = line[counter];
+        if (c == '=') break;
+        readChars[counter] = c;
+        counter++;
+      }
+      if (strcmp(id.c_str(), readChars) == 0)
+      { char themeNameChars[line.size() + 1] = {'\0'};
+        int selector = 0;
+        while (counter < line.size())
+        { c = line[counter];
+          if (c != '"' && c != '=')
+          { themeNameChars[selector] = c;
+            selector++;
+          }
+          counter ++;
+        }
+        themefile.close();
+        return string(themeNameChars);
+      }
+      counter = 0;
+    }
+    themefile.close();
+    return "\0";
+  }
 }
 
 int main(int argc, char *argv[])
@@ -50,6 +94,7 @@ int main(int argc, char *argv[])
   string menuName;
   bool displayOSI = false;
   string windowmanager = "MWM";
+  bool useIcons = false;
   for (int x = 0; x < argc; x++)
   { if (strcmp(argv[x], "-h") == 0 || strcmp(argv[x], "--help") == 0)
     { usage();
@@ -63,12 +108,17 @@ int main(int argc, char *argv[])
     { displayOSI = true;
       continue;
     }
+    if (strcmp(argv[x], "-i") == 0)
+    { useIcons = true;
+      continue;
+    }
     if (strcmp(argv[x], "-fvwm") == 0) 
     { windowmanager = "FVWM";
       continue;
     }
   }
   if (menuName.size() == 0) menuName = "Applications";
+  if (windowmanager == "MWM") useIcons = false;
 
   //Get string vector of paths to .desktop files
   vector<string> paths;
@@ -92,11 +142,38 @@ int main(int argc, char *argv[])
     }
   }
 
+  /* Get vector of string pairs. Each pair contains the icon filename and the
+   * full path to the icon */
+  vector<string> iconpaths;
+  if (useIcons)
+  { iconpaths.reserve(500);
+    string icondirs[NUMBER_OF_ICON_DIRS] = {"/usr/share/icons/hicolor"};
+    if (homedir.c_str() != NULL)
+    { string themename = getIconTheme(homedir); 
+      icondirs[NUMBER_OF_ICON_DIRS - 2] = "/usr/share/icons/" + themename;
+      if (icondirs[NUMBER_OF_ICON_DIRS - 2] != "/usr/share/icons/gnome") icondirs[NUMBER_OF_ICON_DIRS - 1] = "/usr/share/icons/gnome";
+      else icondirs[NUMBER_OF_ICON_DIRS - 1] = "\0";
+    }
+    else icondirs[NUMBER_OF_DIRS - 1] = '\0';
+    for (int x = 0; x < NUMBER_OF_ICON_DIRS; x++)
+    { try
+      { for (boost::filesystem::recursive_directory_iterator i(icondirs[x]), end; i != end; ++i)
+        { if (!is_directory(i->path()))
+          { string ipath = i->path().string();
+            if (ipath.find("16x16") != string::npos)
+              iconpaths.push_back(i->path().string());
+          }
+        }
+      }
+      catch (boost::filesystem::filesystem_error) { continue; }
+    }
+  }
+
   //Create array of DesktopFile, using each path in the paths vector
   DesktopFile *files[counter];
   counter = 0;
   for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
-  { DesktopFile *df = new DesktopFile((*it).c_str(), displayOSI);
+  { DesktopFile *df = new DesktopFile((*it).c_str(), displayOSI, useIcons, iconpaths);
     /* If a name or exec wasn't found we cannot add an entry to our menu so ignore
      * these objects */
     if (df->name != "\0" && df->exec != "\0")
@@ -107,7 +184,7 @@ int main(int argc, char *argv[])
 
   //Create MwmMenuWriter object, passing it the array of DesktopFile
   //This object will cause the menus to be printed
-  new MenuWriter(files, counter, menuName, windowmanager);
+  new MenuWriter(files, counter, menuName, windowmanager, useIcons, iconpaths);
 
   return 0;
 }

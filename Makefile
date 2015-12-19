@@ -1,5 +1,5 @@
 CC = g++
-CXXFLAGS = -Wall
+CXXFLAGS = -Wall -std=c++11 -lboost_system -lboost_filesystem
 
 all: 
 	$(CC) $(CXXFLAGS) Main.cpp DesktopFile.cpp MenuWriter.cpp -o mwmmenu

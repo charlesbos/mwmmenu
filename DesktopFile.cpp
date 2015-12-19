@@ -19,22 +19,29 @@
  */
 
 #include <algorithm>
+#include <iostream>
 #include <set>
 #include <string.h>
 #include "DesktopFile.h"
 
 DesktopFile::DesktopFile() {}
 
-DesktopFile::DesktopFile(const char *filename, bool displayOSI) 
+DesktopFile::DesktopFile(const char *filename, bool displayOSI, bool useIcons, vector<string> iconpaths) 
 { dfile.open(filename);
   this->name = "\0";
   this->exec = "\0";
   this->categories = vector<string>();
   this->nodisplay = false; //Always assume entries are displayed unless entry specifies otherwise
   this->onlyShowIn = false; //Assume false but if we find OnlyShowIn make it true
+  this->useIcons = useIcons;
+  this->iconpaths = iconpaths;
+  this->icon = "\0";
+  this->iconDef = "\0";
+  this->filename = filename;
   if (!dfile); //If we cannot open the file, do nothing. The object will keep its initial values
   else
   { populate(displayOSI);
+    if (useIcons) matchIcon();
     close();
   }
 }
@@ -62,7 +69,7 @@ void DesktopFile::populate(bool displayOSI)
      * to avoid the entry data being overwritten with action data */
     if (id[0] == '[' && started == true) break;
     if (strcmp(id.c_str(), "Name") == 0)
-    { this->name = '"' + getSingleValue(line) + '"';
+    { this->name = getSingleValue(line);
       continue;
     }
     if (strcmp(id.c_str(), "Exec") == 0)
@@ -84,9 +91,16 @@ void DesktopFile::populate(bool displayOSI)
     { string value = getSingleValue(line);
       if (strcmp(value.c_str(), "True") == 0 || strcmp(value.c_str(), "true") == 0)
         this->nodisplay = true;
+      continue;
     }
-    if (!displayOSI)
-      if (strcmp(id.c_str(), "OnlyShowIn") == 0) this->onlyShowIn = true;
+    if (strcmp(id.c_str(), "OnlyShowIn") == 0)
+    { if (!displayOSI) this->onlyShowIn = true;
+      continue;
+    }
+    if (strcmp(id.c_str(), "Icon") == 0)
+    { this->iconDef = getSingleValue(line);
+      continue;
+    }
   }
 }
 
@@ -179,10 +193,20 @@ void DesktopFile::processCategories(vector<string> &categories)
   bool noCategory = true;
 
   while (it < categories.end())
-  { //Convert the 3 audio/video categories to Multimedia
+  { //Convert some base catogories to more commonly used categories
     if (*it == "AudioVideo" || *it == "Audio" || *it == "Video") 
     { *it = "Multimedia";
       ++it;
+      continue;
+    }
+    if (*it == "Network")
+    { *it = "Internet";
+      it++;
+      continue;
+    }
+    if (*it == "Utility")
+    { *it = "Accessories";
+      it++;
       continue;
     }
     //Throw away non-base categories
@@ -197,10 +221,24 @@ void DesktopFile::processCategories(vector<string> &categories)
   //If an entry ends up with no categories, give the entry the catchall category
   it = categories.begin();
   while (it < categories.end())
-  { if (find(baseCategories.begin(), baseCategories.end(), *it) != baseCategories.end() || *it == "Multimedia")
+  { if (find(baseCategories.begin(), baseCategories.end(), *it) != baseCategories.end() || *it == "Multimedia" || *it == "Internet" || *it == "Accessories")
     { noCategory = false;
       break;
     }
   }
   if (noCategory) categories.push_back("Other");
 }
+
+/* Function which attempts to find the full path for a desktop entry by going
+ * through a list of icons, attempting to match the icon entry in the entry
+ * against each icon path */
+void DesktopFile::matchIcon()
+{ for (unsigned int x = 0; x < iconpaths.size(); x++)
+  { string iconName = iconpaths[x].substr(iconpaths[x].find_last_of("/") + 1, iconpaths[x].find_last_of(".") - iconpaths[x].find_last_of("/") - 1);
+    if (iconDef == iconName)
+    { icon = iconpaths[x];
+      break;
+    }
+  }
+}
+  

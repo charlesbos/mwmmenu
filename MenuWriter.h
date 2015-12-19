@@ -26,13 +26,15 @@
 
 class MenuWriter
 { public:
-    MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager);
+    MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths);
 
   private:
     DesktopFile **files;
     int filesLength;
     string menuName;
     string windowmanager;
+    bool useIcons;
+    vector<string> iconpaths;
 
     void printHandler();
 
@@ -40,6 +42,7 @@ class MenuWriter
     int getLongestNameLength();
 
     int getWmID(string windowmanager);
+    string getCategoryIcon(string catName);
 
     void writeMwmCategoryMenu(vector< pair<int,string> > positions, string category);
     void writeMwmMainMenu(string menuName, const char *usedCats[], int catNumber);

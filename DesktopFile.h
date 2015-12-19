@@ -31,16 +31,21 @@ class DesktopFile
 {
   public:
     DesktopFile();
-    DesktopFile(const char *filename, bool displayOSI);
+    DesktopFile(const char *filename, bool displayOSI, bool useIcons, vector<string> iconpaths);
 
     string name;
     string exec;
     vector<string> categories;
     bool nodisplay;
     bool onlyShowIn;
+    bool useIcons;
+    string icon;
 
   private:
     ifstream dfile;
+    vector<string> iconpaths;
+    string filename;
+    string iconDef;
 
     void close();
 
@@ -49,6 +54,7 @@ class DesktopFile
     string getID(string line);
     string getSingleValue(string line);
     vector<string> getMultiValue(string line);
+    void matchIcon();
 
     void processCategories(vector<string> &categories);
 };

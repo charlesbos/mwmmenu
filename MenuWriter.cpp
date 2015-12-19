@@ -23,11 +23,13 @@
 #include <iomanip>
 #include "MenuWriter.h"
 
-MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager)
+MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths)
 { this->files = files;
   this->filesLength = filesLength;
   this->menuName = menuName;
   this->windowmanager = windowmanager;
+  this->useIcons = useIcons;
+  this->iconpaths = iconpaths;
   printHandler();
 }
 
@@ -36,8 +38,8 @@ MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, st
  * which should contain entries for all the category menus used (but not the ones 
  * not used) */
 void MenuWriter::printHandler()
-{ const char *validCatsArr[] = {"Development", "Education", "Game", "Graphics", "Multimedia", "Network",
-                                "Office", "Other", "Science", "Settings", "System", "Utility"};
+{ const char *validCatsArr[] = {"Accessories", "Development", "Education", "Game", "Graphics", "Multimedia", "Internet",
+                                "Office", "Other", "Science", "Settings", "System"};
   const char *usedCats[sizeof(validCatsArr) / sizeof(validCatsArr[0])] = {"\0"};
   int usedCounter = 0;
   int wmID = getWmID(windowmanager);
@@ -104,7 +106,11 @@ int MenuWriter::getLongestNameLength()
 { unsigned int longest = 0;
 
   for (int x = 0; x < filesLength; x++)
-    if (this->files[x]->name.size() > longest) longest = this->files[x]->name.size();
+  { if (useIcons)
+    { if (this->files[x]->name.size() + this->files[x]->icon.size() > longest) longest = this->files[x]->name.size() + this->files[x]->icon.size() + 10; }
+    else
+    { if (this->files[x]->name.size() > longest) longest = this->files[x]->name.size(); }
+  }
 
   return longest;
 }
@@ -116,14 +122,32 @@ int MenuWriter::getWmID(string windowmanager)
   else return 0;
 }
 
+/* Cycle through list of icon paths and attempt to match the category
+ * name against a category icon of the appropriate size. Return null
+ * character if we can't find one */
+string MenuWriter::getCategoryIcon(string catName)
+{ catName.at(0) = tolower(catName.at(0));
+  for (unsigned int x = 0; x < iconpaths.size(); x++)
+    if (iconpaths[x].find("16x16") != string::npos
+        && iconpaths[x].find("categories") != string::npos
+        && iconpaths[x].find(catName) != string::npos)
+      return iconpaths[x];
+  return "\0";
+}
+
 //Write MWM category menu
 void MenuWriter::writeMwmCategoryMenu(vector< pair<int,string> > positions, string category)
 { int longest = getLongestNameLength();
+  string entryName;
+  string entryExec;
 
   cout << "Menu " << category << endl << "{" << endl;
   cout << "\t" << setw(longest) << left << category << "\t" << "f.title" << endl;
   for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-    cout << "\t" << setw(longest) << left << files[it->first]->name << "\t" << "f.exec " << '"' << files[it->first]->exec << '"' << endl;
+  { entryName = '"' + files[it->first]->name + '"';
+    entryExec = '"' + files[it->first]->exec + '"';
+    cout << "\t" << setw(longest) << left << entryName << "\t" << "f.exec " << entryExec << endl;
+  }
   cout << "}" << endl << endl;
 }
 
@@ -144,10 +168,16 @@ void MenuWriter::writeMwmMainMenu(string menuName, const char *usedCats[], int c
 //Write FVWM category menu
 void MenuWriter::writeFvwmCategoryMenu(vector< pair<int,string> > positions, string category)
 { int longest = getLongestNameLength();
+  string entryName;
+  string entryExec;
 
   cout << "AddToMenu " << category << "\t\t" << category << " Title" << endl;
   for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-    cout << "+\t\t" << setw(longest) << left << files[it->first]->name << "\t" << "Exec " << files[it->first]->exec << endl;
+  { if (useIcons && files[it->first]->icon != "\0") entryName = '"' + files[it->first]->name + " %" + files[it->first]->icon + "%" + '"';
+    else entryName = '"' + files[it->first]->name + '"';
+    entryExec = '"' + files[it->first]->exec + '"';
+    cout << "+\t\t" << setw(longest) << left << entryName << "\t" << "Exec " << entryExec << endl;
+  }
   cout << endl;
 }
 
@@ -155,10 +185,18 @@ void MenuWriter::writeFvwmCategoryMenu(vector< pair<int,string> > positions, str
 void MenuWriter::writeFvwmMainMenu(string menuName, const char *usedCats[], int catNumber)
 { if (catNumber > 0)
   { int longest = getLongestNameLength();
+    string catName;
 
     cout << "AddToMenu " << menuName << "\t\t" << menuName << " Title" << endl;
     for (int x = 0; x < catNumber; x++)
-      cout << "+\t\t" << setw(longest) << left << usedCats[x] << "\t" << "Popup  " << usedCats[x] << endl;
+    { if (useIcons)
+      { string catIcon = getCategoryIcon(string(usedCats[x]));
+        if (catIcon != "\0") catName = '"' + string(usedCats[x]) + " %" + catIcon + "%" + '"';
+        else catName = '"' + string(usedCats[x]) + '"';
+      }
+      else catName = '"' + string(usedCats[x]) + '"';
+      cout << "+\t\t" << setw(longest) << left << catName << "\t" << "Popup  " << usedCats[x] << endl;
+    }
     cout << endl;
   }
   else cout << "We couldn't find any desktop entries. Sorry." << endl;
