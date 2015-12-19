@@ -7,4 +7,5 @@ The following window managers are supported:
 * FVWM (F Virtual Window Manager
 
 Dependencies:
+* g++ (I'm using g++ 5.3.0 at the time of writing)
 * Boost
