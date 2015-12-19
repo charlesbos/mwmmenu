@@ -30,21 +30,20 @@
 #define NUMBER_OF_ICON_DIRS 3 //Likewise, increase for each search dir
 
 void usage()
-{ cout << "mwmmenu - a program to produce application menus for the MWM window manager." << endl << endl;
-  cout << "The menus will be printed out into the console. To use them, paste them into" << endl;
-  cout << "your ~/.mwmrc file and then add an entry for the main menu into the root menu" << endl;
-  cout << "defined in ~/.mwmrc" << endl << endl;
-  cout << "The MWM menus should also be compatible with TWM." << endl << endl;
-  cout << "Support for FVWM is now also available and other window managers may be" << endl;
-  cout << "supported at a later date." << endl << endl;
+{ cout << "mwmmenu - creates application menus for MWM and other window managers." << endl << endl;
+  cout << "Without a window manager argument such as -fvwm, the program defaults ";
+  cout << "to a menu format that is compatible with MWM and should also be compatible ";
+  cout << "with TWM." << endl << endl;
   cout << "Usage:" << endl;
-  cout << "  mwmmenu [OPTIONS]" << endl << endl;
+  cout << "  mwmmenu [OPTIONS]" << endl;
+  cout << "  Note that all options, currently, must be spaced." << endl << endl;
   cout << "Options:" << endl;
   cout << "  -h, --help: show this dialogue" << endl;
   cout << "  -n: name used for the main menu - by default, use 'Applications'" << endl;
   cout << "  -o: display entries with the OnlyShowIn key, false by default" << endl;
-  cout << "  -i: use icons with menu entries, only compatible with some window managers" << endl;
-  cout << "  -fvwm: produce menus for FVWM instead of MWM/TWM" << endl;
+  cout << "  -i: use icons with menu entries, only compatible with some window managers" << endl << endl;
+  cout << "  # Other window managers" << endl;
+  cout << "  -fvwm: produce menus for FVWM" << endl;
 }
 
 //Function that attempts to get the user icon theme from ~/.gtkrc-2.0
