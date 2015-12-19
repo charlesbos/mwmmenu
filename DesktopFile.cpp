@@ -192,7 +192,7 @@ void DesktopFile::processCategories(vector<string> &categories)
   bool noCategory = true;
 
   while (it < categories.end())
-  { //Convert some base catogories to more commonly used categories
+  { //Convert some base categories to more commonly used categories
     if (*it == "AudioVideo" || *it == "Audio" || *it == "Video") 
     { *it = "Multimedia";
       ++it;
@@ -200,12 +200,12 @@ void DesktopFile::processCategories(vector<string> &categories)
     }
     if (*it == "Network")
     { *it = "Internet";
-      it++;
+      ++it;
       continue;
     }
     if (*it == "Utility")
     { *it = "Accessories";
-      it++;
+      ++it;
       continue;
     }
     //Throw away non-base categories
