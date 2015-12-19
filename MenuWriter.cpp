@@ -1,6 +1,6 @@
 /*
- * mwmmenu - a program to produce menus for the Motif Window Manager, based on
- * freedesktop.org desktop entries.
+ * mwmmenu - a program to produce application menus for MWM and other window 
+ * managers, based on freedesktop.org desktop entries.
  *
  * Copyright (C) 2015  Charles Bos
  *
