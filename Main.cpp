@@ -27,7 +27,7 @@
 #include "MenuWriter.h"
 
 #define NUMBER_OF_DIRS 3 //If more search dirs are added, increase by 1 for each dir
-#define NUMBER_OF_ICON_DIRS 3 //Likewise, increase for each search dir
+#define NUMBER_OF_ICON_DIRS 5 //Likewise, increase for each search dir
 
 void usage()
 { cout << "mwmmenu - creates application menus for MWM and other window managers." << endl << endl;
@@ -41,7 +41,11 @@ void usage()
   cout << "  -h, --help: show this dialogue" << endl;
   cout << "  -n: name used for the main menu - by default, use 'Applications'" << endl;
   cout << "  -o: display entries with the OnlyShowIn key, false by default" << endl;
-  cout << "  -i: use icons with menu entries, only compatible with some window managers" << endl << endl;
+  cout << "  -i: use icons with menu entries, only compatible with some window managers" << endl;
+  cout << "  -icon_size: choose size of icons used in menus. Should be a value such as 16x16, ";
+  cout << "32x32 etc. Can also be scalable or all. Large icon sizes or all sizes should be used ";
+  cout << "only in window managers which can scale icons down to an appropriate size. The default ";
+  cout << "is 16x16." << endl << endl;
   cout << "  # Other window managers" << endl;
   cout << "  -fvwm: produce menus for FVWM" << endl;
 }
@@ -94,6 +98,7 @@ int main(int argc, char *argv[])
   bool displayOSI = false;
   string windowmanager = "MWM";
   bool useIcons = false;
+  string iconSize = "16x16";
   for (int x = 0; x < argc; x++)
   { if (strcmp(argv[x], "-h") == 0 || strcmp(argv[x], "--help") == 0)
     { usage();
@@ -111,6 +116,10 @@ int main(int argc, char *argv[])
     { useIcons = true;
       continue;
     }
+    if (strcmp(argv[x], "-icon_size") == 0) 
+    { iconSize = argv[x + 1];
+      continue;
+    }
     if (strcmp(argv[x], "-fvwm") == 0) 
     { windowmanager = "FVWM";
       continue;
@@ -118,6 +127,7 @@ int main(int argc, char *argv[])
   }
   if (menuName.size() == 0) menuName = "Applications";
   if (windowmanager == "MWM") useIcons = false;
+  if (iconSize == "all") iconSize = "/"; //All paths will have forward slashes so this makes the check null and void
 
   //Get string vector of paths to .desktop files
   vector<string> paths;
@@ -146,7 +156,7 @@ int main(int argc, char *argv[])
   vector<string> iconpaths;
   if (useIcons)
   { iconpaths.reserve(500);
-    string icondirs[NUMBER_OF_ICON_DIRS] = {"/usr/share/icons/hicolor"};
+    string icondirs[NUMBER_OF_ICON_DIRS] = {"/usr/share/icons/hicolor", "/usr/share/pixmaps", "/usr/local/share/pixmaps"};
     if (homedir.c_str() != NULL)
     { string themename = getIconTheme(homedir); 
       icondirs[NUMBER_OF_ICON_DIRS - 2] = "/usr/share/icons/" + themename;
@@ -159,7 +169,7 @@ int main(int argc, char *argv[])
       { for (boost::filesystem::recursive_directory_iterator i(icondirs[x]), end; i != end; ++i)
         { if (!is_directory(i->path()))
           { string ipath = i->path().string();
-            if (ipath.find("16x16") != string::npos)
+            if (ipath.find(iconSize) != string::npos)
               iconpaths.push_back(i->path().string());
           }
         }
