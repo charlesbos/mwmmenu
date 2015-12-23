@@ -31,22 +31,26 @@
 
 void usage()
 { cout << "mwmmenu - creates application menus for MWM and other window managers." << endl << endl;
-  cout << "Without a window manager argument such as -fvwm, the program defaults ";
-  cout << "to a menu format that is compatible with MWM and should also be compatible ";
-  cout << "with TWM." << endl << endl;
   cout << "Usage:" << endl;
   cout << "  mwmmenu [OPTIONS]" << endl;
-  cout << "  Note that all options, currently, must be spaced." << endl << endl;
+  cout << "  # Note: all options, currently, must be spaced." << endl << endl;
   cout << "Options:" << endl;
-  cout << "  -h, --help: show this dialogue" << endl;
-  cout << "  -n: name used for the main menu - by default, use 'Applications'" << endl;
-  cout << "  -o: display entries with the OnlyShowIn key, false by default" << endl;
-  cout << "  -i: use icons with menu entries, only compatible with some window managers" << endl;
+  cout << "  -h, --help: show this dialogue" << endl << endl;
+  cout << "  -n: name used for the main menu - by default, use 'Applications'" << endl << endl;
+  cout << "  -o: display entries with the OnlyShowIn key, false by default" << endl << endl;
+  cout << "  -i: use icons with menu entries, only compatible with some window managers" << endl << endl;
   cout << "  -icon_size: choose size of icons used in menus. Should be a value such as 16x16, ";
   cout << "32x32 etc. Can also be scalable or all. Large icon sizes or all sizes should be used ";
   cout << "only in window managers which can scale icons down to an appropriate size. The default ";
   cout << "is 16x16." << endl << endl;
-  cout << "  # Other window managers" << endl;
+  cout << "  -exclude: do not add desktop entries that have the names specified. Multiple names ";
+  cout << "should be separated by commas, for instance: -exclude Firefox,XTerm,LibreOffice" << endl << endl;
+  cout << "  -exclude_matching: do not add desktop entries where the entry name contains one of the ";
+  cout << "strings specified. Multiple entries should be separated by commas, for instance -exclude_matching ";
+  cout << "Term,Office" << endl << endl;
+  cout << "  # Note: any names to be excluded that contain spaces must have quotes." << endl << endl;
+  cout << "Menu format options:" << endl << endl;
+  cout << "  # No format argument: produce menus for MWM/TWM" << endl << endl;
   cout << "  -fvwm: produce menus for FVWM" << endl;
 }
 
@@ -99,6 +103,9 @@ int main(int argc, char *argv[])
   string windowmanager = "MWM";
   bool useIcons = false;
   string iconSize = "16x16";
+  string exclude = "\0";
+  string excludeMatching = "\0";
+
   for (int x = 0; x < argc; x++)
   { if (strcmp(argv[x], "-h") == 0 || strcmp(argv[x], "--help") == 0)
     { usage();
@@ -122,6 +129,14 @@ int main(int argc, char *argv[])
     }
     if (strcmp(argv[x], "-fvwm") == 0) 
     { windowmanager = "FVWM";
+      continue;
+    }
+    if (strcmp(argv[x], "-exclude") == 0) 
+    { exclude = argv[x + 1];
+      continue;
+    }
+    if (strcmp(argv[x], "-exclude_matching") == 0) 
+    { excludeMatching = argv[x + 1];
       continue;
     }
   }
@@ -193,7 +208,7 @@ int main(int argc, char *argv[])
 
   //Create MwmMenuWriter object, passing it the array of DesktopFile
   //This object will cause the menus to be printed
-  new MenuWriter(files, counter, menuName, windowmanager, useIcons, iconpaths);
+  new MenuWriter(files, counter, menuName, windowmanager, useIcons, iconpaths, exclude, excludeMatching);
 
   return 0;
 }

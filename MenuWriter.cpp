@@ -23,13 +23,16 @@
 #include <iomanip>
 #include "MenuWriter.h"
 
-MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths)
+MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, string exclude, string excludeMatching)
 { this->files = files;
   this->filesLength = filesLength;
   this->menuName = menuName;
   this->windowmanager = windowmanager;
   this->useIcons = useIcons;
   this->iconpaths = iconpaths;
+  this->exclude = exclude;
+  this->excludeMatching = excludeMatching;
+  exclusionHandler();
   printHandler();
 }
 
@@ -98,6 +101,58 @@ vector< pair<int,string> > MenuWriter::getPositionsPerCat(string category)
 
   sort(positions.begin(), positions.end(), sortPairs);
   return positions;
+}
+
+/* Function to filter out desktop entries specified from the command line
+ * as entries that should be excluded. We do this by checking if an entry
+ * name fully or partially matches the names specified on the command line
+ * as appropriate and then setting the nodisplay value for that DesktopFile
+ * to true if so */
+void MenuWriter::exclusionHandler()
+{ vector<string> excludeStrings;
+  vector<string> excludeMatchingStrings;
+  char buffer[exclude.size() + excludeMatching.size() + 1] = {'\0'};
+  int selector = 0;
+
+  if (exclude != "\0")
+  { for (unsigned int x = 0; x < exclude.size(); x++)
+    { if (exclude[x] == ',') 
+      { excludeStrings.push_back(buffer);
+        selector = 0;
+        fill(buffer, buffer + sizeof(buffer) / sizeof(buffer[0]), '\0');
+        continue;
+      }
+      buffer[selector] = exclude[x];
+      selector += 1;
+    }
+    if (selector != 0) excludeStrings.push_back(buffer);
+    for (int x = 0; x < filesLength; x++)
+      if (find(excludeStrings.begin(), excludeStrings.end(), files[x]->name) != excludeStrings.end()) files[x]->nodisplay = true;
+  }
+
+  if (excludeMatching != "\0")
+  { selector = 0;
+    fill(buffer, buffer + sizeof(buffer) / sizeof(buffer[0]), '\0');
+    for (unsigned int x = 0; x < excludeMatching.size(); x++)
+    { if (excludeMatching[x] == ',') 
+      { excludeMatchingStrings.push_back(buffer);
+        selector = 0;
+        fill(buffer, buffer + sizeof(buffer) / sizeof(buffer[0]), '\0');
+        continue;
+      }
+      buffer[selector] = excludeMatching[x];
+      selector += 1;
+    }
+    if (selector != 0) excludeMatchingStrings.push_back(buffer);
+    for (int x = 0; x < filesLength; x++)
+    { for (unsigned int y = 0; y < excludeMatchingStrings.size(); y++)
+      { if (files[x]->name.find(excludeMatchingStrings[y]) != string::npos)
+        { files[x]->nodisplay = true;
+          break;
+        }
+      }
+    }
+  }
 }
 
 /* This function is used to get the length of the longest entry name so that we can

@@ -26,7 +26,7 @@
 
 class MenuWriter
 { public:
-    MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths);
+    MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, string exclude, string excludeMatching);
 
   private:
     DesktopFile **files;
@@ -35,8 +35,11 @@ class MenuWriter
     string windowmanager;
     bool useIcons;
     vector<string> iconpaths;
+    string exclude;
+    string excludeMatching;
 
     void printHandler();
+    void exclusionHandler();
 
     vector< pair<int,string> > getPositionsPerCat(string category);
     int getLongestNameLength();
