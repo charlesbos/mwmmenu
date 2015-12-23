@@ -83,9 +83,9 @@ vector< pair<int,string> > MenuWriter::getPositionsPerCat(string category)
 
   for (int x = 0; x < filesLength; x++)
   { //If the entry matches the category, add it but if NoDisplay is true, then don't
-    if (find(this->files[x]->categories.begin(), this->files[x]->categories.end(), category) != this->files[x]->categories.end()
-      && this->files[x]->nodisplay != true && this->files[x]->onlyShowIn != true)
-    { pair<int,string> p(x, this->files[x]->name);
+    if (find(files[x]->categories.begin(), files[x]->categories.end(), category) != files[x]->categories.end()
+      && files[x]->nodisplay != true && files[x]->onlyShowIn != true)
+    { pair<int,string> p(x, files[x]->name);
       positions.push_back(p);
     }
   }
@@ -157,9 +157,9 @@ int MenuWriter::getLongestNameLength()
      * icon path after the exec so we don't want to add that extra length to the name in
      * this case */
     if (useIcons && windowmanager != "Fluxbox")
-    { if (this->files[x]->name.size() + this->files[x]->icon.size() > longest) longest = this->files[x]->name.size() + this->files[x]->icon.size() + 10; }
+    { if (files[x]->name.size() + files[x]->icon.size() > longest) longest = files[x]->name.size() + files[x]->icon.size() + 10; }
     else
-    { if (this->files[x]->name.size() > longest) longest = this->files[x]->name.size() + 10; }
+    { if (files[x]->name.size() > longest) longest = files[x]->name.size() + 10; }
   }
 
   return longest;

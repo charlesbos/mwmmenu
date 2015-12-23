@@ -68,11 +68,11 @@ void DesktopFile::populate(bool hideOSI)
      * to avoid the entry data being overwritten with action data */
     if (id[0] == '[' && started == true) break;
     if (strcmp(id.c_str(), "Name") == 0)
-    { this->name = getSingleValue(line);
+    { name = getSingleValue(line);
       continue;
     }
     if (strcmp(id.c_str(), "Exec") == 0)
-    { this->exec = getSingleValue(line);
+    { exec = getSingleValue(line);
       continue;
     }
     if (strcmp(id.c_str(), "Categories") == 0)
@@ -85,19 +85,19 @@ void DesktopFile::populate(bool hideOSI)
      * the responsibility of the processCategories function. However, if we never find
      * a 'Categories' id for an entry, that function will never get called. So we
      * have to give the entry the catchall category here instead. */
-    if (this->categories.size() == 0) this->categories.push_back("Other");
+    if (categories.size() == 0) categories.push_back("Other");
     if (strcmp(id.c_str(), "NoDisplay") == 0)
     { string value = getSingleValue(line);
       if (strcmp(value.c_str(), "True") == 0 || strcmp(value.c_str(), "true") == 0)
-        this->nodisplay = true;
+        nodisplay = true;
       continue;
     }
     if (strcmp(id.c_str(), "OnlyShowIn") == 0)
-    { if (hideOSI) this->onlyShowIn = true;
+    { if (hideOSI) onlyShowIn = true;
       continue;
     }
     if (strcmp(id.c_str(), "Icon") == 0)
-    { this->iconDef = getSingleValue(line);
+    { iconDef = getSingleValue(line);
       continue;
     }
   }
