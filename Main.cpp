@@ -37,7 +37,7 @@ void usage()
   cout << "Options:" << endl;
   cout << "  -h, --help: show this dialogue" << endl << endl;
   cout << "  -n: name used for the main menu - by default, use 'Applications'" << endl << endl;
-  cout << "  -o: display entries with the OnlyShowIn key, false by default" << endl << endl;
+  cout << "  -o: hide entries with the OnlyShowIn key, false by default" << endl << endl;
   cout << "  -i: use icons with menu entries, only compatible with some window managers" << endl << endl;
   cout << "  -icon_size: choose size of icons used in menus. Should be a value such as 16x16, ";
   cout << "32x32 etc. Can also be scalable or all. Large icon sizes or all sizes should be used ";
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 { //Handle args
   string homedir = getenv("HOME");
   string menuName;
-  bool displayOSI = false;
+  bool hideOSI = false;
   string windowmanager = "MWM";
   bool useIcons = false;
   string iconSize = "16x16";
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
       continue;
     }
     if (strcmp(argv[x], "-o") == 0)
-    { displayOSI = true;
+    { hideOSI = true;
       continue;
     }
     if (strcmp(argv[x], "-i") == 0)
@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
   DesktopFile *files[counter];
   counter = 0;
   for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
-  { DesktopFile *df = new DesktopFile((*it).c_str(), displayOSI, useIcons, iconpaths);
+  { DesktopFile *df = new DesktopFile((*it).c_str(), hideOSI, useIcons, iconpaths);
     /* If a name or exec wasn't found we cannot add an entry to our menu so ignore
      * these objects */
     if (df->name != "\0" && df->exec != "\0")

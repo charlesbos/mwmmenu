@@ -31,7 +31,7 @@ class DesktopFile
 {
   public:
     DesktopFile();
-    DesktopFile(const char *filename, bool displayOSI, bool useIcons, vector<string> iconpaths);
+    DesktopFile(const char *filename, bool hideOSI, bool useIcons, vector<string> iconpaths);
 
     string name;
     string exec;
@@ -49,7 +49,7 @@ class DesktopFile
 
     void close();
 
-    void populate(bool displayOSI);
+    void populate(bool hideOSI);
 
     string getID(string line);
     string getSingleValue(string line);

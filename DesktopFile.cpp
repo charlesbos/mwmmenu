@@ -25,7 +25,7 @@
 
 DesktopFile::DesktopFile() {}
 
-DesktopFile::DesktopFile(const char *filename, bool displayOSI, bool useIcons, vector<string> iconpaths) 
+DesktopFile::DesktopFile(const char *filename, bool hideOSI, bool useIcons, vector<string> iconpaths) 
 { dfile.open(filename);
   this->name = "\0";
   this->exec = "\0";
@@ -39,7 +39,7 @@ DesktopFile::DesktopFile(const char *filename, bool displayOSI, bool useIcons, v
   this->filename = filename;
   if (!dfile); //If we cannot open the file, do nothing. The object will keep its initial values
   else
-  { populate(displayOSI);
+  { populate(hideOSI);
     if (useIcons) matchIcon();
     close();
   }
@@ -49,7 +49,7 @@ void DesktopFile::close() { dfile.close(); }
 
 /* This function fetches the required values (Name, Exec, Categories and NoDisplay)
  * and then assigns the results to the appropriate instance variables */
-void DesktopFile::populate(bool displayOSI)
+void DesktopFile::populate(bool hideOSI)
 { string line;
   bool started = false;
 
@@ -93,7 +93,7 @@ void DesktopFile::populate(bool displayOSI)
       continue;
     }
     if (strcmp(id.c_str(), "OnlyShowIn") == 0)
-    { if (!displayOSI) this->onlyShowIn = true;
+    { if (hideOSI) this->onlyShowIn = true;
       continue;
     }
     if (strcmp(id.c_str(), "Icon") == 0)
