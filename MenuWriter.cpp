@@ -26,6 +26,7 @@
 #define mwm 0
 #define twm 1
 #define fvwm 2
+#define fluxbox 3
 
 MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, string exclude, string excludeMatching)
 { this->files = files;
@@ -54,7 +55,7 @@ void MenuWriter::printHandler()
   for (unsigned int x = 0; x < sizeof(validCatsArr) / sizeof(validCatsArr[0]); x++)
   { vector< pair<int,string> > positions = getPositionsPerCat(validCatsArr[x]);
     if (!positions.empty()) //Ignore any categories that do not have any entries associated
-    { writeCategoryMenu(positions, validCatsArr[x], wmID);
+    { writeCategoryMenu(positions, validCatsArr[x], wmID, usedCounter, ((sizeof(validCatsArr) / sizeof(validCatsArr[0])) - 1));
       usedCats[usedCounter] = validCatsArr[x];
       usedCounter++;
     }
@@ -150,7 +151,7 @@ int MenuWriter::getLongestNameLength()
 { unsigned int longest = 0;
 
   for (int x = 0; x < filesLength; x++)
-  { if (useIcons)
+  { if (useIcons && windowmanager != "Fluxbox")
     { if (this->files[x]->name.size() + this->files[x]->icon.size() > longest) longest = this->files[x]->name.size() + this->files[x]->icon.size() + 10; }
     else
     { if (this->files[x]->name.size() > longest) longest = this->files[x]->name.size() + 10; }
@@ -163,6 +164,7 @@ int MenuWriter::getLongestNameLength()
 int MenuWriter::getWmID(string windowmanager)
 { if (windowmanager == "TWM") return twm;
   if (windowmanager == "FVWM") return fvwm;
+  if (windowmanager == "Fluxbox") return fluxbox;
   else return mwm;
 }
 
@@ -180,7 +182,7 @@ string MenuWriter::getCategoryIcon(string catName)
 }
 
 //Write category menu
-void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string category, int wmID)
+void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string category, int wmID, int catNumber, int maxCatNumber)
 { int longest = getLongestNameLength();
   string entryName;
   string entryExec;
@@ -217,6 +219,24 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
         cout << "+\t\t" << setw(longest) << left << entryName << "\t" << "Exec " << entryExec << endl;
       }
       cout << endl;
+      break;
+    case fluxbox :
+      if (catNumber == 0) cout << "[submenu] (" << menuName << ')' << endl;
+      if (useIcons)
+      { string catIcon = getCategoryIcon(category);
+        if (catIcon != "\0") catName = '(' + category + ") <" + catIcon + '>';
+        else catName = '(' + category + ')';
+      }
+      else catName = '(' + category + ')';
+      cout << "[submenu] " + catName + " {}" << endl;
+      for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
+      { if (useIcons && files[it->first]->icon != "\0") entryExec = '{' + files[it->first]->exec + "} <" + files[it->first]->icon + ">";
+        else entryExec = '{' + files[it->first]->exec + '}';
+        entryName = '(' + files[it->first]->name + ')';
+        cout << "\t[exec] " << setw(longest) << left << entryName << " " << entryExec << endl;
+      }
+      cout << "[end]" << endl;
+      if (catNumber == maxCatNumber) cout << "[end]" << endl;
       break;
   }
 }
@@ -259,6 +279,9 @@ void MenuWriter::writeMainMenu(string menuName, const char *usedCats[], int catN
           cout << "+\t\t" << setw(longest) << left << catName << "\t" << "Popup  " << usedCats[x] << endl;
         }
         cout << endl;
+        break;
+      case fluxbox :
+        //Do nothing here, main menu needs to be handled in the writeCategoryMenu function
         break;
     }
   }

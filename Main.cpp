@@ -52,7 +52,8 @@ void usage()
   cout << "Menu format options:" << endl << endl;
   cout << "  # No format argument: produce menus for MWM" << endl << endl;
   cout << "  -twm: produce menus for TWM" << endl << endl;
-  cout << "  -fvwm: produce menus for FVWM" << endl;
+  cout << "  -fvwm: produce menus for FVWM" << endl << endl;
+  cout << "  -fluxbox: produce menus for Fluxbox" << endl;
 }
 
 //Function that attempts to get the user icon theme from ~/.gtkrc-2.0
@@ -134,6 +135,10 @@ int main(int argc, char *argv[])
     }
     if (strcmp(argv[x], "-twm") == 0) 
     { windowmanager = "TWM";
+      continue;
+    }
+    if (strcmp(argv[x], "-fluxbox") == 0) 
+    { windowmanager = "Fluxbox";
       continue;
     }
     if (strcmp(argv[x], "-exclude") == 0) 

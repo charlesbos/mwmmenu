@@ -5,6 +5,7 @@ The following window managers are supported (more may be added in the future):
 * MWM (Motif Window Manager)
 * TWM (Tab Window Manager)
 * FVWM (F Virtual Window Manager
+* Fluxbox
 
 Dependencies:
 * boost-libs
