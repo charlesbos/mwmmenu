@@ -23,6 +23,7 @@
 #include <iomanip>
 #include "MenuWriter.h"
 
+//WM id numbers
 #define mwm 0
 #define twm 1
 #define fvwm 2
@@ -151,7 +152,11 @@ int MenuWriter::getLongestNameLength()
 { unsigned int longest = 0;
 
   for (int x = 0; x < filesLength; x++)
-  { if (useIcons && windowmanager != "Fluxbox")
+  { /* Most wm menus seem to define an icon path after the entry name so for the longest
+     * name we need to add the length of the icon path on. However Fluxbox defines the
+     * icon path after the exec so we don't want to add that extra length to the name in
+     * this case */
+    if (useIcons && windowmanager != "Fluxbox")
     { if (this->files[x]->name.size() + this->files[x]->icon.size() > longest) longest = this->files[x]->name.size() + this->files[x]->icon.size() + 10; }
     else
     { if (this->files[x]->name.size() > longest) longest = this->files[x]->name.size() + 10; }
