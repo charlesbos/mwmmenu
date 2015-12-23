@@ -50,7 +50,8 @@ void usage()
   cout << "Term,Office" << endl << endl;
   cout << "  # Note: any names to be excluded that contain spaces must have quotes." << endl << endl;
   cout << "Menu format options:" << endl << endl;
-  cout << "  # No format argument: produce menus for MWM/TWM" << endl << endl;
+  cout << "  # No format argument: produce menus for MWM" << endl << endl;
+  cout << "  -twm: produce menus for TWM" << endl << endl;
   cout << "  -fvwm: produce menus for FVWM" << endl;
 }
 
@@ -131,6 +132,10 @@ int main(int argc, char *argv[])
     { windowmanager = "FVWM";
       continue;
     }
+    if (strcmp(argv[x], "-twm") == 0) 
+    { windowmanager = "TWM";
+      continue;
+    }
     if (strcmp(argv[x], "-exclude") == 0) 
     { exclude = argv[x + 1];
       continue;
@@ -141,7 +146,7 @@ int main(int argc, char *argv[])
     }
   }
   if (menuName.size() == 0) menuName = "Applications";
-  if (windowmanager == "MWM") useIcons = false;
+  if (windowmanager == "MWM" || windowmanager == "TWM") useIcons = false;
   if (iconSize == "all") iconSize = "/"; //All paths will have forward slashes so this makes the check null and void
 
   //Get string vector of paths to .desktop files

@@ -184,6 +184,7 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
 { int longest = getLongestNameLength();
   string entryName;
   string entryExec;
+  string catName;
 
   switch(wmID)
   { case mwm :
@@ -197,6 +198,15 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
       cout << "}" << endl << endl;
       break;
     case twm :
+      catName = '"' + category + '"';
+      cout << "menu " << catName << endl << "{" << endl;
+      cout << setw(longest) << left << catName << "\t" << "f.title" << endl;
+      for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
+      { entryName = '"' + files[it->first]->name + '"';
+        entryExec = "\"exec " + files[it->first]->exec + " &" + '"';
+        cout << setw(longest) << left << entryName << "\t" << "f.exec " << entryExec << endl;
+      }
+      cout << "}" << endl << endl;
       break;
     case fvwm :
       cout << "AddToMenu " << category << "\t\t" << category << " Title" << endl;
@@ -216,6 +226,8 @@ void MenuWriter::writeMainMenu(string menuName, const char *usedCats[], int catN
 { if (catNumber > 0)
   { int longest = getLongestNameLength();
     string catName;
+    string menuNameWithQuotes;
+    string catMenuWithQuotes;
 
     switch(wmID)
     { case mwm :
@@ -226,6 +238,14 @@ void MenuWriter::writeMainMenu(string menuName, const char *usedCats[], int catN
         cout << "}" << endl << endl;
         break;
       case twm :
+        menuNameWithQuotes = '"' + menuName + '"';
+        cout << "menu " << menuNameWithQuotes << endl << "{" << endl;
+        cout << setw(longest) << left << menuNameWithQuotes << "\t" << "f.title" << endl;
+        for (int x = 0; x < catNumber; x++)
+        { catMenuWithQuotes = '"' + string(usedCats[x]) + '"';
+          cout << setw(longest) << left << catMenuWithQuotes << "\t" << "f.menu  " << catMenuWithQuotes << endl;
+        }
+        cout << "}" << endl << endl;
         break;
       case fvwm :
         cout << "AddToMenu " << menuName << "\t\t" << menuName << " Title" << endl;
