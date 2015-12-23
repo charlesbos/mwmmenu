@@ -47,10 +47,8 @@ class MenuWriter
     int getWmID(string windowmanager);
     string getCategoryIcon(string catName);
 
-    void writeMwmCategoryMenu(vector< pair<int,string> > positions, string category);
-    void writeMwmMainMenu(string menuName, const char *usedCats[], int catNumber);
-    void writeFvwmCategoryMenu(vector< pair<int,string> > positions, string category);
-    void writeFvwmMainMenu(string menuName, const char *usedCats[], int catNumber);
+    void writeCategoryMenu(vector< pair<int,string> > positions, string category, int wmID);
+    void writeMainMenu(string menuName, const char *usedCats[], int catNumber, int wmID);
 };
 
 #endif
