@@ -228,14 +228,14 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
         else catName = '(' + category + ')';
       }
       else catName = '(' + category + ')';
-      cout << "[submenu] " + catName + " {}" << endl;
+      cout << "\t[submenu] " + catName + " {}" << endl;
       for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
       { if (useIcons && files[it->first]->icon != "\0") entryExec = '{' + files[it->first]->exec + "} <" + files[it->first]->icon + ">";
         else entryExec = '{' + files[it->first]->exec + '}';
         entryName = '(' + files[it->first]->name + ')';
-        cout << "\t[exec] " << setw(longest) << left << entryName << " " << entryExec << endl;
+        cout << "\t\t[exec] " << setw(longest) << left << entryName << " " << entryExec << endl;
       }
-      cout << "[end]" << endl;
+      cout << "\t[end]" << endl;
       if (catNumber == maxCatNumber) cout << "[end]" << endl;
       break;
   }
