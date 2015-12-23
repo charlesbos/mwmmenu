@@ -49,6 +49,8 @@ void usage()
   cout << "  -exclude_matching: do not add desktop entries where the entry name contains one of the ";
   cout << "strings specified. Multiple entries should be separated by commas, for instance -exclude_matching ";
   cout << "Term,Office" << endl << endl;
+  cout << "  -exclude_categories: do not print category menus for the given strings. Multiple values should ";
+  cout << "be separated by commas, for instance: -exclude_categories Internet,System" << endl << endl;
   cout << "Menu format options:" << endl;
   cout << "  # No format argument: produce menus for MWM" << endl;
   cout << "  -twm: produce menus for TWM" << endl;
@@ -107,6 +109,7 @@ int main(int argc, char *argv[])
   string iconSize = "16x16";
   string exclude = "\0";
   string excludeMatching = "\0";
+  string excludeCategories = "\0";
 
   for (int x = 0; x < argc; x++)
   { if (strcmp(argv[x], "-h") == 0 || strcmp(argv[x], "--help") == 0)
@@ -147,6 +150,10 @@ int main(int argc, char *argv[])
     }
     if (strcmp(argv[x], "-exclude_matching") == 0) 
     { excludeMatching = argv[x + 1];
+      continue;
+    }
+    if (strcmp(argv[x], "-exclude_categories") == 0) 
+    { excludeCategories = argv[x + 1];
       continue;
     }
   }
@@ -218,7 +225,7 @@ int main(int argc, char *argv[])
 
   //Create MwmMenuWriter object, passing it the array of DesktopFile
   //This object will cause the menus to be printed
-  new MenuWriter(files, counter, menuName, windowmanager, useIcons, iconpaths, exclude, excludeMatching);
+  new MenuWriter(files, counter, menuName, windowmanager, useIcons, iconpaths, exclude, excludeMatching, excludeCategories);
 
   return 0;
 }

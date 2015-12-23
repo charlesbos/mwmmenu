@@ -29,7 +29,7 @@
 #define fvwm 2
 #define fluxbox 3
 
-MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, string exclude, string excludeMatching)
+MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, string exclude, string excludeMatching, string excludeCategories)
 { this->files = files;
   this->filesLength = filesLength;
   this->menuName = menuName;
@@ -38,7 +38,8 @@ MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, st
   this->iconpaths = iconpaths;
   this->exclude = exclude;
   this->excludeMatching = excludeMatching;
-  exclusionHandler();
+  this->excludeCategories = excludeCategories;
+  entryExclusionHandler();
   printHandler();
 }
 
@@ -52,10 +53,13 @@ void MenuWriter::printHandler()
   const char *usedCats[sizeof(validCatsArr) / sizeof(validCatsArr[0])] = {"\0"};
   int usedCounter = 0;
   int wmID = getWmID(windowmanager);
+  vector<string> excludedCatStrings = getExcludedCategories();
 
   for (unsigned int x = 0; x < sizeof(validCatsArr) / sizeof(validCatsArr[0]); x++)
   { vector< pair<int,string> > positions = getPositionsPerCat(validCatsArr[x]);
-    if (!positions.empty()) //Ignore any categories that do not have any entries associated
+    /* Ignore categories that do not have entries associated and also ignore categories
+     * that have been specified on the command line as categories that should be ignored */
+    if (!positions.empty() && !checkExcludedCategories(validCatsArr[x], excludedCatStrings))
     { writeCategoryMenu(positions, validCatsArr[x], wmID, usedCounter, ((sizeof(validCatsArr) / sizeof(validCatsArr[0])) - 1));
       usedCats[usedCounter] = validCatsArr[x];
       usedCounter++;
@@ -99,7 +103,7 @@ vector< pair<int,string> > MenuWriter::getPositionsPerCat(string category)
  * name fully or partially matches the names specified on the command line
  * as appropriate and then setting the nodisplay value for that DesktopFile
  * to true if so */
-void MenuWriter::exclusionHandler()
+void MenuWriter::entryExclusionHandler()
 { vector<string> excludeStrings;
   vector<string> excludeMatchingStrings;
   char buffer[exclude.size() + excludeMatching.size() + 1] = {'\0'};
@@ -144,6 +148,37 @@ void MenuWriter::exclusionHandler()
       }
     }
   }
+}
+
+/* Function to split the excludeCategories argument into a vector
+ * of individual strings for each category to be excluded */
+vector<string> MenuWriter::getExcludedCategories()
+{ vector<string> excludedCatStrings;
+  char buffer[excludeCategories.size() + 1] = {'\0'};
+  int selector = 0;
+
+  for (unsigned int x = 0; x < excludeCategories.size(); x++)
+  { if (excludeCategories[x] == ',') 
+    { excludedCatStrings.push_back(buffer);
+      selector = 0;
+      fill(buffer, buffer + sizeof(buffer) / sizeof(buffer[0]), '\0');
+      continue;
+    }
+    buffer[selector] = excludeCategories[x];
+    selector += 1;
+  }
+  if (selector != 0) excludedCatStrings.push_back(buffer);
+
+  return excludedCatStrings;
+}
+
+/* A function to check whether a category is present in the list of excluded categories.
+ * If it is, return true, otherwise return false */
+bool MenuWriter::checkExcludedCategories(string category, vector<string> excludedCatStrings)
+{ if (find(excludedCatStrings.begin(), excludedCatStrings.end(), category) != excludedCatStrings.end())
+    return true;
+  else
+    return false;
 }
 
 /* This function is used to get the length of the longest entry name so that we can
