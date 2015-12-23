@@ -153,7 +153,7 @@ int MenuWriter::getLongestNameLength()
   { if (useIcons)
     { if (this->files[x]->name.size() + this->files[x]->icon.size() > longest) longest = this->files[x]->name.size() + this->files[x]->icon.size() + 10; }
     else
-    { if (this->files[x]->name.size() > longest) longest = this->files[x]->name.size(); }
+    { if (this->files[x]->name.size() > longest) longest = this->files[x]->name.size() + 10; }
   }
 
   return longest;
