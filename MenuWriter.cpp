@@ -60,7 +60,7 @@ void MenuWriter::printHandler()
       usedCounter++;
     }
   }
-  writeMainMenu(menuName, usedCats, usedCounter, wmID);
+  writeMainMenu(usedCats, usedCounter, wmID);
 }
 
 /* This function is used by the sort function to sort the menu entries for each category
@@ -242,7 +242,7 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
 }
 
 //Write main menu
-void MenuWriter::writeMainMenu(string menuName, const char *usedCats[], int catNumber, int wmID)
+void MenuWriter::writeMainMenu(const char *usedCats[], int catNumber, int wmID)
 { if (catNumber > 0)
   { int longest = getLongestNameLength();
     string catName;
