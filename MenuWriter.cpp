@@ -28,6 +28,7 @@
 #define twm 1
 #define fvwm 2
 #define fluxbox 3
+#define openbox 4
 
 MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, string exclude, string excludeMatching, string excludeCategories)
 { this->files = files;
@@ -205,6 +206,7 @@ int MenuWriter::getWmID(string windowmanager)
 { if (windowmanager == "TWM") return twm;
   if (windowmanager == "FVWM") return fvwm;
   if (windowmanager == "Fluxbox") return fluxbox;
+  if (windowmanager == "Openbox") return openbox;
   else return mwm;
 }
 
@@ -278,6 +280,22 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
       cout << "\t[end]" << endl;
       if (catNumber == maxCatNumber) cout << "[end]" << endl;
       break;
+    case openbox :
+      catName = '"' + category + '"';
+      cout << "<menu id=" << catName << " label=" << catName << ">" << endl;
+      for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
+      { if (useIcons && files[it->first]->icon != "\0") 
+          entryName = '"' + files[it->first]->name + '"' + " icon=\"" + files[it->first]->icon + "\">";
+        else entryName = '"' + files[it->first]->name + "\">";
+        entryExec = files[it->first]->exec;
+        cout << "\t<item label=" << setw(longest) << left << entryName << endl;
+        cout << "\t\t<action name=\"Execute\">" << endl;
+        cout << "\t\t\t<execute>" << entryExec << "</execute>" << endl;
+        cout << "\t\t</action>" << endl;
+        cout << "\t</item>" << endl;
+      }
+      cout << "</menu>" << endl << endl;
+      break;
   }
 }
 
@@ -322,6 +340,20 @@ void MenuWriter::writeMainMenu(const char *usedCats[], int catNumber, int wmID)
         break;
       case fluxbox :
         //Do nothing here, main menu needs to be handled in the writeCategoryMenu function
+        break;
+      case openbox :
+        menuNameWithQuotes = '"' + menuName + '"';
+        cout << "<menu id=" << menuNameWithQuotes << " label=" << menuNameWithQuotes << ">" << endl;
+        for (int x = 0; x < catNumber; x++)
+        { if (useIcons)
+          { string catIcon = getCategoryIcon(string(usedCats[x]));
+            if (catIcon != "\0") catName = '"' + string(usedCats[x]) + '"' + " icon=\"" + catIcon + "\"/>";
+            else catName = '"' + string(usedCats[x]) + "\"/>";
+          }
+          else catName = '"' + string(usedCats[x]) + "\"/>";
+          cout << "\t<menu id=" << setw(longest) << left << catName << endl;
+        }
+        cout << "</menu>" << endl << endl;
         break;
     }
   }
