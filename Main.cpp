@@ -243,6 +243,11 @@ int main(int argc, char *argv[])
       icondirs.push_back("/usr/share/icons/" + themename);
       if (find(icondirs.begin(), icondirs.end(), "/usr/share/icons/gnome") != icondirs.end()) icondirs.push_back("/usr/share/icons/gnome");
     }
+    if (extraIconPaths != "\0")
+    { vector<string> newIPaths = splitCommaArgs(extraIconPaths);
+      for (unsigned int x = 0; x < newIPaths.size(); x++)
+        icondirs.push_back(newIPaths[x]);
+    }
     for (unsigned int x = 0; x < icondirs.size(); x++)
     { try
       { for (boost::filesystem::recursive_directory_iterator i(icondirs[x]), end; i != end; ++i)
