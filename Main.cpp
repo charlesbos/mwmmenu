@@ -20,7 +20,6 @@
 
 #include <iostream>
 #include <stdlib.h>
-#include <dirent.h>
 #include <string.h>
 #include "boost/filesystem.hpp"
 #include "DesktopFile.h"
@@ -209,7 +208,6 @@ int main(int argc, char *argv[])
   //Get string vector of paths to .desktop files
   vector<string> paths;
   paths.reserve(300);
-  int counter = 0;
   vector<string> appdirs = {"/usr/share/applications/", "/usr/local/share/applications/"};
   if (homedir.c_str() != NULL) appdirs.push_back(homedir + "/.local/share/applications/");
   if (extraDesktopPaths != "\0")
@@ -217,19 +215,12 @@ int main(int argc, char *argv[])
     for (unsigned int x = 0; x < newDPaths.size(); x++)
       appdirs.push_back(newDPaths[x]);
   }
-  dirent *f;
   for (unsigned int x = 0; x < appdirs.size(); x++)
-  { DIR *d = opendir(appdirs[x].c_str());
-    if (d != NULL)
-    { while ((f = readdir(d)) != NULL)
-      { string file = f->d_name;
-        string fullPath = appdirs[x] + file;
-        if (fullPath.find(".desktop") != string::npos)
-        { paths.push_back(fullPath);
-          counter++;
-        }
-      }
+  { try
+    { for (boost::filesystem::recursive_directory_iterator i(appdirs[x]), end; i != end; ++i)
+        if (!is_directory(i->path())) paths.push_back(i->path().string());
     }
+    catch (boost::filesystem::filesystem_error) { continue; }
   }
 
   /* Get vector of string pairs. Each pair contains the icon filename and the
@@ -263,8 +254,8 @@ int main(int argc, char *argv[])
   }
 
   //Create array of DesktopFile, using each path in the paths vector
-  DesktopFile *files[counter];
-  counter = 0;
+  DesktopFile *files[paths.size()];
+  int counter = 0;
   for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
   { DesktopFile *df = new DesktopFile((*it).c_str(), hideOSI, useIcons, iconpaths);
     /* If a name or exec wasn't found we cannot add an entry to our menu so ignore
