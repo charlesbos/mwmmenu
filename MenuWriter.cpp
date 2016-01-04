@@ -30,7 +30,7 @@
 #define fluxbox 3
 #define openbox 4
 
-MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, string exclude, string excludeMatching, string excludeCategories)
+MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, vector<string> exclude, vector<string> excludeMatching, vector<string> excludeCategories)
 { this->files = files;
   this->filesLength = filesLength;
   this->menuName = menuName;
@@ -54,13 +54,12 @@ void MenuWriter::printHandler()
   const char *usedCats[sizeof(validCatsArr) / sizeof(validCatsArr[0])] = {"\0"};
   int usedCounter = 0;
   int wmID = getWmID(windowmanager);
-  vector<string> excludedCatStrings = getExcludedCategories();
 
   for (unsigned int x = 0; x < sizeof(validCatsArr) / sizeof(validCatsArr[0]); x++)
   { vector< pair<int,string> > positions = getPositionsPerCat(validCatsArr[x]);
     /* Ignore categories that do not have entries associated and also ignore categories
      * that have been specified on the command line as categories that should be ignored */
-    if (!positions.empty() && !checkExcludedCategories(validCatsArr[x], excludedCatStrings))
+    if (!positions.empty() && !checkExcludedCategories(validCatsArr[x]))
     { writeCategoryMenu(positions, validCatsArr[x], wmID, usedCounter, ((sizeof(validCatsArr) / sizeof(validCatsArr[0])) - 1));
       usedCats[usedCounter] = validCatsArr[x];
       usedCounter++;
@@ -105,44 +104,15 @@ vector< pair<int,string> > MenuWriter::getPositionsPerCat(string category)
  * as appropriate and then setting the nodisplay value for that DesktopFile
  * to true if so */
 void MenuWriter::entryExclusionHandler()
-{ vector<string> excludeStrings;
-  vector<string> excludeMatchingStrings;
-  char buffer[exclude.size() + excludeMatching.size() + 1] = {'\0'};
-  int selector = 0;
-
-  if (exclude != "\0")
-  { for (unsigned int x = 0; x < exclude.size(); x++)
-    { if (exclude[x] == ',') 
-      { excludeStrings.push_back(buffer);
-        selector = 0;
-        fill(buffer, buffer + sizeof(buffer) / sizeof(buffer[0]), '\0');
-        continue;
-      }
-      buffer[selector] = exclude[x];
-      selector += 1;
-    }
-    if (selector != 0) excludeStrings.push_back(buffer);
-    for (int x = 0; x < filesLength; x++)
-      if (find(excludeStrings.begin(), excludeStrings.end(), files[x]->name) != excludeStrings.end()) files[x]->nodisplay = true;
+{ if (exclude.size() != 0)
+  { for (int x = 0; x < filesLength; x++)
+      if (find(exclude.begin(), exclude.end(), files[x]->name) != exclude.end()) files[x]->nodisplay = true;
   }
 
-  if (excludeMatching != "\0")
-  { selector = 0;
-    fill(buffer, buffer + sizeof(buffer) / sizeof(buffer[0]), '\0');
-    for (unsigned int x = 0; x < excludeMatching.size(); x++)
-    { if (excludeMatching[x] == ',') 
-      { excludeMatchingStrings.push_back(buffer);
-        selector = 0;
-        fill(buffer, buffer + sizeof(buffer) / sizeof(buffer[0]), '\0');
-        continue;
-      }
-      buffer[selector] = excludeMatching[x];
-      selector += 1;
-    }
-    if (selector != 0) excludeMatchingStrings.push_back(buffer);
-    for (int x = 0; x < filesLength; x++)
-    { for (unsigned int y = 0; y < excludeMatchingStrings.size(); y++)
-      { if (files[x]->name.find(excludeMatchingStrings[y]) != string::npos)
+  if (excludeMatching.size() != 0)
+  { for (int x = 0; x < filesLength; x++)
+    { for (unsigned int y = 0; y < excludeMatching.size(); y++)
+      { if (files[x]->name.find(excludeMatching[y]) != string::npos)
         { files[x]->nodisplay = true;
           break;
         }
@@ -151,32 +121,10 @@ void MenuWriter::entryExclusionHandler()
   }
 }
 
-/* Function to split the excludeCategories argument into a vector
- * of individual strings for each category to be excluded */
-vector<string> MenuWriter::getExcludedCategories()
-{ vector<string> excludedCatStrings;
-  char buffer[excludeCategories.size() + 1] = {'\0'};
-  int selector = 0;
-
-  for (unsigned int x = 0; x < excludeCategories.size(); x++)
-  { if (excludeCategories[x] == ',') 
-    { excludedCatStrings.push_back(buffer);
-      selector = 0;
-      fill(buffer, buffer + sizeof(buffer) / sizeof(buffer[0]), '\0');
-      continue;
-    }
-    buffer[selector] = excludeCategories[x];
-    selector += 1;
-  }
-  if (selector != 0) excludedCatStrings.push_back(buffer);
-
-  return excludedCatStrings;
-}
-
 /* A function to check whether a category is present in the list of excluded categories.
  * If it is, return true, otherwise return false */
-bool MenuWriter::checkExcludedCategories(string category, vector<string> excludedCatStrings)
-{ if (find(excludedCatStrings.begin(), excludedCatStrings.end(), category) != excludedCatStrings.end())
+bool MenuWriter::checkExcludedCategories(string category)
+{ if (find(excludeCategories.begin(), excludeCategories.end(), category) != excludeCategories.end())
     return true;
   else
     return false;

@@ -101,6 +101,28 @@ string getIconTheme(string homedir)
   }
 }
 
+/* Function to split string argument separated by commas into
+ * a string vector */
+vector<string> splitCommaArgs(string arg)
+{ vector<string> splitArgs;
+  char buffer[arg.size() + 1] = {'\0'};
+  int selector = 0;
+
+  for (unsigned int x = 0; x < arg.size(); x++)
+  { if (arg[x] == ',') 
+    { splitArgs.push_back(buffer);
+      selector = 0;
+      fill(buffer, buffer + sizeof(buffer) / sizeof(buffer[0]), '\0');
+      continue;
+    }
+    buffer[selector] = arg[x];
+    selector += 1;
+  }
+  if (selector != 0) splitArgs.push_back(buffer);
+
+  return splitArgs;
+}
+
 int main(int argc, char *argv[])
 { //Handle args
   string homedir = getenv("HOME");
@@ -237,7 +259,15 @@ int main(int argc, char *argv[])
 
   //Create MwmMenuWriter object, passing it the array of DesktopFile
   //This object will cause the menus to be printed
-  new MenuWriter(files, counter, menuName, windowmanager, useIcons, iconpaths, exclude, excludeMatching, excludeCategories);
+  new MenuWriter(files, 
+                 counter, 
+                 menuName, 
+                 windowmanager, 
+                 useIcons, 
+                 iconpaths, 
+                 splitCommaArgs(string(exclude)), 
+                 splitCommaArgs(string(excludeMatching)), 
+                 splitCommaArgs(string(excludeCategories)));
 
   return 0;
 }
