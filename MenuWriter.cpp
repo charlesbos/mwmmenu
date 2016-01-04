@@ -104,12 +104,11 @@ vector< pair<int,string> > MenuWriter::getPositionsPerCat(string category)
  * as appropriate and then setting the nodisplay value for that DesktopFile
  * to true if so */
 void MenuWriter::entryExclusionHandler()
-{ if (exclude.size() != 0)
+{ if (exclude.empty())
   { for (int x = 0; x < filesLength; x++)
       if (find(exclude.begin(), exclude.end(), files[x]->name) != exclude.end()) files[x]->nodisplay = true;
   }
-
-  if (excludeMatching.size() != 0)
+  if (excludeMatching.empty())
   { for (int x = 0; x < filesLength; x++)
     { for (unsigned int y = 0; y < excludeMatching.size(); y++)
       { if (files[x]->name.find(excludeMatching[y]) != string::npos)
