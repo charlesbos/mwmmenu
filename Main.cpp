@@ -283,9 +283,9 @@ int main(int argc, char *argv[])
                  windowmanager, 
                  useIcons, 
                  iconpaths, 
-                 splitCommaArgs(string(exclude)), 
-                 splitCommaArgs(string(excludeMatching)), 
-                 splitCommaArgs(string(excludeCategories)));
+                 splitCommaArgs(exclude), 
+                 splitCommaArgs(excludeMatching), 
+                 splitCommaArgs(excludeCategories));
 
   return 0;
 }
