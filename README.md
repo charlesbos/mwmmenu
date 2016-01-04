@@ -7,6 +7,7 @@ The following window managers are supported (more may be added in the future):
 * FVWM (F Virtual Window Manager
 * Fluxbox
 * Openbox
+* Blackbox
 
 Dependencies:
 * boost-libs

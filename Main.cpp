@@ -57,6 +57,7 @@ void usage()
   cout << "  -fvwm: produce menus for FVWM" << endl;
   cout << "  -fluxbox: produce menus for Fluxbox" << endl;
   cout << "  -openbox: produce menus for Openbox" << endl;
+  cout << "  -blackbox: produce menus for Blackbox" << endl;
 }
 
 //Function that attempts to get the user icon theme from ~/.gtkrc-2.0
@@ -147,6 +148,12 @@ int main(int argc, char *argv[])
     }
     if (strcmp(argv[x], "-openbox") == 0) 
     { windowmanager = "Openbox";
+      continue;
+    }
+    /* This isn't a typo - Blackbox and Fluxbox menus are the same.
+     * The -blackbox option is just there to prevent confusion */
+    if (strcmp(argv[x], "-blackbox") == 0) 
+    { windowmanager = "Fluxbox";
       continue;
     }
     if (strcmp(argv[x], "-exclude") == 0) 
