@@ -26,9 +26,6 @@
 #include "DesktopFile.h"
 #include "MenuWriter.h"
 
-#define NUMBER_OF_DIRS 3 //If more search dirs are added, increase by 1 for each dir
-#define NUMBER_OF_ICON_DIRS 5 //Likewise, increase for each search dir
-
 void usage()
 { cout << "mwmmenu - creates application menus for MWM and other window managers." << endl << endl;
   cout << "Usage:" << endl;
@@ -51,6 +48,10 @@ void usage()
   cout << "Term,Office" << endl << endl;
   cout << "  -exclude_categories: do not print category menus for the given strings. Multiple values should ";
   cout << "be separated by commas, for instance: -exclude_categories Internet,System" << endl << endl;
+  cout << "  -add_desktop_paths: add extra search paths for desktop entries. Multiple ";
+  cout << "paths should be separated by commas." << endl << endl;
+  cout << "  -add_icon_paths: add extra search paths for icons. Multiple ";
+  cout << "paths should be separated by commas." << endl << endl;
   cout << "Menu format options:" << endl;
   cout << "  # No format argument: produce menus for MWM" << endl;
   cout << "  -twm: produce menus for TWM" << endl;
@@ -134,6 +135,8 @@ int main(int argc, char *argv[])
   string exclude = "\0";
   string excludeMatching = "\0";
   string excludeCategories = "\0";
+  string extraDesktopPaths = "\0";
+  string extraIconPaths = "\0";
 
   for (int x = 0; x < argc; x++)
   { if (strcmp(argv[x], "-h") == 0 || strcmp(argv[x], "--help") == 0)
@@ -190,6 +193,14 @@ int main(int argc, char *argv[])
     { excludeCategories = argv[x + 1];
       continue;
     }
+    if (strcmp(argv[x], "-add_desktop_paths") == 0) 
+    { extraDesktopPaths = argv[x + 1];
+      continue;
+    }
+    if (strcmp(argv[x], "-add_icon_paths") == 0) 
+    { extraIconPaths = argv[x + 1];
+      continue;
+    }
   }
   if (menuName.size() == 0) menuName = "Applications";
   if (windowmanager == "MWM" || windowmanager == "TWM") useIcons = false;
@@ -199,11 +210,15 @@ int main(int argc, char *argv[])
   vector<string> paths;
   paths.reserve(300);
   int counter = 0;
-  string appdirs[NUMBER_OF_DIRS] = {"/usr/share/applications/", "/usr/local/share/applications/"};
-  if (homedir.c_str() != NULL) appdirs[NUMBER_OF_DIRS - 1] = homedir + "/.local/share/applications/";
-  else appdirs[NUMBER_OF_DIRS - 1] = '\0';
+  vector<string> appdirs = {"/usr/share/applications/", "/usr/local/share/applications/"};
+  if (homedir.c_str() != NULL) appdirs.push_back(homedir + "/.local/share/applications/");
+  if (extraDesktopPaths != "\0")
+  { vector<string> newDPaths = splitCommaArgs(extraDesktopPaths);
+    for (unsigned int x = 0; x < newDPaths.size(); x++)
+      appdirs.push_back(newDPaths[x]);
+  }
   dirent *f;
-  for (int x = 0; x < NUMBER_OF_DIRS; x++)
+  for (unsigned int x = 0; x < appdirs.size(); x++)
   { DIR *d = opendir(appdirs[x].c_str());
     if (d != NULL)
     { while ((f = readdir(d)) != NULL)
@@ -222,15 +237,13 @@ int main(int argc, char *argv[])
   vector<string> iconpaths;
   if (useIcons)
   { iconpaths.reserve(500);
-    string icondirs[NUMBER_OF_ICON_DIRS] = {"/usr/share/icons/hicolor", "/usr/share/pixmaps", "/usr/local/share/pixmaps"};
+    vector<string> icondirs = {"/usr/share/icons/hicolor", "/usr/share/pixmaps", "/usr/local/share/pixmaps"};
     if (homedir.c_str() != NULL)
     { string themename = getIconTheme(homedir); 
-      icondirs[NUMBER_OF_ICON_DIRS - 2] = "/usr/share/icons/" + themename;
-      if (icondirs[NUMBER_OF_ICON_DIRS - 2] != "/usr/share/icons/gnome") icondirs[NUMBER_OF_ICON_DIRS - 1] = "/usr/share/icons/gnome";
-      else icondirs[NUMBER_OF_ICON_DIRS - 1] = "\0";
+      icondirs.push_back("/usr/share/icons/" + themename);
+      if (find(icondirs.begin(), icondirs.end(), "/usr/share/icons/gnome") != icondirs.end()) icondirs.push_back("/usr/share/icons/gnome");
     }
-    else icondirs[NUMBER_OF_DIRS - 1] = '\0';
-    for (int x = 0; x < NUMBER_OF_ICON_DIRS; x++)
+    for (unsigned int x = 0; x < icondirs.size(); x++)
     { try
       { for (boost::filesystem::recursive_directory_iterator i(icondirs[x]), end; i != end; ++i)
         { if (!is_directory(i->path()))
