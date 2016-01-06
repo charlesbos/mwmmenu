@@ -174,10 +174,8 @@ int main(int argc, char *argv[])
     { windowmanager = "Openbox";
       continue;
     }
-    /* This isn't a typo - Blackbox and Fluxbox menus are the same.
-     * The -blackbox option is just there to prevent confusion */
     if (strcmp(argv[x], "-blackbox") == 0) 
-    { windowmanager = "Fluxbox";
+    { windowmanager = "Blackbox";
       continue;
     }
     if (strcmp(argv[x], "-exclude") == 0) 
@@ -202,7 +200,7 @@ int main(int argc, char *argv[])
     }
   }
   if (menuName.size() == 0) menuName = "Applications";
-  if (windowmanager == "MWM" || windowmanager == "TWM") useIcons = false;
+  if (windowmanager == "MWM" || windowmanager == "TWM" || windowmanager == "Blackbox") useIcons = false;
   if (iconSize == "all") iconSize = "/"; //All paths will have forward slashes so this makes the check null and void
 
   //Get string vector of paths to .desktop files

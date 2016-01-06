@@ -154,6 +154,7 @@ int MenuWriter::getWmID(string windowmanager)
   if (windowmanager == "FVWM") return fvwm;
   if (windowmanager == "Fluxbox") return fluxbox;
   if (windowmanager == "Openbox") return openbox;
+  if (windowmanager == "Blackbox") return fluxbox; //Fluxbox menus work in Blackbox
   else return mwm;
 }
 
