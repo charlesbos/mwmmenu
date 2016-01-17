@@ -29,6 +29,7 @@
 #define fvwm 2
 #define fluxbox 3
 #define openbox 4
+#define olvwm 5
 
 MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, vector<string> exclude, vector<string> excludeMatching, vector<string> excludeCategories)
 { this->files = files;
@@ -155,6 +156,7 @@ int MenuWriter::getWmID(string windowmanager)
   if (windowmanager == "Fluxbox") return fluxbox;
   if (windowmanager == "Openbox") return openbox;
   if (windowmanager == "Blackbox") return fluxbox; //Fluxbox menus work in Blackbox
+  if (windowmanager == "Olvwm") return olvwm;
   else return mwm;
 }
 
@@ -244,6 +246,18 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
       }
       cout << "</menu>" << endl << endl;
       break;
+    case olvwm :
+      if (catNumber == 0) cout << setw(longest) << left << '"' + menuName + '"' << "MENU" << endl << endl;
+      catName = '"' + category + '"';
+      cout << setw(longest) << left << catName << "MENU" << endl;
+      for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
+      { entryName = '"' + files[it->first]->name + '"';
+        entryExec = files[it->first]->exec;
+        cout << setw(longest) << left << entryName << entryExec << endl;
+      }
+      cout << setw(longest) << left << catName << "END PIN" << endl << endl;
+      if (catNumber == maxCatNumber) cout << setw(longest) << left << '"' + menuName + '"' << "END PIN" << endl;
+      break;   
   }
 }
 
@@ -302,6 +316,9 @@ void MenuWriter::writeMainMenu(const char *usedCats[], int catNumber, int wmID)
           cout << "\t<menu id=" << setw(longest) << left << catName << endl;
         }
         cout << "</menu>" << endl << endl;
+        break;
+      case olvwm :
+        //Do nothing here, main menu needs to be handled in the writeCategoryMenu function
         break;
     }
   }
