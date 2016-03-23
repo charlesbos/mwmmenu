@@ -26,8 +26,7 @@
 DesktopFile::DesktopFile() {}
 
 DesktopFile::DesktopFile(const char *filename, bool hideOSI, bool useIcons, vector<string> iconpaths) 
-{ dfile.open(filename);
-  this->name = "\0";
+{ this->name = "\0";
   this->exec = "\0";
   this->categories = vector<string>();
   this->nodisplay = false; //Always assume entries are displayed unless entry specifies otherwise
@@ -37,6 +36,7 @@ DesktopFile::DesktopFile(const char *filename, bool hideOSI, bool useIcons, vect
   this->icon = "\0";
   this->iconDef = "\0";
   this->filename = filename;
+  dfile.open(filename);
   if (!dfile); //If we cannot open the file, do nothing. The object will keep its initial values
   else
   { populate(hideOSI);
