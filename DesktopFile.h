@@ -44,9 +44,8 @@ class DesktopFile
     ifstream dfile;
     vector<string> iconpaths;
     string iconDef;
-    bool useIcons;
 
-    void populate(bool hideOSI);
+    void populate(bool hideOSI, bool useIcons);
 
     string getID(string line);
     string getSingleValue(string line);

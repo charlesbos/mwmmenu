@@ -31,21 +31,20 @@ DesktopFile::DesktopFile(const char *filename, bool hideOSI, bool useIcons, vect
   this->categories = vector<string>();
   this->nodisplay = false; //Always assume entries are displayed unless entry specifies otherwise
   this->onlyShowIn = false; //Assume false but if we find OnlyShowIn make it true
-  this->useIcons = useIcons;
   this->iconpaths = iconpaths;
   this->icon = "\0";
   this->iconDef = "\0";
   dfile.open(filename);
   if (!dfile); //If we cannot open the file, do nothing. The object will keep its initial values
   else
-  { populate(hideOSI);
+  { populate(hideOSI, useIcons);
     dfile.close();
   }
 }
 
 /* This function fetches the required values (Name, Exec, Categories and NoDisplay)
  * and then assigns the results to the appropriate instance variables */
-void DesktopFile::populate(bool hideOSI)
+void DesktopFile::populate(bool hideOSI, bool useIcons)
 { string line;
   bool started = false;
 
