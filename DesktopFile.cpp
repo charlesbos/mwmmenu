@@ -76,16 +76,9 @@ void DesktopFile::populate(bool hideOSI)
       continue;
     }
     if (strcmp(id.c_str(), "Categories") == 0)
-    { vector<string> categories = getMultiValue(line);
-      processCategories(categories);
-      this->categories = categories;
+    { categories = getMultiValue(line);
       continue;
     }
-    /* Ensuring that desktop entries have the correct catagory should, in theory, be
-     * the responsibility of the processCategories function. However, if we never find
-     * a 'Categories' id for an entry, that function will never get called. So we
-     * have to give the entry the catchall category here instead. */
-    if (categories.size() == 0) categories.push_back("Other");
     if (strcmp(id.c_str(), "NoDisplay") == 0)
     { string value = getSingleValue(line);
       if (strcmp(value.c_str(), "True") == 0 || strcmp(value.c_str(), "true") == 0)
@@ -101,6 +94,7 @@ void DesktopFile::populate(bool hideOSI)
       continue;
     }
   }
+  processCategories(categories);
 }
 
 /* This function is used to get the single value before the = sign.
