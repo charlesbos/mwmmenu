@@ -44,7 +44,6 @@ class DesktopFile
   private:
     ifstream dfile;
     vector<string> iconpaths;
-    string filename;
     string iconDef;
 
     void populate(bool hideOSI);

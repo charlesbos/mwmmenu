@@ -35,7 +35,6 @@ DesktopFile::DesktopFile(const char *filename, bool hideOSI, bool useIcons, vect
   this->iconpaths = iconpaths;
   this->icon = "\0";
   this->iconDef = "\0";
-  this->filename = filename;
   dfile.open(filename);
   if (!dfile); //If we cannot open the file, do nothing. The object will keep its initial values
   else
