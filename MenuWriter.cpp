@@ -42,7 +42,6 @@ MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, st
   this->exclude = exclude;
   this->excludeMatching = excludeMatching;
   this->excludeCategories = excludeCategories;
-  entryExclusionHandler();
   printHandler();
 }
 
@@ -56,6 +55,8 @@ void MenuWriter::printHandler()
   const char *usedCats[sizeof(validCatsArr) / sizeof(validCatsArr[0])] = {"\0"};
   int usedCounter = 0;
   int wmID = getWmID(windowmanager);
+
+  entryExclusionHandler();
 
   for (unsigned int x = 0; x < sizeof(validCatsArr) / sizeof(validCatsArr[0]); x++)
   { vector< pair<int,string> > positions = getPositionsPerCat(validCatsArr[x]);
