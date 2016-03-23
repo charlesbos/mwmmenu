@@ -38,13 +38,13 @@ class DesktopFile
     vector<string> categories;
     bool nodisplay;
     bool onlyShowIn;
-    bool useIcons;
     string icon;
 
   private:
     ifstream dfile;
     vector<string> iconpaths;
     string iconDef;
+    bool useIcons;
 
     void populate(bool hideOSI);
 
