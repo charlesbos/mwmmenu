@@ -30,6 +30,7 @@
 #define fluxbox 3
 #define openbox 4
 #define olvwm 5
+#define windowmaker 6
 
 MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, vector<string> exclude, vector<string> excludeMatching, vector<string> excludeCategories)
 { this->files = files;
@@ -157,6 +158,7 @@ int MenuWriter::getWmID(string windowmanager)
   if (windowmanager == "Openbox") return openbox;
   if (windowmanager == "Blackbox") return fluxbox; //Fluxbox menus work in Blackbox
   if (windowmanager == "Olvwm") return olvwm;
+  if (windowmanager == "Windowmaker") return windowmaker;
   else return mwm;
 }
 
@@ -258,6 +260,18 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
       cout << setw(longest) << left << catName << "END PIN" << endl << endl;
       if (catNumber == maxCatNumber) cout << setw(longest) << left << '"' + menuName + '"' << "END PIN" << endl;
       break;   
+    case windowmaker :
+      if (catNumber == 0) cout << "(\n  " << '"' << menuName << '"' << ',' << endl;
+      cout << "  (\n    " << category << ',' << endl;
+      for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
+      { entryName = '"' + files[it->first]->name + '"';
+        entryExec = '"' + files[it->first]->exec + '"';
+        cout << "    (" << entryName << ", " << "EXEC, " << entryExec << ")";
+        if ((it - positions.begin()) != (positions.end() - positions.begin() - 1)) cout << ',' << endl;
+        else cout << endl;
+      }
+      if (catNumber != maxCatNumber - 1) cout << "  )," << endl;
+      else cout << "  )\n)" << endl;
   }
 }
 
@@ -318,6 +332,9 @@ void MenuWriter::writeMainMenu(const char *usedCats[], int catNumber, int wmID)
         cout << "</menu>" << endl << endl;
         break;
       case olvwm :
+        //Do nothing here, main menu needs to be handled in the writeCategoryMenu function
+        break;
+      case windowmaker :
         //Do nothing here, main menu needs to be handled in the writeCategoryMenu function
         break;
     }

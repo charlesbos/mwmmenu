@@ -59,6 +59,7 @@ void usage()
   cout << "  -openbox: produce menus for Openbox" << endl;
   cout << "  -blackbox: produce menus for Blackbox" << endl;
   cout << "  -olvwm: produce menus for Olvwm" << endl;
+  cout << "  -windowmaker: produce menus for Windowmaker" << endl;
 }
 
 //Function that attempts to get the user icon theme from ~/.gtkrc-2.0
@@ -183,6 +184,10 @@ int main(int argc, char *argv[])
     { windowmanager = "Olvwm";
       continue;
     }
+    if (strcmp(argv[x], "-windowmaker") == 0) 
+    { windowmanager = "Windowmaker";
+      continue;
+    }
     if (strcmp(argv[x], "-exclude") == 0) 
     { exclude = argv[x + 1];
       continue;
@@ -205,7 +210,12 @@ int main(int argc, char *argv[])
     }
   }
   if (menuName.size() == 0) menuName = "Applications";
-  if (windowmanager == "MWM" || windowmanager == "TWM" || windowmanager == "Blackbox" || windowmanager == "Olvwm") useIcons = false;
+  if (windowmanager == "MWM" || 
+      windowmanager == "TWM" || 
+      windowmanager == "Blackbox" || 
+      windowmanager == "Olvwm" ||
+      windowmanager == "Windowmaker") 
+    useIcons = false;
   if (iconSize == "all") iconSize = "/"; //All paths will have forward slashes so this makes the check null and void
 
   //Get string vector of paths to .desktop files
