@@ -230,7 +230,7 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
         cout << "\t\t[exec] " << setw(longest) << left << entryName << " " << entryExec << endl;
       }
       cout << "\t[end]" << endl;
-      if (catNumber == maxCatNumber) cout << "[end]" << endl;
+      if (catNumber == maxCatNumber - 1) cout << "[end]" << endl;
       break;
     case openbox :
       catName = '"' + category + '"';
@@ -258,7 +258,7 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
         cout << setw(longest) << left << entryName << entryExec << endl;
       }
       cout << setw(longest) << left << catName << "END PIN" << endl << endl;
-      if (catNumber == maxCatNumber) cout << setw(longest) << left << '"' + menuName + '"' << "END PIN" << endl;
+      if (catNumber == maxCatNumber - 1) cout << setw(longest) << left << '"' + menuName + '"' << "END PIN" << endl;
       break;   
     case windowmaker :
       if (catNumber == 0) cout << "(\n  " << '"' << menuName << '"' << ',' << endl;
