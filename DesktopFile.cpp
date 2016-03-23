@@ -40,12 +40,9 @@ DesktopFile::DesktopFile(const char *filename, bool hideOSI, bool useIcons, vect
   if (!dfile); //If we cannot open the file, do nothing. The object will keep its initial values
   else
   { populate(hideOSI);
-    if (useIcons) matchIcon();
-    close();
+    dfile.close();
   }
 }
-
-void DesktopFile::close() { dfile.close(); }
 
 /* This function fetches the required values (Name, Exec, Categories and NoDisplay)
  * and then assigns the results to the appropriate instance variables */
@@ -94,7 +91,9 @@ void DesktopFile::populate(bool hideOSI)
       continue;
     }
   }
+
   processCategories(categories);
+  if (useIcons) matchIcon();
 }
 
 /* This function is used to get the single value before the = sign.

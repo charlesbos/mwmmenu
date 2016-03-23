@@ -47,8 +47,6 @@ class DesktopFile
     string filename;
     string iconDef;
 
-    void close();
-
     void populate(bool hideOSI);
 
     string getID(string line);
