@@ -33,7 +33,6 @@ DesktopFile::DesktopFile(const char *filename, bool hideOSI, bool useIcons, vect
   this->onlyShowIn = false; //Assume false but if we find OnlyShowIn make it true
   this->iconpaths = iconpaths;
   this->icon = "\0";
-  this->iconDef = "\0";
   dfile.open(filename);
   if (!dfile); //If we cannot open the file, do nothing. The object will keep its initial values
   else
@@ -46,6 +45,7 @@ DesktopFile::DesktopFile(const char *filename, bool hideOSI, bool useIcons, vect
  * and then assigns the results to the appropriate instance variables */
 void DesktopFile::populate(bool hideOSI, bool useIcons)
 { string line;
+  string iconDef = "\0";
   bool started = false;
 
   while (!dfile.eof())
@@ -91,7 +91,7 @@ void DesktopFile::populate(bool hideOSI, bool useIcons)
   }
 
   processCategories(categories);
-  if (useIcons) matchIcon();
+  if (useIcons && iconDef != "\0") matchIcon(iconDef);
 }
 
 /* This function is used to get the single value before the = sign.
@@ -222,7 +222,7 @@ void DesktopFile::processCategories(vector<string> &categories)
 /* Function which attempts to find the full path for a desktop entry by going
  * through a list of icons, attempting to match the icon entry in the entry
  * against each icon path */
-void DesktopFile::matchIcon()
+void DesktopFile::matchIcon(string iconDef)
 { for (unsigned int x = 0; x < iconpaths.size(); x++)
   { string iconName = iconpaths[x].substr(iconpaths[x].find_last_of("/") + 1, iconpaths[x].find_last_of(".") - iconpaths[x].find_last_of("/") - 1);
     if (iconDef == iconName)
