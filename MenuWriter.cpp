@@ -54,7 +54,7 @@ void MenuWriter::printHandler()
                                 "Office", "Other", "Science", "Settings", "System"};
   const char *usedCats[sizeof(validCatsArr) / sizeof(validCatsArr[0])] = {"\0"};
   int usedCounter = 0;
-  int wmID = getWmID(windowmanager);
+  int wmID = getWmID();
 
   entryExclusionHandler();
 
@@ -152,7 +152,7 @@ int MenuWriter::getLongestNameLength()
 }
 
 //Return an integer identifying which window manager, menus should be produced for
-int MenuWriter::getWmID(string windowmanager)
+int MenuWriter::getWmID()
 { if (windowmanager == "TWM") return twm;
   if (windowmanager == "FVWM") return fvwm;
   if (windowmanager == "Fluxbox") return fluxbox;
