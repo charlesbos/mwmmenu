@@ -31,19 +31,18 @@ DesktopFile::DesktopFile(const char *filename, bool hideOSI, bool useIcons, vect
   this->categories = vector<string>();
   this->nodisplay = false; //Always assume entries are displayed unless entry specifies otherwise
   this->onlyShowIn = false; //Assume false but if we find OnlyShowIn make it true
-  this->iconpaths = iconpaths;
   this->icon = "\0";
   dfile.open(filename);
   if (!dfile); //If we cannot open the file, do nothing. The object will keep its initial values
   else
-  { populate(hideOSI, useIcons);
+  { populate(hideOSI, useIcons, iconpaths);
     dfile.close();
   }
 }
 
 /* This function fetches the required values (Name, Exec, Categories and NoDisplay)
  * and then assigns the results to the appropriate instance variables */
-void DesktopFile::populate(bool hideOSI, bool useIcons)
+void DesktopFile::populate(bool hideOSI, bool useIcons, vector<string> iconpaths)
 { string line;
   string iconDef = "\0";
   bool started = false;
@@ -91,7 +90,7 @@ void DesktopFile::populate(bool hideOSI, bool useIcons)
   }
 
   processCategories(categories);
-  if (useIcons && iconDef != "\0") matchIcon(iconDef);
+  if (useIcons && iconDef != "\0") matchIcon(iconDef, iconpaths);
 }
 
 /* This function is used to get the single value before the = sign.
@@ -222,7 +221,7 @@ void DesktopFile::processCategories(vector<string> &categories)
 /* Function which attempts to find the full path for a desktop entry by going
  * through a list of icons, attempting to match the icon entry in the entry
  * against each icon path */
-void DesktopFile::matchIcon(string iconDef)
+void DesktopFile::matchIcon(string iconDef, vector<string> iconpaths)
 { for (unsigned int x = 0; x < iconpaths.size(); x++)
   { string iconName = iconpaths[x].substr(iconpaths[x].find_last_of("/") + 1, iconpaths[x].find_last_of(".") - iconpaths[x].find_last_of("/") - 1);
     if (iconDef == iconName)

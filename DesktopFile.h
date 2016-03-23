@@ -42,14 +42,13 @@ class DesktopFile
 
   private:
     ifstream dfile;
-    vector<string> iconpaths;
 
-    void populate(bool hideOSI, bool useIcons);
+    void populate(bool hideOSI, bool useIcons, vector<string> iconpaths);
 
     string getID(string line);
     string getSingleValue(string line);
     vector<string> getMultiValue(string line);
-    void matchIcon(string iconDef);
+    void matchIcon(string iconDef, vector<string> iconpaths);
 
     void processCategories(vector<string> &categories);
 };
