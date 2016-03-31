@@ -56,6 +56,7 @@ void MenuWriter::printHandler()
   const char *usedCats[sizeof(validCatsArr) / sizeof(validCatsArr[0])] = {"\0"};
   int usedCounter = 0;
   int wmID = getWmID();
+  int longest = getLongestNameLength();
 
   entryExclusionHandler();
 
@@ -64,12 +65,12 @@ void MenuWriter::printHandler()
     /* Ignore categories that do not have entries associated and also ignore categories
      * that have been specified on the command line as categories that should be ignored */
     if (!positions.empty() && !checkExcludedCategories(validCatsArr[x]))
-    { writeCategoryMenu(positions, validCatsArr[x], wmID, usedCounter, ((sizeof(validCatsArr) / sizeof(validCatsArr[0])) - 1));
+    { writeCategoryMenu(positions, validCatsArr[x], wmID, usedCounter, ((sizeof(validCatsArr) / sizeof(validCatsArr[0])) - 1), longest);
       usedCats[usedCounter] = validCatsArr[x];
       usedCounter++;
     }
   }
-  writeMainMenu(usedCats, usedCounter, wmID);
+  writeMainMenu(usedCats, usedCounter, wmID, longest);
 }
 
 /* This function is used by the sort function to sort the menu entries for each category
@@ -182,9 +183,8 @@ string MenuWriter::getCategoryIcon(string catName)
  * for a given category. It might also print out the 'main' menu which in which
  * the category menus are nested. This is done only if the window manager menu syntax
  * requires the category submenus to be literally nested inside the main one */
-void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string category, int wmID, int catNumber, int maxCatNumber)
-{ int longest = getLongestNameLength();
-  string entryName;
+void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string category, int wmID, int catNumber, int maxCatNumber, int longest)
+{ string entryName;
   string entryExec;
   string catName;
 
@@ -301,10 +301,9 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
  * nested inside the 'main' menu. In this case, the writeCategoryMenu function will also
  * handle the main menu and this function will do nothing. In cases where there
  * are no printable menu entries, this function will print a warning message instead */
-void MenuWriter::writeMainMenu(const char *usedCats[], int catNumber, int wmID)
+void MenuWriter::writeMainMenu(const char *usedCats[], int catNumber, int wmID, int longest)
 { if (catNumber > 0)
-  { int longest = getLongestNameLength();
-    string menuNameWithQuotes;
+  { string menuNameWithQuotes;
     string catNameWithQuotes;
 
     switch(wmID)
