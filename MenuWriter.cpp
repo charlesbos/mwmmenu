@@ -178,7 +178,10 @@ string MenuWriter::getCategoryIcon(string catName)
   return "\0";
 }
 
-//Write category menu
+/* This function is called multiple times. Each time, it prints out the submenu
+ * for a given category. It might also print out the 'main' menu which in which
+ * the category menus are nested. This is done only if the window manager menu syntax
+ * requires the category submenus to be literally nested inside the main one */
 void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string category, int wmID, int catNumber, int maxCatNumber)
 { int longest = getLongestNameLength();
   string entryName;
@@ -293,7 +296,11 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
   }
 }
 
-//Write main menu
+/* This function is called once. It will print out a menu referring to the category
+ * submenus. Note that some window managers require the submenus to be literally
+ * nested inside the 'main' menu. In this case, the writeCategoryMenu function will also
+ * handle the main menu and this function will do nothing. In cases where there
+ * are no printable menu entries, this function will print a warning message instead */
 void MenuWriter::writeMainMenu(const char *usedCats[], int catNumber, int wmID)
 { if (catNumber > 0)
   { int longest = getLongestNameLength();
