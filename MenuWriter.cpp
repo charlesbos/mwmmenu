@@ -133,8 +133,8 @@ bool MenuWriter::checkExcludedCategories(string category)
     return false;
 }
 
-/* This function is used to get the length of the longest entry name so that we can
- * neatly format the menu output */
+/* This function will return either the longest name length (or the longest length name + icon
+ * path string) plus an offset of 10 to account for any tab chars */
 int MenuWriter::getLongestNameLength()
 { unsigned int longest = 0;
 
@@ -144,12 +144,12 @@ int MenuWriter::getLongestNameLength()
      * icon path after the exec so we don't want to add that extra length to the name in
      * this case */
     if (useIcons && windowmanager != "Fluxbox")
-    { if (files[x]->name.size() + files[x]->icon.size() > longest) longest = files[x]->name.size() + files[x]->icon.size() + 10; }
+    { if (files[x]->name.size() + files[x]->icon.size() > longest) longest = files[x]->name.size() + files[x]->icon.size(); }
     else
-    { if (files[x]->name.size() > longest) longest = files[x]->name.size() + 10; }
+    { if (files[x]->name.size() > longest) longest = files[x]->name.size(); }
   }
 
-  return longest;
+  return longest + 10;
 }
 
 //Return an integer identifying which window manager, menus should be produced for
