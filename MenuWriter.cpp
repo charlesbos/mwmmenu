@@ -31,6 +31,7 @@
 #define openbox 4
 #define olvwm 5
 #define windowmaker 6
+#define icewm 7
 
 MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, vector<string> exclude, vector<string> excludeMatching, vector<string> excludeCategories)
 { this->files = files;
@@ -160,6 +161,7 @@ int MenuWriter::getWmID()
   if (windowmanager == "Blackbox") return fluxbox; //Fluxbox menus work in Blackbox
   if (windowmanager == "Olvwm") return olvwm;
   if (windowmanager == "Windowmaker") return windowmaker;
+  if (windowmanager == "IceWM") return icewm;
   else return mwm;
 }
 
@@ -273,6 +275,21 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
       }
       if (catNumber != maxCatNumber - 1) cout << "  )," << endl;
       else cout << "  )\n)" << endl;
+    case icewm :
+      if (useIcons)
+      { string catIcon = getCategoryIcon(category);
+        if (catIcon != "\0") catName = '"' + category + "\" " + catIcon;
+        else catName = '"' + category + '"';
+      }
+      else catName = '"' + category + '"';
+      cout << "menu " << catName << " folder {" << endl;
+      for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
+      { if (useIcons && files[it->first]->icon != "\0") entryName = '"' + files[it->first]->name + '"' + " " + files[it->first]->icon;
+        else entryName = '"' + files[it->first]->name + '"';
+        entryExec = files[it->first]->exec;
+        cout << "\tprog " + entryName + " - " + entryExec << endl;
+      }
+      cout << "}\n" << endl;
   }
 }
 
@@ -337,6 +354,9 @@ void MenuWriter::writeMainMenu(const char *usedCats[], int catNumber, int wmID)
         break;
       case windowmaker :
         //Do nothing here, main menu needs to be handled in the writeCategoryMenu function
+        break;
+      case icewm :
+        //Do nothing here, main menu is defined in ~/.icewm/menu
         break;
     }
   }

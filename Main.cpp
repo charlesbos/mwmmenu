@@ -60,6 +60,7 @@ void usage()
   cout << "  -blackbox: produce menus for Blackbox" << endl;
   cout << "  -olvwm: produce menus for Olvwm" << endl;
   cout << "  -windowmaker: produce menus for Windowmaker" << endl;
+  cout << "  -icewm: produce menus for IceWM" << endl;
 }
 
 //Function that attempts to get the user icon theme from ~/.gtkrc-2.0
@@ -186,6 +187,10 @@ int main(int argc, char *argv[])
     }
     if (strcmp(argv[x], "-windowmaker") == 0) 
     { windowmanager = "Windowmaker";
+      continue;
+    }
+    if (strcmp(argv[x], "-icewm") == 0) 
+    { windowmanager = "IceWM";
       continue;
     }
     if (strcmp(argv[x], "-exclude") == 0) 

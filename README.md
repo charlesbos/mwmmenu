@@ -10,6 +10,7 @@ The following window managers are supported (more may be added in the future):
 * Blackbox
 * Olvwm (Open Look Virtual Window Manager)
 * Windowmaker
+* IceWM
 
 Dependencies:
 * boost-libs
