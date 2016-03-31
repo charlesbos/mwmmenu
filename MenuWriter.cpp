@@ -304,9 +304,8 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
 void MenuWriter::writeMainMenu(const char *usedCats[], int catNumber, int wmID)
 { if (catNumber > 0)
   { int longest = getLongestNameLength();
-    string catName;
     string menuNameWithQuotes;
-    string catMenuWithQuotes;
+    string catNameWithQuotes;
 
     switch(wmID)
     { case mwm :
@@ -321,8 +320,8 @@ void MenuWriter::writeMainMenu(const char *usedCats[], int catNumber, int wmID)
         cout << "menu " << menuNameWithQuotes << endl << "{" << endl;
         cout << setw(longest) << left << menuNameWithQuotes << "\t" << "f.title" << endl;
         for (int x = 0; x < catNumber; x++)
-        { catMenuWithQuotes = '"' + string(usedCats[x]) + '"';
-          cout << setw(longest) << left << catMenuWithQuotes << "\t" << "f.menu  " << catMenuWithQuotes << endl;
+        { catNameWithQuotes = '"' + string(usedCats[x]) + '"';
+          cout << setw(longest) << left << catNameWithQuotes << "\t" << "f.menu  " << catNameWithQuotes << endl;
         }
         cout << "}" << endl << endl;
         break;
@@ -331,11 +330,11 @@ void MenuWriter::writeMainMenu(const char *usedCats[], int catNumber, int wmID)
         for (int x = 0; x < catNumber; x++)
         { if (useIcons)
           { string catIcon = getCategoryIcon(string(usedCats[x]));
-            if (catIcon != "\0") catName = '"' + string(usedCats[x]) + " %" + catIcon + "%" + '"';
-            else catName = '"' + string(usedCats[x]) + '"';
+            if (catIcon != "\0") catNameWithQuotes = '"' + string(usedCats[x]) + " %" + catIcon + "%" + '"';
+            else catNameWithQuotes = '"' + string(usedCats[x]) + '"';
           }
-          else catName = '"' + string(usedCats[x]) + '"';
-          cout << "+\t\t\t" << setw(longest) << left << catName << "\t" << "Popup  " << usedCats[x] << endl;
+          else catNameWithQuotes = '"' + string(usedCats[x]) + '"';
+          cout << "+\t\t\t" << setw(longest) << left << catNameWithQuotes << "\t" << "Popup  " << usedCats[x] << endl;
         }
         cout << endl;
         break;
@@ -348,11 +347,11 @@ void MenuWriter::writeMainMenu(const char *usedCats[], int catNumber, int wmID)
         for (int x = 0; x < catNumber; x++)
         { if (useIcons)
           { string catIcon = getCategoryIcon(string(usedCats[x]));
-            if (catIcon != "\0") catName = '"' + string(usedCats[x]) + '"' + " icon=\"" + catIcon + "\"/>";
-            else catName = '"' + string(usedCats[x]) + "\"/>";
+            if (catIcon != "\0") catNameWithQuotes = '"' + string(usedCats[x]) + '"' + " icon=\"" + catIcon + "\"/>";
+            else catNameWithQuotes = '"' + string(usedCats[x]) + "\"/>";
           }
-          else catName = '"' + string(usedCats[x]) + "\"/>";
-          cout << "\t<menu id=" << setw(longest) << left << catName << endl;
+          else catNameWithQuotes = '"' + string(usedCats[x]) + "\"/>";
+          cout << "\t<menu id=" << setw(longest) << left << catNameWithQuotes << endl;
         }
         cout << "</menu>" << endl << endl;
         break;
