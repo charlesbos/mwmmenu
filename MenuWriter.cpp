@@ -279,15 +279,15 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
       if (useIcons)
       { string catIcon = getCategoryIcon(category);
         if (catIcon != "\0") catName = '"' + category + "\" " + catIcon;
-        else catName = '"' + category + '"';
+        else catName = '"' + category + "\" -";
       }
-      else catName = '"' + category + '"';
-      cout << "menu " << catName << " folder {" << endl;
+      else catName = '"' + category + "\" folder";
+      cout << "menu " << catName << " {" << endl;
       for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
       { if (useIcons && files[it->first]->icon != "\0") entryName = '"' + files[it->first]->name + '"' + " " + files[it->first]->icon;
-        else entryName = '"' + files[it->first]->name + '"';
+        else entryName = '"' + files[it->first]->name + "\" -";
         entryExec = files[it->first]->exec;
-        cout << "\tprog " + entryName + " - " + entryExec << endl;
+        cout << "\tprog " + entryName + " " + entryExec << endl;
       }
       cout << "}\n" << endl;
   }
