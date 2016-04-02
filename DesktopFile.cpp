@@ -49,11 +49,11 @@ void DesktopFile::populate(bool hideOSI, bool useIcons, vector<string> iconpaths
 
   while (!dfile.eof())
   { getline(dfile, line);
-    if (strlen(line.c_str()) == 0) continue;
+    if (line.size() == 0) continue;
     string id = getID(line);
     /* .desktop files can contain more than just desktop entries. On getting
      * the id [Desktop Entry] we know we've started looking at an entry */
-    if (strcmp(id.c_str(), "[Desktop Entry]") == 0)
+    if (id == "[Desktop Entry]")
     { started = true;
       continue;
     }
@@ -61,29 +61,29 @@ void DesktopFile::populate(bool hideOSI, bool useIcons, vector<string> iconpaths
      * a desktop action as opposed to a desktop entry. We should break here 
      * to avoid the entry data being overwritten with action data */
     if (id[0] == '[' && started == true) break;
-    if (strcmp(id.c_str(), "Name") == 0)
+    if (id == "Name")
     { name = getSingleValue(line);
       continue;
     }
-    if (strcmp(id.c_str(), "Exec") == 0)
+    if (id == "Exec")
     { exec = getSingleValue(line);
       continue;
     }
-    if (strcmp(id.c_str(), "Categories") == 0)
+    if (id == "Categories")
     { categories = getMultiValue(line);
       continue;
     }
-    if (strcmp(id.c_str(), "NoDisplay") == 0)
+    if (id == "NoDisplay")
     { string value = getSingleValue(line);
-      if (strcmp(value.c_str(), "True") == 0 || strcmp(value.c_str(), "true") == 0)
+      if (value == "True" || value == "true")
         nodisplay = true;
       continue;
     }
-    if (strcmp(id.c_str(), "OnlyShowIn") == 0)
+    if (id == "OnlyShowIn")
     { if (hideOSI) onlyShowIn = true;
       continue;
     }
-    if (strcmp(id.c_str(), "Icon") == 0)
+    if (id == "Icon")
     { iconDef = getSingleValue(line);
       continue;
     }
