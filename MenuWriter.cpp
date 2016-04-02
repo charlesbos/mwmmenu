@@ -53,19 +53,20 @@ MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, st
 void MenuWriter::printHandler()
 { const char *validCatsArr[] = {"Accessories", "Development", "Education", "Game", "Graphics", "Multimedia", "Internet",
                                 "Office", "Other", "Science", "Settings", "System"};
-  const char *usedCats[sizeof(validCatsArr) / sizeof(validCatsArr[0])] = {"\0"};
+  int validCatsLength = sizeof(validCatsArr) / sizeof(validCatsArr[0]);
+  const char *usedCats[validCatsLength] = {"\0"};
   int usedCounter = 0;
   int wmID = getWmID();
   int longest = getLongestNameLength();
 
   entryExclusionHandler();
 
-  for (unsigned int x = 0; x < sizeof(validCatsArr) / sizeof(validCatsArr[0]); x++)
+  for (int x = 0; x < validCatsLength; x++)
   { vector< pair<int,string> > positions = getPositionsPerCat(validCatsArr[x]);
     /* Ignore categories that do not have entries associated and also ignore categories
      * that have been specified on the command line as categories that should be ignored */
     if (!positions.empty() && !checkExcludedCategories(validCatsArr[x]))
-    { writeCategoryMenu(positions, validCatsArr[x], wmID, usedCounter, ((sizeof(validCatsArr) / sizeof(validCatsArr[0])) - 1), longest);
+    { writeCategoryMenu(positions, validCatsArr[x], wmID, usedCounter, validCatsLength - 1, longest);
       usedCats[usedCounter] = validCatsArr[x];
       usedCounter++;
     }
