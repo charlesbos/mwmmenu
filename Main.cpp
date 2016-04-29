@@ -31,10 +31,10 @@ void usage()
   cout << "  # Note: all options must be spaced." << endl;
   cout << "  mwmmenu [OPTIONS]" << endl << endl;
   cout << "Options:" << endl;
-  cout << "  -h, --help: show this dialogue" << endl;
-  cout << "  -n: name used for the main menu - by default, use Applications" << endl;
-  cout << "  -o: hide entries with the OnlyShowIn key, false by default" << endl;
-  cout << "  -i: use icons with menu entries, only compatible with some window managers" << endl << endl;
+  cout << "  -h, -help: show this dialogue" << endl;
+  cout << "  -n, -name: name used for the main menu - by default, use Applications" << endl;
+  cout << "  -o, -only_show: hide entries with the OnlyShowIn key, false by default" << endl;
+  cout << "  -i, -icons: use icons with menu entries, only compatible with some window managers" << endl << endl;
   cout << "  -icon_size: choose size of icons used in menus. Should be a value such as 16x16, ";
   cout << "32x32 etc. Can also be scalable or all. Large icon sizes or all sizes should be used ";
   cout << "only in window managers which can scale icons down to an appropriate size. The default ";
@@ -141,19 +141,19 @@ int main(int argc, char *argv[])
   string extraIconPaths = "\0";
 
   for (int x = 0; x < argc; x++)
-  { if (strcmp(argv[x], "-h") == 0 || strcmp(argv[x], "--help") == 0)
+  { if (strcmp(argv[x], "-h") == 0 || strcmp(argv[x], "-help") == 0)
     { usage();
       return 0; 
     }
-    if (strcmp(argv[x], "-n") == 0) 
+    if (strcmp(argv[x], "-n") == 0 || strcmp(argv[x], "-name") == 0) 
     { menuName = argv[x + 1];
       continue;
     }
-    if (strcmp(argv[x], "-o") == 0)
+    if (strcmp(argv[x], "-o") == 0 || strcmp(argv[x], "-only_show") == 0)
     { hideOSI = true;
       continue;
     }
-    if (strcmp(argv[x], "-i") == 0)
+    if (strcmp(argv[x], "-i") == 0 || strcmp(argv[x], "-icons") == 0)
     { useIcons = true;
       continue;
     }
