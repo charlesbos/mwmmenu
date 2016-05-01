@@ -279,6 +279,7 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
       }
       if (catNumber != maxCatNumber - 1) cout << "  )," << endl;
       else cout << "  )\n)" << endl;
+      break;
     case icewm :
       if (useIcons)
       { string catIcon = getCategoryIcon(category);
@@ -294,6 +295,7 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
         cout << "\tprog " + entryName + " " + entryExec << endl;
       }
       cout << "}\n" << endl;
+      break;
   }
 }
 
