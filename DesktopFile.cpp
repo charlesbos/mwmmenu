@@ -89,7 +89,7 @@ void DesktopFile::populate(bool hideOSI, bool useIcons, vector<string> iconpaths
     }
   }
 
-  processCategories(categories);
+  processCategories();
   if (useIcons && iconDef != "\0") matchIcon(iconDef, iconpaths);
 }
 
@@ -166,7 +166,7 @@ vector<string> DesktopFile::getMultiValue(string line)
  * displayed in menus, to group multiple multimedia categories into one,
  * to strip out possible duplicates and to add a catchall category if no
  * base categories are present */
-void DesktopFile::processCategories(vector<string> &categories)
+void DesktopFile::processCategories()
 { const char *baseCatsArr[] = {"AudioVideo", "Audio", "Video", "Development", "Education", "Game", "Graphics", 
                                "Network", "Office", "Science", "Settings", "System", "Utility"};
   vector<string> baseCategories(baseCatsArr, baseCatsArr + sizeof(baseCatsArr) / sizeof(baseCatsArr[0]));

@@ -50,7 +50,7 @@ class DesktopFile
     vector<string> getMultiValue(string line);
     void matchIcon(string iconDef, vector<string> iconpaths);
 
-    void processCategories(vector<string> &categories);
+    void processCategories();
 };
 
 #endif
