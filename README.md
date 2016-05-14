@@ -15,4 +15,4 @@ The following window managers are supported (more may be added in the future):
 Dependencies:
 * boost-libs
 * boost (makedep)
-* g++
+* g++ (makedep)
