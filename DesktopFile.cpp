@@ -97,6 +97,7 @@ void DesktopFile::populate(bool hideOSI, bool useIcons, vector<string> iconpaths
  * Should be Name, Exec, Categories etc */
 string DesktopFile::getID(string line)
 { vector<char> readChars;
+  readChars.reserve(10);
   char c = '\0';
   unsigned int counter = 0;
 
@@ -114,6 +115,7 @@ string DesktopFile::getID(string line)
  * Name=Firefox this function will return Firefox */
 string DesktopFile::getSingleValue(string line)
 { vector<char> readChars;
+  readChars.reserve(10);
   string value;
   char c = '\0';
   bool startFilling = false;
@@ -139,8 +141,9 @@ string DesktopFile::getSingleValue(string line)
  * vector with the items System and Settings */
 vector<string> DesktopFile::getMultiValue(string line)
 { vector<string> values;
-  values.reserve(10);
   vector<char> readChars;
+  values.reserve(5);
+  readChars.reserve(10);
   char c = '\0';
   bool startFilling = false;
   unsigned int counter = 0;

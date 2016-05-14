@@ -91,6 +91,7 @@ bool sortPairs(pair<int,string> p1, pair<int,string> p2)
  * that we can alphabetically sort the menu entries */
 vector< pair<int,string> > MenuWriter::getPositionsPerCat(string category)
 { vector< pair<int,string> > positions;
+  positions.reserve(20);
 
   for (int x = 0; x < filesLength; x++)
   { //If the entry matches the category, add it but if NoDisplay is true, then don't

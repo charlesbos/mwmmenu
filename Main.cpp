@@ -77,6 +77,7 @@ string getIconTheme(string homedir)
     while (!themefile.eof())
     { getline(themefile, line);
       vector<char> readChars;
+      readChars.reserve(10);
       while (counter < line.size())
       { c = line[counter];
         if (c == '=') break;
@@ -87,6 +88,7 @@ string getIconTheme(string homedir)
       read_id.erase(remove(read_id.begin(), read_id.end(), ' '), read_id.end());
       if (id == read_id)
       { vector<char> themeNameChars;
+        themeNameChars.reserve(10);
         while (counter < line.size())
         { c = line[counter];
           if (c != '"' && c != '=') themeNameChars.push_back(c);
@@ -109,6 +111,8 @@ string getIconTheme(string homedir)
 vector<string> splitCommaArgs(string arg)
 { vector<string> splitArgs;
   vector<char> buffer;
+  splitArgs.reserve(5);
+  buffer.reserve(10);
 
   for (unsigned int x = 0; x < arg.size(); x++)
   { if (arg[x] == ',') 
