@@ -33,7 +33,7 @@
 #define windowmaker 6
 #define icewm 7
 
-MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, vector<string> exclude, vector<string> excludeMatching, vector<string> excludeCategories)
+MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, vector<string> exclude, vector<string> excludeMatching, vector<string> excludeCategories, string iconSize)
 { this->files = files;
   this->filesLength = filesLength;
   this->menuName = menuName;
@@ -43,6 +43,7 @@ MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, st
   this->exclude = exclude;
   this->excludeMatching = excludeMatching;
   this->excludeCategories = excludeCategories;
+  this->iconSize = iconSize;
   printHandler();
 }
 
@@ -175,7 +176,7 @@ int MenuWriter::getWmID()
 string MenuWriter::getCategoryIcon(string catName)
 { catName.at(0) = tolower(catName.at(0));
   for (unsigned int x = 0; x < iconpaths.size(); x++)
-    if (iconpaths[x].find("16x16") != string::npos
+    if (iconpaths[x].find(iconSize) != string::npos
         && iconpaths[x].find("categories") != string::npos
         && iconpaths[x].find(catName) != string::npos)
       return iconpaths[x];

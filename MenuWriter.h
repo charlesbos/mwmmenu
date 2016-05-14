@@ -26,7 +26,7 @@
 
 class MenuWriter
 { public:
-    MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, vector<string> exclude, vector<string> excludeMatching, vector<string> excludeCategories);
+    MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, vector<string> exclude, vector<string> excludeMatching, vector<string> excludeCategories, string iconSize);
 
   private:
     DesktopFile **files;
@@ -38,6 +38,7 @@ class MenuWriter
     vector<string> exclude;
     vector<string> excludeMatching;
     vector<string> excludeCategories;
+    string iconSize;
 
     void printHandler();
     void entryExclusionHandler();

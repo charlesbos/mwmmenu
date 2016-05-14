@@ -295,7 +295,8 @@ int main(int argc, char *argv[])
                                   iconpaths, 
                                   splitCommaArgs(exclude), 
                                   splitCommaArgs(excludeMatching), 
-                                  splitCommaArgs(excludeCategories));
+                                  splitCommaArgs(excludeCategories),
+                                  iconSize);
 
   delete mw;
   for (int x = 0; x < counter; x++) delete files[x];
