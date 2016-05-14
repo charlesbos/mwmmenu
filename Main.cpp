@@ -76,26 +76,22 @@ string getIconTheme(string homedir)
     unsigned int counter = 0;
     while (!themefile.eof())
     { getline(themefile, line);
-      char readChars[line.size() + 1] = {'\0'};
+      vector<char> readChars;
       while (counter < line.size())
       { c = line[counter];
         if (c == '=') break;
-        readChars[counter] = c;
+        readChars.push_back(c);
         counter++;
       }
-      if (strcmp(id.c_str(), readChars) == 0)
-      { char themeNameChars[line.size() + 1] = {'\0'};
-        int selector = 0;
+      if (id == string(readChars.begin(), readChars.end()))
+      { vector<char> themeNameChars;
         while (counter < line.size())
         { c = line[counter];
-          if (c != '"' && c != '=')
-          { themeNameChars[selector] = c;
-            selector++;
-          }
+          if (c != '"' && c != '=') themeNameChars.push_back(c);
           counter ++;
         }
         themefile.close();
-        return string(themeNameChars);
+        return string(themeNameChars.begin(), themeNameChars.end());
       }
       counter = 0;
     }
@@ -108,20 +104,17 @@ string getIconTheme(string homedir)
  * a string vector */
 vector<string> splitCommaArgs(string arg)
 { vector<string> splitArgs;
-  char buffer[arg.size() + 1] = {'\0'};
-  int selector = 0;
+  vector<char> buffer;
 
   for (unsigned int x = 0; x < arg.size(); x++)
   { if (arg[x] == ',') 
-    { splitArgs.push_back(buffer);
-      selector = 0;
-      fill(buffer, buffer + sizeof(buffer) / sizeof(buffer[0]), '\0');
+    { splitArgs.push_back(string(buffer.begin(), buffer.end()));
+      buffer.clear();
       continue;
     }
-    buffer[selector] = arg[x];
-    selector += 1;
+    buffer.push_back(arg[x]);
   }
-  if (selector != 0) splitArgs.push_back(buffer);
+  if (!buffer.empty()) splitArgs.push_back(string(buffer.begin(), buffer.end()));
 
   return splitArgs;
 }
@@ -272,7 +265,7 @@ int main(int argc, char *argv[])
   }
 
   //Create array of DesktopFile, using each path in the paths vector
-  DesktopFile *files[paths.size()];
+  DesktopFile **files = new DesktopFile*[paths.size()];
   int counter = 0;
   for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
   { DesktopFile *df = new DesktopFile((*it).c_str(), hideOSI, useIcons, iconpaths);
@@ -298,6 +291,7 @@ int main(int argc, char *argv[])
 
   delete mw;
   for (int x = 0; x < counter; x++) delete files[x];
+  delete[] files;
   return 0;
 }
   

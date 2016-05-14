@@ -96,43 +96,38 @@ void DesktopFile::populate(bool hideOSI, bool useIcons, vector<string> iconpaths
 /* This function is used to get the single value before the = sign.
  * Should be Name, Exec, Categories etc */
 string DesktopFile::getID(string line)
-{ char readChars[line.size() + 1] = {'\0'};
+{ vector<char> readChars;
   char c = '\0';
   unsigned int counter = 0;
 
   while (counter < line.size())
   { c = line[counter];
     if (c == '=') break;
-    readChars[counter] = c;
+    readChars.push_back(c);
     counter++;
   }
 
-  return readChars;
+  return string(readChars.begin(), readChars.end());
 }
 
 /* This function is used to get single values, for example: for the line 
  * Name=Firefox this function will return Firefox */
 string DesktopFile::getSingleValue(string line)
-{ char readChars[line.size() + 1] = {'\0'};
+{ vector<char> readChars;
   string value;
   char c = '\0';
   bool startFilling = false;
   unsigned int counter = 0;
-  int fillCounter = 0;
 
   while (counter < line.size())
   { c = line[counter];
-    if (startFilling) 
-    { readChars[fillCounter] = c;
-      fillCounter++;
-    }
-    //Make sure we only get the value, not the id as well
-    if (c == '=') startFilling = true;
+    if (startFilling) readChars.push_back(c);
+    if (c == '=') startFilling = true; //Make sure we only get the value, not the id as well
     counter++;
   }
 
+  value = string(readChars.begin(), readChars.end());
   //Throw away field codes like %F, MWM doesn't appear to handle these
-  value = readChars;
   string::iterator fieldCode = find(value.begin(), value.end(), '%');
   if (fieldCode != value.end()) value.erase(fieldCode - 1, value.end());
 
@@ -145,24 +140,18 @@ string DesktopFile::getSingleValue(string line)
 vector<string> DesktopFile::getMultiValue(string line)
 { vector<string> values;
   values.reserve(10);
-  char readChars[line.size() + 1] = {'\0'};
+  vector<char> readChars;
   char c = '\0';
   bool startFilling = false;
-  int counter = 0;
-  int fillCounter = 0;
+  unsigned int counter = 0;
 
-  for (unsigned int x = 0; x < line.size(); x++)
-  { c = line[x];
-    if (startFilling && c != ';') //Add chars to our buffer array, but avoid the semi-colons
-    { readChars[fillCounter] = c;
-      fillCounter++;
-    }
+  while (counter < line.size())
+  { c = line[counter];
+    if (startFilling && c != ';') readChars.push_back(c); //Add chars to our buffer array, but avoid the semi-colons
     if (c == '=') startFilling = true;
     if (c == ';') //Categories are seperated with semi-colons so add to vector when we encounter them
-    { values.push_back(readChars);
-      fill(readChars, readChars + line.size() + 1, '\0');
-      fillCounter = 0;
-      continue;
+    { values.push_back(string(readChars.begin(), readChars.end()));
+      readChars.clear();
     }
     counter++;
   }

@@ -54,7 +54,7 @@ void MenuWriter::printHandler()
 { const char *validCatsArr[] = {"Accessories", "Development", "Education", "Game", "Graphics", "Multimedia", "Internet",
                                 "Office", "Other", "Science", "Settings", "System"};
   int validCatsLength = sizeof(validCatsArr) / sizeof(validCatsArr[0]);
-  const char *usedCats[validCatsLength] = {"\0"};
+  const char **usedCats = new const char*[validCatsLength];
   int usedCounter = 0;
   int wmID = getWmID();
   int longest = getLongestNameLength();
@@ -72,6 +72,7 @@ void MenuWriter::printHandler()
     }
   }
   writeMainMenu(usedCats, usedCounter, wmID, longest);
+  delete[] usedCats;
 }
 
 /* This function is used by the sort function to sort the menu entries for each category
