@@ -83,7 +83,9 @@ string getIconTheme(string homedir)
         readChars.push_back(c);
         counter++;
       }
-      if (id == string(readChars.begin(), readChars.end()))
+      string read_id = string(readChars.begin(), readChars.end());
+      read_id.erase(remove(read_id.begin(), read_id.end(), ' '), read_id.end());
+      if (id == read_id)
       { vector<char> themeNameChars;
         while (counter < line.size())
         { c = line[counter];
@@ -91,7 +93,9 @@ string getIconTheme(string homedir)
           counter ++;
         }
         themefile.close();
-        return string(themeNameChars.begin(), themeNameChars.end());
+        string themename = string(themeNameChars.begin(), themeNameChars.end());
+        themename.erase(remove(themename.begin(), themename.end(), ' '), themename.end());
+        return themename;
       }
       counter = 0;
     }
