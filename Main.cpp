@@ -286,16 +286,18 @@ int main(int argc, char *argv[])
 
   //Create MwmMenuWriter object, passing it the array of DesktopFile
   //This object will cause the menus to be printed
-  new MenuWriter(files, 
-                 counter, 
-                 menuName, 
-                 windowmanager, 
-                 useIcons, 
-                 iconpaths, 
-                 splitCommaArgs(exclude), 
-                 splitCommaArgs(excludeMatching), 
-                 splitCommaArgs(excludeCategories));
+  MenuWriter *mw = new MenuWriter(files, 
+                                  counter, 
+                                  menuName, 
+                                  windowmanager, 
+                                  useIcons, 
+                                  iconpaths, 
+                                  splitCommaArgs(exclude), 
+                                  splitCommaArgs(excludeMatching), 
+                                  splitCommaArgs(excludeCategories));
 
+  delete mw;
+  for (int x = 0; x < counter; x++) delete files[x];
   return 0;
 }
   
