@@ -128,6 +128,8 @@ string DesktopFile::getSingleValue(string line)
     counter++;
   }
 
+  //Some names include a trailing space. For matching, it's best if we remove these
+  if (readChars[readChars.size() - 1] == ' ') readChars.erase(readChars.end() - 1);
   value = string(readChars.begin(), readChars.end());
   //Throw away field codes like %F, MWM doesn't appear to handle these
   string::iterator fieldCode = find(value.begin(), value.end(), '%');
