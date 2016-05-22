@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
       return 0; 
     }
     if (strcmp(argv[x], "-n") == 0 || strcmp(argv[x], "-name") == 0) 
-    { menuName = argv[x + 1];
+    { if (x + 1 < argc) menuName = argv[x + 1];
       continue;
     }
     if (strcmp(argv[x], "-o") == 0 || strcmp(argv[x], "-only_show") == 0)
@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
       continue;
     }
     if (strcmp(argv[x], "-icon_size") == 0) 
-    { iconSize = argv[x + 1];
+    { if (x + 1 < argc) iconSize = argv[x + 1];
       continue;
     }
     if (strcmp(argv[x], "-fvwm") == 0) 
@@ -192,31 +192,31 @@ int main(int argc, char *argv[])
       continue;
     }
     if (strcmp(argv[x], "-exclude") == 0) 
-    { exclude = argv[x + 1];
+    { if (x + 1 < argc) exclude = argv[x + 1];
       continue;
     }
     if (strcmp(argv[x], "-exclude_matching") == 0) 
-    { excludeMatching = argv[x + 1];
+    { if (x + 1 < argc) excludeMatching = argv[x + 1];
       continue;
     }
     if (strcmp(argv[x], "-exclude_categories") == 0) 
-    { excludeCategories = argv[x + 1];
+    { if (x + 1 < argc) excludeCategories = argv[x + 1];
       continue;
     }
     if (strcmp(argv[x], "-exclude_by_filename") == 0)
-    { excludedFilenames = argv[x + 1];
+    { if (x + 1 < argc) excludedFilenames = argv[x + 1];
       continue;
     }
     if (strcmp(argv[x], "-include") == 0)
-    { include = argv[x + 1];
+    { if (x + 1 < argc) include = argv[x + 1];
       continue;
     }
     if (strcmp(argv[x], "-add_desktop_paths") == 0) 
-    { extraDesktopPaths = argv[x + 1];
+    { if (x + 1 < argc) extraDesktopPaths = argv[x + 1];
       continue;
     }
     if (strcmp(argv[x], "-add_icon_paths") == 0) 
-    { extraIconPaths = argv[x + 1];
+    { if (x + 1 < argc) extraIconPaths = argv[x + 1];
       continue;
     }
   }
