@@ -33,6 +33,7 @@ class DesktopFile
     DesktopFile();
     DesktopFile(const char *filename, bool hideOSI, bool useIcons, vector<string> iconpaths);
 
+    string filename;
     string name;
     string exec;
     vector<string> categories;

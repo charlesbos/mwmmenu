@@ -26,7 +26,8 @@
 DesktopFile::DesktopFile() {}
 
 DesktopFile::DesktopFile(const char *filename, bool hideOSI, bool useIcons, vector<string> iconpaths) 
-{ this->name = "\0";
+{ this->filename = filename;
+  this->name = "\0";
   this->exec = "\0";
   this->categories = vector<string>();
   this->nodisplay = false; //Always assume entries are displayed unless entry specifies otherwise

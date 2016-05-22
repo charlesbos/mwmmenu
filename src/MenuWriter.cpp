@@ -33,7 +33,7 @@
 #define windowmaker 6
 #define icewm 7
 
-MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, vector<string> exclude, vector<string> excludeMatching, vector<string> excludeCategories, string iconSize, vector<string> include)
+MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, vector<string> exclude, vector<string> excludeMatching, vector<string> excludeCategories, string iconSize, vector<string> include, vector<string> excludedFilenames)
 { this->files = files;
   this->filesLength = filesLength;
   this->menuName = menuName;
@@ -45,6 +45,7 @@ MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, st
   this->excludeCategories = excludeCategories;
   this->iconSize = iconSize;
   this->include = include;
+  this->excludedFilenames = excludedFilenames;
   printHandler();
 }
 
@@ -130,6 +131,10 @@ void MenuWriter::entryDisplayHandler()
         }
       }
     }
+  }
+  if (!excludedFilenames.empty())
+  { for (int x = 0; x < filesLength; x++)
+      if (find(excludedFilenames.begin(), excludedFilenames.end(), files[x]->filename) != excludedFilenames.end()) files[x]->nodisplay = true;
   }
   if (!include.empty())
   { for (int x = 0; x < filesLength; x++)
