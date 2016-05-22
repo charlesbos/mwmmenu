@@ -125,18 +125,18 @@ vector<string> splitCommaArgs(string arg)
 int main(int argc, char *argv[])
 { //Handle args
   string homedir = getenv("HOME");
-  string menuName;
+  string menuName = "Applications";
   bool hideOSI = false;
   string windowmanager = "MWM";
   bool useIcons = false;
   string iconSize = "16x16";
-  string exclude = "\0";
-  string excludeMatching = "\0";
-  string excludeCategories = "\0";
-  string excludedFilenames = "\0";
-  string include = "\0";
-  string extraDesktopPaths = "\0";
-  string extraIconPaths = "\0";
+  string exclude;
+  string excludeMatching;
+  string excludeCategories;
+  string excludedFilenames;
+  string include;
+  string extraDesktopPaths;
+  string extraIconPaths;
 
   for (int x = 0; x < argc; x++)
   { if (strcmp(argv[x], "-h") == 0 || strcmp(argv[x], "-help") == 0)
@@ -220,7 +220,6 @@ int main(int argc, char *argv[])
       continue;
     }
   }
-  if (menuName.size() == 0) menuName = "Applications";
   if (windowmanager == "MWM" || 
       windowmanager == "TWM" || 
       windowmanager == "Blackbox" || 
