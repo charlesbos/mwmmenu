@@ -40,6 +40,7 @@ void usage()
   cout << "  -exclude: do not add desktop entries that have the names specified. Multiple names should be separated by commas, for instance: -exclude Firefox,XTerm,LibreOffice" << endl << endl;
   cout << "  -exclude_matching: do not add desktop entries where the entry name contains one of the strings specified. Multiple entries should be separated by commas, for instance -exclude_matching Term,Office" << endl << endl;
   cout << "  -exclude_categories: do not print category menus for the given strings. Multiple values should be separated by commas, for instance: -exclude_categories Internet,System" << endl << endl;
+  cout << "  -include: force desktop entries to be included in menus even if their no display value is true. Multiple values should be separated by commas." << endl << endl;
   cout << "  -add_desktop_paths: add extra search paths for desktop entries. Multiple paths should be separated by commas." << endl << endl;
   cout << "  -add_icon_paths: add extra search paths for icons. Multiple paths should be separated by commas." << endl << endl;
   cout << "Menu format options:" << endl;
@@ -129,6 +130,7 @@ int main(int argc, char *argv[])
   string exclude = "\0";
   string excludeMatching = "\0";
   string excludeCategories = "\0";
+  string include = "\0";
   string extraDesktopPaths = "\0";
   string extraIconPaths = "\0";
 
@@ -195,6 +197,10 @@ int main(int argc, char *argv[])
     }
     if (strcmp(argv[x], "-exclude_categories") == 0) 
     { excludeCategories = argv[x + 1];
+      continue;
+    }
+    if (strcmp(argv[x], "-include") == 0)
+    { include = argv[x + 1];
       continue;
     }
     if (strcmp(argv[x], "-add_desktop_paths") == 0) 
@@ -287,7 +293,8 @@ int main(int argc, char *argv[])
                                   splitCommaArgs(exclude), 
                                   splitCommaArgs(excludeMatching), 
                                   splitCommaArgs(excludeCategories),
-                                  iconSize);
+                                  iconSize,
+                                  splitCommaArgs(include));
 
   delete mw;
   for (int x = 0; x < counter; x++) delete files[x];

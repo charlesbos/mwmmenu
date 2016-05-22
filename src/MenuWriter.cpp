@@ -33,7 +33,7 @@
 #define windowmaker 6
 #define icewm 7
 
-MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, vector<string> exclude, vector<string> excludeMatching, vector<string> excludeCategories, string iconSize)
+MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, vector<string> exclude, vector<string> excludeMatching, vector<string> excludeCategories, string iconSize, vector<string> include)
 { this->files = files;
   this->filesLength = filesLength;
   this->menuName = menuName;
@@ -44,6 +44,7 @@ MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, st
   this->excludeMatching = excludeMatching;
   this->excludeCategories = excludeCategories;
   this->iconSize = iconSize;
+  this->include = include;
   printHandler();
 }
 
@@ -60,7 +61,7 @@ void MenuWriter::printHandler()
   int wmID = getWmID();
   int longest = getLongestNameLength();
 
-  entryExclusionHandler();
+  entryDisplayHandler();
 
   for (int x = 0; x < validCatsLength; x++)
   { vector< pair<int,string> > positions = getPositionsPerCat(validCatsArr[x]);
@@ -111,8 +112,11 @@ vector< pair<int,string> > MenuWriter::getPositionsPerCat(string category)
  * as entries that should be excluded. We do this by checking if an entry
  * name fully or partially matches the names specified on the command line
  * as appropriate and then setting the nodisplay value for that DesktopFile
- * to true if so */
-void MenuWriter::entryExclusionHandler()
+ * to true if so 
+ *
+ * Now it also forces the inclusion of any specified desktop entries that
+ * hav a no display value of true */
+void MenuWriter::entryDisplayHandler()
 { if (!exclude.empty())
   { for (int x = 0; x < filesLength; x++)
       if (find(exclude.begin(), exclude.end(), files[x]->name) != exclude.end()) files[x]->nodisplay = true;
@@ -126,6 +130,10 @@ void MenuWriter::entryExclusionHandler()
         }
       }
     }
+  }
+  if (!include.empty())
+  { for (int x = 0; x < filesLength; x++)
+      if (find(include.begin(), include.end(), files[x]->name) != include.end()) files[x]->nodisplay = false;
   }
 }
 
