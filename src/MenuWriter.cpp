@@ -54,10 +54,10 @@ MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, st
  * which should contain entries for all the category menus used (but not the ones 
  * not used) */
 void MenuWriter::printHandler()
-{ const char *validCatsArr[] = {"Accessories", "Development", "Education", "Game", "Graphics", "Multimedia", "Internet",
-                                "Office", "Other", "Science", "Settings", "System"};
-  int validCatsLength = sizeof(validCatsArr) / sizeof(validCatsArr[0]);
-  const char **usedCats = new const char*[validCatsLength];
+{ vector<string> validCatsArr = {"Accessories", "Development", "Education", "Game", "Graphics", "Multimedia", "Internet",
+                                 "Office", "Other", "Science", "Settings", "System"};
+  int validCatsLength = validCatsArr.size();
+  vector<string> usedCats;
   int usedCounter = 0;
   int wmID = getWmID();
   int longest = getLongestNameLength();
@@ -70,12 +70,11 @@ void MenuWriter::printHandler()
      * that have been specified on the command line as categories that should be ignored */
     if (!positions.empty() && !checkExcludedCategories(validCatsArr[x]))
     { writeCategoryMenu(positions, validCatsArr[x], wmID, usedCounter, validCatsLength - 1, longest);
-      usedCats[usedCounter] = validCatsArr[x];
+      usedCats.push_back(validCatsArr[x]);
       usedCounter++;
     }
   }
   writeMainMenu(usedCats, usedCounter, wmID, longest);
-  delete[] usedCats;
 }
 
 /* This function is used by the sort function to sort the menu entries for each category
@@ -320,7 +319,7 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
  * nested inside the 'main' menu. In this case, the writeCategoryMenu function will also
  * handle the main menu and this function will do nothing. In cases where there
  * are no printable menu entries, this function will print a warning message instead */
-void MenuWriter::writeMainMenu(const char *usedCats[], int catNumber, int wmID, int longest)
+void MenuWriter::writeMainMenu(vector<string> usedCats, int catNumber, int wmID, int longest)
 { if (catNumber > 0)
   { string menuNameWithQuotes;
     string catNameWithQuotes;

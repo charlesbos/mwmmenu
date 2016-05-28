@@ -170,9 +170,8 @@ vector<string> DesktopFile::getMultiValue(string line)
  * to strip out possible duplicates and to add a catchall category if no
  * base categories are present */
 void DesktopFile::processCategories()
-{ const char *baseCatsArr[] = {"AudioVideo", "Audio", "Video", "Development", "Education", "Game", "Graphics", 
-                               "Network", "Office", "Science", "Settings", "System", "Utility"};
-  vector<string> baseCategories(baseCatsArr, baseCatsArr + sizeof(baseCatsArr) / sizeof(baseCatsArr[0]));
+{ vector<string> baseCategories = {"AudioVideo", "Audio", "Video", "Development", "Education", "Game", "Graphics", 
+                                   "Network", "Office", "Science", "Settings", "System", "Utility"};
   vector<string>::iterator it = categories.begin();
 
   while (it < categories.end())
