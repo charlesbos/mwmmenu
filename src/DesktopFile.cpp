@@ -176,25 +176,13 @@ void DesktopFile::processCategories()
   vector<string>::iterator it = categories.begin();
 
   while (it < categories.end())
-  { //Convert some base categories to more commonly used categories
-    if (*it == "AudioVideo" || *it == "Audio" || *it == "Video") 
-    { *it = "Multimedia";
-      ++it;
-      continue;
-    }
-    if (*it == "Network")
-    { *it = "Internet";
-      ++it;
-      continue;
-    }
-    if (*it == "Utility")
-    { *it = "Accessories";
-      ++it;
-      continue;
-    }
-    //Throw away non-base categories
+  { //Throw away non-base categories
     if (find(baseCategories.begin(), baseCategories.end(), *it) == baseCategories.end()) it = categories.erase(it);
-    else ++it;
+    //Convert some base categories to more commonly used categories
+    if (*it == "AudioVideo" || *it == "Audio" || *it == "Video") *it = "Multimedia";
+    if (*it == "Network") *it = "Internet";
+    if (*it == "Utility") *it = "Accessories";
+    it++;
   }
 
   //Convert to set and back again to remove duplicates
