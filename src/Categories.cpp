@@ -82,6 +82,7 @@ void Categories::getIncludedFiles()
     if (!files.empty()) 
       for (unsigned int x = 0; x < files.size(); x++)
         incEntries.push_back(files[x]);
+    menu_f.close();
   }
 }
 
