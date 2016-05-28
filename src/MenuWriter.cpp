@@ -34,9 +34,23 @@
 #define windowmaker 6
 #define icewm 7
 
-MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, vector<string> exclude, vector<string> excludeMatching, vector<string> excludeCategories, string iconSize, vector<string> include, vector<string> excludedFilenames, Categories **cats)
+MenuWriter::MenuWriter(DesktopFile **files, 
+                       int filesLength, 
+                       string menuName, 
+                       string windowmanager, 
+                       bool useIcons, 
+                       vector<string> iconpaths, 
+                       vector<string> exclude, 
+                       vector<string> excludeMatching, 
+                       vector<string> excludeCategories, 
+                       string iconSize, 
+                       vector<string> include, 
+                       vector<string> excludedFilenames, 
+                       Categories **cats,
+                       int customCatNum)
 { this->files = files;
   this->cats = cats;
+  this->customCatNum = customCatNum;
   this->filesLength = filesLength;
   this->menuName = menuName;
   this->windowmanager = windowmanager;
@@ -58,7 +72,7 @@ MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, st
 void MenuWriter::printHandler()
 { vector<string> validCatsArr = {"Accessories", "Development", "Education", "Game", "Graphics", "Multimedia", "Internet",
                                  "Office", "Other", "Science", "Settings", "System"};
-  for (unsigned int x = 0; x < sizeof(cats) / sizeof(cats[0]); x++) validCatsArr.push_back(cats[x]->name);
+  for (int x = 0; x < customCatNum; x++) validCatsArr.push_back(cats[x]->name);
   sort(validCatsArr.begin(), validCatsArr.end());
   int validCatsLength = validCatsArr.size();
   vector<string> usedCats;
