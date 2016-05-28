@@ -37,6 +37,7 @@ void usage()
   cout << "  -o, -only_show: hide entries with the OnlyShowIn key, false by default" << endl;
   cout << "  -i, -icons: use icons with menu entries, only compatible with some window managers" << endl << endl;
   cout << "  -icon_size: choose size of icons used in menus. Can be 16x16, 32x32... or scalable or all. The default is 16x16." << endl << endl;
+  cout << "  -no_custom_categories: do not add entries to or print non-standard categories, other will be used instead if required. " << endl << endl;
   cout << "  # Note: " << endl;
   cout << "  * Any names that contain spaces must have quotes." << endl;
   cout << "  * Multiple names should be separated by commas: e.g. -option Entry1,Entry2,Entry3" << endl << endl;
@@ -138,6 +139,7 @@ int main(int argc, char *argv[])
   string include;
   string extraDesktopPaths;
   string extraIconPaths;
+  bool noCustomCats = false;
 
   for (int x = 0; x < argc; x++)
   { if (strcmp(argv[x], "-h") == 0 || strcmp(argv[x], "-help") == 0)
@@ -218,6 +220,10 @@ int main(int argc, char *argv[])
     }
     if (strcmp(argv[x], "-add_icon_paths") == 0) 
     { if (x + 1 < argc) extraIconPaths = argv[x + 1];
+      continue;
+    }
+    if (strcmp(argv[x], "-no_custom_categories") == 0)
+    { noCustomCats = true;
       continue;
     }
   }
@@ -314,7 +320,7 @@ int main(int argc, char *argv[])
   DesktopFile **files = new DesktopFile*[paths.size()];
   int counter = 0;
   for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
-  { DesktopFile *df = new DesktopFile((*it).c_str(), hideOSI, useIcons, iconpaths, cats);
+  { DesktopFile *df = new DesktopFile((*it).c_str(), hideOSI, useIcons, iconpaths, cats, noCustomCats);
     /* If a name or exec wasn't found we cannot add an entry to our menu so ignore
      * these objects */
     if (df->name != "\0" && df->exec != "\0")

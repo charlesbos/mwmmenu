@@ -26,7 +26,7 @@
 
 DesktopFile::DesktopFile() {}
 
-DesktopFile::DesktopFile(const char *filename, bool hideOSI, bool useIcons, vector<string> iconpaths, Categories **cats) 
+DesktopFile::DesktopFile(const char *filename, bool hideOSI, bool useIcons, vector<string> iconpaths, Categories **cats, bool noCustomCats) 
 { this->filename = filename;
   this->name = "\0";
   this->exec = "\0";
@@ -37,14 +37,14 @@ DesktopFile::DesktopFile(const char *filename, bool hideOSI, bool useIcons, vect
   dfile.open(filename);
   if (!dfile); //If we cannot open the file, do nothing. The object will keep its initial values
   else
-  { populate(hideOSI, useIcons, iconpaths, cats);
+  { populate(hideOSI, useIcons, iconpaths, cats, noCustomCats);
     dfile.close();
   }
 }
 
 /* This function fetches the required values (Name, Exec, Categories and NoDisplay)
  * and then assigns the results to the appropriate instance variables */
-void DesktopFile::populate(bool hideOSI, bool useIcons, vector<string> iconpaths, Categories **cats)
+void DesktopFile::populate(bool hideOSI, bool useIcons, vector<string> iconpaths, Categories **cats, bool noCustomCats)
 { string line;
   string iconDef = "\0";
   bool started = false;
@@ -91,7 +91,7 @@ void DesktopFile::populate(bool hideOSI, bool useIcons, vector<string> iconpaths
     }
   }
 
-  processCategories(cats);
+  processCategories(cats, noCustomCats);
   if (useIcons && iconDef != "\0") matchIcon(iconDef, iconpaths);
 }
 
@@ -170,7 +170,7 @@ vector<string> DesktopFile::getMultiValue(string line)
  * displayed in menus, to group multiple multimedia categories into one,
  * to strip out possible duplicates and to add a catchall category if no
  * base categories are present */
-void DesktopFile::processCategories(Categories **cats)
+void DesktopFile::processCategories(Categories **cats, bool noCustomCats)
 { vector<string> baseCategories = {"AudioVideo", "Audio", "Video", "Development", "Education", "Game", "Graphics", 
                                    "Network", "Office", "Science", "Settings", "System", "Utility"};
   vector<string>::iterator it = categories.begin();
@@ -190,10 +190,12 @@ void DesktopFile::processCategories(Categories **cats)
   categories.assign(temp.begin(), temp.end());
 
   //Add any custom categories, if appropriate
-  string baseFilename = filename.substr(filename.find_last_of("/") + 1, filename.size() - filename.find_last_of("/") - 1);
-  for (unsigned int x = 0; x < sizeof(cats) / sizeof(cats[0]); x++)
-  { for (unsigned int y = 0; y < cats[x]->incEntries.size(); y++)
-      if (cats[x]->incEntries[y] == baseFilename) categories.push_back(cats[x]->name);
+  if (!noCustomCats)
+  { string baseFilename = filename.substr(filename.find_last_of("/") + 1, filename.size() - filename.find_last_of("/") - 1);
+    for (unsigned int x = 0; x < sizeof(cats) / sizeof(cats[0]); x++)
+    { for (unsigned int y = 0; y < cats[x]->incEntries.size(); y++)
+	if (cats[x]->incEntries[y] == baseFilename) categories.push_back(cats[x]->name);
+    }
   }
 
   //If an entry ends up with no categories, give the entry the catchall category
