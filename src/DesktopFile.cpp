@@ -174,7 +174,6 @@ void DesktopFile::processCategories()
                                "Network", "Office", "Science", "Settings", "System", "Utility"};
   vector<string> baseCategories(baseCatsArr, baseCatsArr + sizeof(baseCatsArr) / sizeof(baseCatsArr[0]));
   vector<string>::iterator it = categories.begin();
-  bool noCategory = true;
 
   while (it < categories.end())
   { //Convert some base categories to more commonly used categories
@@ -203,14 +202,7 @@ void DesktopFile::processCategories()
   categories.assign(temp.begin(), temp.end());
 
   //If an entry ends up with no categories, give the entry the catchall category
-  it = categories.begin();
-  while (it < categories.end())
-  { if (find(baseCategories.begin(), baseCategories.end(), *it) != baseCategories.end() || *it == "Multimedia" || *it == "Internet" || *it == "Accessories")
-    { noCategory = false;
-      break;
-    }
-  }
-  if (noCategory) categories.push_back("Other");
+  if (categories.empty()) categories.push_back("Other");
 }
 
 /* Function which attempts to find the full path for a desktop entry by going
