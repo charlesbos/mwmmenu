@@ -29,8 +29,6 @@ class Categories
     Categories();
     Categories(const char *dirFile, vector<string> menuFiles);
 
-    string dirFile;
-    vector<string> menuFiles;
     string name;
     string icon;
     vector<string> incEntries;
@@ -39,6 +37,8 @@ class Categories
     static string getSingleValue(string line);
 
   private:
+    string dirFile;
+    vector<string> menuFiles;
     ifstream dir_f;
     ifstream menu_f;
 
