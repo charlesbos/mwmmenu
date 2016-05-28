@@ -24,6 +24,7 @@
 #include "boost/filesystem.hpp"
 #include "DesktopFile.h"
 #include "MenuWriter.h"
+#include "Categories.h"
 
 void usage()
 { cout << "mwmmenu - creates application menus for MWM and other window managers." << endl << endl;
@@ -276,11 +277,44 @@ int main(int argc, char *argv[])
     }
   }
 
+  /* Find custom desktop entry categories */
+  vector<string> catDirs = {"/usr/share/desktop-directories"};
+  string menuDir = "\0";
+  if (homedir.c_str() != NULL) 
+  { catDirs.push_back(homedir + "/.local/share/desktop-directories");
+    menuDir = homedir + "/.config/menus/applications-merged";
+  }
+  vector<string> catPaths;
+  vector<string> menuPaths;
+  for (unsigned int x = 0; x < catDirs.size(); x++)
+  { try
+    { for (boost::filesystem::recursive_directory_iterator i(catDirs[x]), end; i != end; ++i)
+        if (!is_directory(i->path())) catPaths.push_back(i->path().string());
+    }
+    catch (boost::filesystem::filesystem_error) { continue; }
+  }
+  if (menuDir != "\0")
+  { try
+    { for (boost::filesystem::recursive_directory_iterator i(menuDir), end; i != end; ++i)
+        if (!is_directory(i->path())) menuPaths.push_back(i->path().string());
+    }
+    catch (boost::filesystem::filesystem_error) { ; }
+  }
+  int catCounter = 0;
+  Categories **cats = new Categories*[catPaths.size()];
+  for (unsigned int x = 0; x < catPaths.size(); x++)
+  { Categories *c = new Categories(catPaths[x].c_str(), menuPaths);
+    if (c->name != "\0" && !c->incEntries.empty())
+    { cats[catCounter] = c;
+      catCounter++;
+    }  
+  }
+
   //Create array of DesktopFile, using each path in the paths vector
   DesktopFile **files = new DesktopFile*[paths.size()];
   int counter = 0;
   for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
-  { DesktopFile *df = new DesktopFile((*it).c_str(), hideOSI, useIcons, iconpaths);
+  { DesktopFile *df = new DesktopFile((*it).c_str(), hideOSI, useIcons, iconpaths, cats);
     /* If a name or exec wasn't found we cannot add an entry to our menu so ignore
      * these objects */
     if (df->name != "\0" && df->exec != "\0")
@@ -302,11 +336,16 @@ int main(int argc, char *argv[])
                                   splitCommaArgs(excludeCategories),
                                   iconSize,
                                   splitCommaArgs(include),
-                                  splitCommaArgs(excludedFilenames));
+                                  splitCommaArgs(excludedFilenames),
+                                  cats);
 
+  //Memory cleanup
   delete mw;
   for (int x = 0; x < counter; x++) delete files[x];
   delete[] files;
+  for (int x = 0; x < catCounter; x++) delete cats[x];
+  delete cats;
+
   return 0;
 }
   

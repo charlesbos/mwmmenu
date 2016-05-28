@@ -18,41 +18,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _DESKTOP_FILE_H_
-#define _DESKTOP_FILE_H_
+#ifndef _CATEGORIES_H_
+#define _CATEGORIES_H_
 
-#include <string>
-#include <fstream>
-#include <vector>
+#include "DesktopFile.h"
 
-using namespace std;
-
-class Categories;
-
-class DesktopFile
+class Categories
 {
   public:
-    DesktopFile();
-    DesktopFile(const char *filename, bool hideOSI, bool useIcons, vector<string> iconpaths, Categories **cats);
+    Categories();
+    Categories(const char *dirFile, vector<string> menuFiles);
 
-    string filename;
+    string dirFile;
+    vector<string> menuFiles;
     string name;
-    string exec;
-    vector<string> categories;
-    bool nodisplay;
-    bool onlyShowIn;
     string icon;
+    vector<string> incEntries;
 
     static string getID(string line);
     static string getSingleValue(string line);
-    static vector<string> getMultiValue(string line);
- 
-  private:
-    ifstream dfile;
 
-    void populate(bool hideOSI, bool useIcons, vector<string> iconpaths, Categories **cats);
-    void matchIcon(string iconDef, vector<string> iconpaths);
-    void processCategories(Categories **cats);
+  private:
+    ifstream dir_f;
+    ifstream menu_f;
+
+    void getCategoryParams();
+    void getIncludedFiles();
 };
 
 #endif

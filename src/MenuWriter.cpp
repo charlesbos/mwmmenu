@@ -22,6 +22,7 @@
 #include <iostream>
 #include <iomanip>
 #include "MenuWriter.h"
+#include "Categories.h"
 
 //WM id numbers
 #define mwm 0
@@ -33,8 +34,9 @@
 #define windowmaker 6
 #define icewm 7
 
-MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, vector<string> exclude, vector<string> excludeMatching, vector<string> excludeCategories, string iconSize, vector<string> include, vector<string> excludedFilenames)
+MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, vector<string> exclude, vector<string> excludeMatching, vector<string> excludeCategories, string iconSize, vector<string> include, vector<string> excludedFilenames, Categories **cats)
 { this->files = files;
+  this->cats = cats;
   this->filesLength = filesLength;
   this->menuName = menuName;
   this->windowmanager = windowmanager;
@@ -56,6 +58,8 @@ MenuWriter::MenuWriter(DesktopFile **files, int filesLength, string menuName, st
 void MenuWriter::printHandler()
 { vector<string> validCatsArr = {"Accessories", "Development", "Education", "Game", "Graphics", "Multimedia", "Internet",
                                  "Office", "Other", "Science", "Settings", "System"};
+  for (unsigned int x = 0; x < sizeof(cats) / sizeof(cats[0]); x++) validCatsArr.push_back(cats[x]->name);
+  sort(validCatsArr.begin(), validCatsArr.end());
   int validCatsLength = validCatsArr.size();
   vector<string> usedCats;
   int usedCounter = 0;
@@ -186,10 +190,24 @@ int MenuWriter::getWmID()
  * name against a category icon of the appropriate size. Return null
  * character if we can't find one */
 string MenuWriter::getCategoryIcon(string catName)
-{ catName.at(0) = tolower(catName.at(0));
+{ string nameGuard = "categories";
+
+  //There is no icon for education so use the science one instead
+  if (catName == "Education") catName = "Science";
+
+  //If it's a custom category, use its icon definition instead
+  for (unsigned int x = 0; x < sizeof(cats) / sizeof(cats[0]); x++)
+  { if (catName == cats[x]->name)
+    { catName = cats[x]->icon;
+      nameGuard = "/"; //If its custom, we know the icondef is valid so remove the guard
+      break;
+    }
+  }
+
+  catName.at(0) = tolower(catName.at(0));
   for (unsigned int x = 0; x < iconpaths.size(); x++)
     if (iconpaths[x].find(iconSize) != string::npos
-        && iconpaths[x].find("categories") != string::npos
+        && iconpaths[x].find(nameGuard) != string::npos
         && iconpaths[x].find(catName) != string::npos)
       return iconpaths[x];
   return "\0";

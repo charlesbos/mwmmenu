@@ -21,15 +21,15 @@
 #ifndef _MENU_WRITER_H_
 #define _MENU_WRITER_H_
 
-#include <fstream>
 #include "DesktopFile.h"
 
 class MenuWriter
 { public:
-    MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, vector<string> exclude, vector<string> excludeMatching, vector<string> excludeCategories, string iconSize, vector<string> include, vector<string> excludedFilenames);
+    MenuWriter(DesktopFile **files, int filesLength, string menuName, string windowmanager, bool useIcons, vector<string> iconpaths, vector<string> exclude, vector<string> excludeMatching, vector<string> excludeCategories, string iconSize, vector<string> include, vector<string> excludedFilenames, Categories **cats);
 
   private:
     DesktopFile **files;
+    Categories **cats;
     int filesLength;
     string menuName;
     string windowmanager;
