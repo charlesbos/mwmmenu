@@ -263,6 +263,7 @@ int main(int argc, char *argv[])
     { string themename = getIconTheme(homedir); 
       icondirs.push_back("/usr/share/icons/" + themename);
       if (find(icondirs.begin(), icondirs.end(), "/usr/share/icons/gnome") != icondirs.end()) icondirs.push_back("/usr/share/icons/gnome");
+      icondirs.push_back(homedir + "/.local/share/icons");
     }
     if (extraIconPaths != "\0")
     { vector<string> newIPaths = splitCommaArgs(extraIconPaths);
