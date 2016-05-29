@@ -213,6 +213,7 @@ int MenuWriter::getWmID()
  * character if we can't find one */
 string MenuWriter::getCategoryIcon(string catName)
 { string nameGuard = "categories";
+  bool customCategory = false;
 
   //There is no icon for education so use the science one instead
   if (catName == "Education") catName = "Science";
@@ -222,16 +223,27 @@ string MenuWriter::getCategoryIcon(string catName)
   { if (catName == cats[x]->name)
     { catName = cats[x]->icon;
       nameGuard = "/"; //If its custom, we know the icondef is valid so remove the guard
+      customCategory = true;
       break;
     }
   }
+  /* This is a kludge. If the custom category icon definition is a full path instead of
+   * a true definition, then return the full path instead of searching the standard locations */
+  if (customCategory)
+  { if (catName.find("/") != string::npos)
+      return catName;
+  }
 
+  /* The main search loop. Here we try to match the category name against icon paths, checking
+   * that the word 'categories' appears somewhere in the path, as well as checking for size */
   catName.at(0) = tolower(catName.at(0));
   for (unsigned int x = 0; x < iconpaths.size(); x++)
     if (iconpaths[x].find(iconSize) != string::npos
         && iconpaths[x].find(nameGuard) != string::npos
         && iconpaths[x].find(catName) != string::npos)
       return iconpaths[x];
+
+  //If we can't find anything at all, then return this
   return "\0";
 }
 

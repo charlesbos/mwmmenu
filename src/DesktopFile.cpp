@@ -206,7 +206,17 @@ void DesktopFile::processCategories(Categories **cats, int customCatNum, bool no
  * through a list of icons, attempting to match the icon entry in the entry
  * against each icon path */
 void DesktopFile::matchIcon(string iconDef, vector<string> iconpaths)
-{ for (unsigned int x = 0; x < iconpaths.size(); x++)
+{ /* This is a bit of a kludge. An icon definition should just be the name of the icon without
+   * the full path or the file extension. But sometimes, desktop entry icon definitions are
+   * full paths to icons so in that case just set that path as the icon and don't bother
+   * searching in the standard locations */
+  if (iconDef.find("/") != string::npos)
+  { icon = iconDef;
+    return;
+  }
+  /* Here we search through the icon locations provided, trying to match the definition to a
+   * full path. Note that the first matching icon found will be the one that is chosen */
+  for (unsigned int x = 0; x < iconpaths.size(); x++)
   { string iconName = iconpaths[x].substr(iconpaths[x].find_last_of("/") + 1, iconpaths[x].find_last_of(".") - iconpaths[x].find_last_of("/") - 1);
     if (iconDef == iconName)
     { icon = iconpaths[x];
