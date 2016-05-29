@@ -281,12 +281,12 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
       break;
     case fvwm :
       catName = '"' + category + '"';
-      cout << "AddToMenu " << setw(10) << left << catName << "\t" << setw(longest) << left << catName << "\tTitle" << endl;
+      cout << "AddToMenu " << setw(15) << left << catName << "\t" << setw(longest) << left << catName << "\tTitle" << endl;
       for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
       { if (useIcons && files[it->first]->icon != "\0") entryName = '"' + files[it->first]->name + " %" + files[it->first]->icon + "%" + '"';
         else entryName = '"' + files[it->first]->name + '"';
         entryExec = files[it->first]->exec;
-        cout << "+\t\t\t" << setw(longest) << left << entryName << "\t" << "Exec " << entryExec << endl;
+        cout << "+\t\t\t\t" << setw(longest) << left << entryName << "\t" << "Exec " << entryExec << endl;
       }
       cout << endl;
       break;
@@ -384,8 +384,9 @@ void MenuWriter::writeMainMenu(vector<string> usedCats, int catNumber, int wmID,
 
     switch(wmID)
     { case mwm :
-        cout << "Menu " << menuName << endl << "{" << endl;
-        cout << "\t" << setw(longest) << left << menuName << "\t" << "f.title" << endl;
+        menuNameWithQuotes = '"' + menuName + '"';
+        cout << "Menu " << menuNameWithQuotes << endl << "{" << endl;
+        cout << "\t" << setw(longest) << left << menuNameWithQuotes << "\t" << "f.title" << endl;
         for (int x = 0; x < catNumber; x++)
         { catNameWithQuotes = '"' + string(usedCats[x]) + '"';
           cout << "\t" << setw(longest) << left << catNameWithQuotes << "\t" << "f.menu  " << catNameWithQuotes << endl;
@@ -403,7 +404,8 @@ void MenuWriter::writeMainMenu(vector<string> usedCats, int catNumber, int wmID,
         cout << "}" << endl << endl;
         break;
       case fvwm :
-        cout << "AddToMenu " << setw(10) << left << menuName << "\t" << setw(longest) << left << menuName << "\tTitle" << endl;
+        menuNameWithQuotes = '"' + menuName + '"';
+        cout << "AddToMenu " << setw(15) << left << menuNameWithQuotes << "\t" << setw(longest) << left << menuNameWithQuotes << "\tTitle" << endl;
         for (int x = 0; x < catNumber; x++)
         { if (useIcons)
           { string catIcon = getCategoryIcon(string(usedCats[x]));
@@ -411,7 +413,7 @@ void MenuWriter::writeMainMenu(vector<string> usedCats, int catNumber, int wmID,
             else catNameWithQuotes = '"' + string(usedCats[x]) + '"';
           }
           else catNameWithQuotes = '"' + string(usedCats[x]) + '"';
-          cout << "+\t\t\t" << setw(longest) << left << catNameWithQuotes << "\t" << "Popup  " << '"' + usedCats[x] + '"' << endl;
+          cout << "+\t\t\t\t" << setw(longest) << left << catNameWithQuotes << "\t" << "Popup  " << '"' + usedCats[x] + '"' << endl;
         }
         cout << endl;
         break;
