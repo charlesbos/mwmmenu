@@ -36,7 +36,7 @@ void usage()
   cout << "  -n, -name: name used for the main menu - by default, use Applications" << endl;
   cout << "  -o, -only_show: hide entries with the OnlyShowIn key, false by default" << endl;
   cout << "  -i, -icons: use icons with menu entries, only compatible with some window managers" << endl << endl;
-  cout << "  -icon_size: choose size of icons used in menus. Can be 16x16, 32x32... or scalable or all. The default is 16x16." << endl << endl;
+  cout << "  -icon_size: choose size of icons used in menus. Can be 16x16, 32x32... or scalable or all. The default is all." << endl << endl;
   cout << "  -no_custom_categories: do not add entries to or print non-standard categories, other will be used instead if required. " << endl << endl;
   cout << "  # Note: " << endl;
   cout << "  * Any names that contain spaces must have quotes." << endl;
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
   bool hideOSI = false;
   string windowmanager = "MWM";
   bool useIcons = false;
-  string iconSize = "16x16";
+  string iconSize = "all";
   string exclude;
   string excludeMatching;
   string excludeCategories;
