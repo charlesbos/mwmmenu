@@ -230,7 +230,7 @@ string MenuWriter::getCategoryIcon(string catName)
   /* This is a kludge. If the custom category icon definition is a full path instead of
    * a true definition, then return the full path instead of searching the standard locations */
   if (customCategory)
-  { if (catName.find("/") != string::npos)
+  { if (catName.find("/") != string::npos && catName.find(iconSize) != string::npos)
       return catName;
   }
 

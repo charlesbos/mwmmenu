@@ -323,7 +323,7 @@ int main(int argc, char *argv[])
   DesktopFile **files = new DesktopFile*[paths.size()];
   int counter = 0;
   for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
-  { DesktopFile *df = new DesktopFile((*it).c_str(), splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats, catCounter, noCustomCats);
+  { DesktopFile *df = new DesktopFile((*it).c_str(), splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats, catCounter, noCustomCats, iconSize);
     /* If a name or exec wasn't found we cannot add an entry to our menu so ignore
      * these objects */
     if (df->name != "\0" && df->exec != "\0")

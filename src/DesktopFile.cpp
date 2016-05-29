@@ -26,7 +26,7 @@
 
 DesktopFile::DesktopFile() {}
 
-DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Categories **cats, int customCatNum, bool noCustomCats) 
+DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Categories **cats, int customCatNum, bool noCustomCats, string iconSize) 
 { this->filename = filename;
   this->name = "\0";
   this->exec = "\0";
@@ -36,14 +36,14 @@ DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, 
   dfile.open(filename);
   if (!dfile); //If we cannot open the file, do nothing. The object will keep its initial values
   else
-  { populate(showFromDesktops, useIcons, iconpaths, cats, customCatNum, noCustomCats);
+  { populate(showFromDesktops, useIcons, iconpaths, cats, customCatNum, noCustomCats, iconSize);
     dfile.close();
   }
 }
 
 /* This function fetches the required values (Name, Exec, Categories and NoDisplay)
  * and then assigns the results to the appropriate instance variables */
-void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Categories **cats, int customCatNum, bool noCustomCats)
+void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Categories **cats, int customCatNum, bool noCustomCats, string iconSize)
 { string line;
   string iconDef = "\0";
   vector<string> onlyShowInDesktops;
@@ -92,7 +92,7 @@ void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vecto
   }
 
   processCategories(cats, customCatNum, noCustomCats);
-  if (useIcons && iconDef != "\0") matchIcon(iconDef, iconpaths);
+  if (useIcons && iconDef != "\0") matchIcon(iconDef, iconpaths, iconSize);
   if (!onlyShowInDesktops.empty()) processDesktops(showFromDesktops, onlyShowInDesktops);
 }
 
@@ -206,14 +206,16 @@ void DesktopFile::processCategories(Categories **cats, int customCatNum, bool no
 /* Function which attempts to find the full path for a desktop entry by going
  * through a list of icons, attempting to match the icon entry in the entry
  * against each icon path */
-void DesktopFile::matchIcon(string iconDef, vector<string> iconpaths)
+void DesktopFile::matchIcon(string iconDef, vector<string> iconpaths, string iconSize)
 { /* This is a bit of a kludge. An icon definition should just be the name of the icon without
    * the full path or the file extension. But sometimes, desktop entry icon definitions are
    * full paths to icons so in that case just set that path as the icon and don't bother
    * searching in the standard locations */
   if (iconDef.find("/") != string::npos)
-  { icon = iconDef;
-    return;
+  { if (iconDef.find(iconSize) != string::npos) 
+    { icon = iconDef;
+      return;
+    }
   }
   /* Here we search through the icon locations provided, trying to match the definition to a
    * full path. Note that the first matching icon found will be the one that is chosen */
