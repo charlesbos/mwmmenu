@@ -77,17 +77,24 @@ void MenuWriter::printHandler()
   int validCatsLength = validCatsArr.size();
   vector<string> usedCats;
   int usedCounter = 0;
+  int maxCatNum = 0;
   int wmID = getWmID();
   int longest = getLongestNameLength();
 
   entryDisplayHandler();
 
+  /* FIXME: this way of determining the number of categories used is wasteful
+   * and should be re-written at some point */
+  for (int x = 0; x < validCatsLength; x++)
+  { vector< pair<int,string> > positions = getPositionsPerCat(validCatsArr[x]);
+    if (!positions.empty() && !checkExcludedCategories(validCatsArr[x])) maxCatNum++;
+  }
   for (int x = 0; x < validCatsLength; x++)
   { vector< pair<int,string> > positions = getPositionsPerCat(validCatsArr[x]);
     /* Ignore categories that do not have entries associated and also ignore categories
      * that have been specified on the command line as categories that should be ignored */
     if (!positions.empty() && !checkExcludedCategories(validCatsArr[x]))
-    { writeCategoryMenu(positions, validCatsArr[x], wmID, usedCounter, usedCats.size(), longest);
+    { writeCategoryMenu(positions, validCatsArr[x], wmID, usedCounter, maxCatNum - 1, longest);
       usedCats.push_back(validCatsArr[x]);
       usedCounter++;
     }
