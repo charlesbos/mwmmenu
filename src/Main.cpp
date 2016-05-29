@@ -34,7 +34,6 @@ void usage()
   cout << "Options:" << endl;
   cout << "  -h, -help: show this dialogue" << endl;
   cout << "  -n, -name: name used for the main menu - by default, use Applications" << endl;
-  cout << "  -o, -only_show: hide entries with the OnlyShowIn key, false by default" << endl;
   cout << "  -i, -icons: use icons with menu entries, only compatible with some window managers" << endl << endl;
   cout << "  -icon_size: choose size of icons used in menus. Can be 16x16, 32x32... or scalable or all. The default is all." << endl << endl;
   cout << "  -no_custom_categories: do not add entries to or print non-standard categories, other will be used instead if required. " << endl << endl;
@@ -46,6 +45,7 @@ void usage()
   cout << "  -exclude_categories: do not print category menus for the given strings." << endl << endl;
   cout << "  -exclude_by_filename: exclude desktop entry based on its full path." << endl << endl;
   cout << "  -include: force desktop entries to be included in menus even if their no display value is true." << endl << endl;
+  cout << "  -show_from_desktops: show entries from the specified desktops if OnlyShowIn is set. Can be values like GNOME or XFCE. Can also be none or all, The default is all." << endl << endl;
   cout << "  -add_desktop_paths: add extra search paths for desktop entries." << endl << endl;
   cout << "  -add_icon_paths: add extra search paths for icons." << endl << endl;
   cout << "Menu format options:" << endl;
@@ -128,7 +128,6 @@ int main(int argc, char *argv[])
 { //Handle args
   string homedir = getenv("HOME");
   string menuName = "Applications";
-  bool hideOSI = false;
   string windowmanager = "MWM";
   bool useIcons = false;
   string iconSize = "all";
@@ -137,6 +136,7 @@ int main(int argc, char *argv[])
   string excludeCategories;
   string excludedFilenames;
   string include;
+  string showFromDesktops = "all";
   string extraDesktopPaths;
   string extraIconPaths;
   bool noCustomCats = false;
@@ -148,10 +148,6 @@ int main(int argc, char *argv[])
     }
     if (strcmp(argv[x], "-n") == 0 || strcmp(argv[x], "-name") == 0) 
     { if (x + 1 < argc) menuName = argv[x + 1];
-      continue;
-    }
-    if (strcmp(argv[x], "-o") == 0 || strcmp(argv[x], "-only_show") == 0)
-    { hideOSI = true;
       continue;
     }
     if (strcmp(argv[x], "-i") == 0 || strcmp(argv[x], "-icons") == 0)
@@ -212,6 +208,10 @@ int main(int argc, char *argv[])
     }
     if (strcmp(argv[x], "-include") == 0)
     { if (x + 1 < argc) include = argv[x + 1];
+      continue;
+    }
+    if (strcmp(argv[x], "-show_from_desktops") == 0)
+    { if (x + 1 < argc) showFromDesktops = argv[x + 1];
       continue;
     }
     if (strcmp(argv[x], "-add_desktop_paths") == 0) 
@@ -321,7 +321,7 @@ int main(int argc, char *argv[])
   DesktopFile **files = new DesktopFile*[paths.size()];
   int counter = 0;
   for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
-  { DesktopFile *df = new DesktopFile((*it).c_str(), hideOSI, useIcons, iconpaths, cats, catCounter, noCustomCats);
+  { DesktopFile *df = new DesktopFile((*it).c_str(), splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats, catCounter, noCustomCats);
     /* If a name or exec wasn't found we cannot add an entry to our menu so ignore
      * these objects */
     if (df->name != "\0" && df->exec != "\0")

@@ -33,14 +33,13 @@ class DesktopFile
 {
   public:
     DesktopFile();
-    DesktopFile(const char *filename, bool hideOSI, bool useIcons, vector<string> iconpaths, Categories **cats, int customCatNum, bool noCustomCats);
+    DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Categories **cats, int customCatNum, bool noCustomCats);
 
     string filename;
     string name;
     string exec;
     vector<string> categories;
     bool nodisplay;
-    bool onlyShowIn;
     string icon;
 
     static string getID(string line);
@@ -50,9 +49,10 @@ class DesktopFile
   private:
     ifstream dfile;
 
-    void populate(bool hideOSI, bool useIcons, vector<string> iconpaths, Categories **cats, int customCatNum, bool noCustomCats);
+    void populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Categories **cats, int customCatNum, bool noCustomCats);
     void matchIcon(string iconDef, vector<string> iconpaths);
     void processCategories(Categories **cats, int customCatNum, bool noCustomCats);
+    void processDesktops(vector<string> showFromDesktops, vector<string> onlyShowInDesktops);
 };
 
 #endif

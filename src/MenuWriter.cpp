@@ -124,7 +124,7 @@ vector< pair<int,string> > MenuWriter::getPositionsPerCat(string category)
   for (int x = 0; x < filesLength; x++)
   { //If the entry matches the category, add it but if NoDisplay is true, then don't
     if (find(files[x]->categories.begin(), files[x]->categories.end(), category) != files[x]->categories.end()
-      && files[x]->nodisplay != true && files[x]->onlyShowIn != true)
+      && files[x]->nodisplay != true)
     { pair<int,string> p(x, files[x]->name);
       positions.push_back(p);
     }

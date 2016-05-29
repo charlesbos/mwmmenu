@@ -26,27 +26,27 @@
 
 DesktopFile::DesktopFile() {}
 
-DesktopFile::DesktopFile(const char *filename, bool hideOSI, bool useIcons, vector<string> iconpaths, Categories **cats, int customCatNum, bool noCustomCats) 
+DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Categories **cats, int customCatNum, bool noCustomCats) 
 { this->filename = filename;
   this->name = "\0";
   this->exec = "\0";
   this->categories = vector<string>();
   this->nodisplay = false; //Always assume entries are displayed unless entry specifies otherwise
-  this->onlyShowIn = false; //Assume false but if we find OnlyShowIn make it true
   this->icon = "\0";
   dfile.open(filename);
   if (!dfile); //If we cannot open the file, do nothing. The object will keep its initial values
   else
-  { populate(hideOSI, useIcons, iconpaths, cats, customCatNum, noCustomCats);
+  { populate(showFromDesktops, useIcons, iconpaths, cats, customCatNum, noCustomCats);
     dfile.close();
   }
 }
 
 /* This function fetches the required values (Name, Exec, Categories and NoDisplay)
  * and then assigns the results to the appropriate instance variables */
-void DesktopFile::populate(bool hideOSI, bool useIcons, vector<string> iconpaths, Categories **cats, int customCatNum, bool noCustomCats)
+void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Categories **cats, int customCatNum, bool noCustomCats)
 { string line;
   string iconDef = "\0";
+  vector<string> onlyShowInDesktops;
   bool started = false;
 
   while (!dfile.eof())
@@ -82,7 +82,7 @@ void DesktopFile::populate(bool hideOSI, bool useIcons, vector<string> iconpaths
       continue;
     }
     if (id == "OnlyShowIn")
-    { if (hideOSI) onlyShowIn = true;
+    { onlyShowInDesktops = getMultiValue(line);
       continue;
     }
     if (id == "Icon")
@@ -93,6 +93,7 @@ void DesktopFile::populate(bool hideOSI, bool useIcons, vector<string> iconpaths
 
   processCategories(cats, customCatNum, noCustomCats);
   if (useIcons && iconDef != "\0") matchIcon(iconDef, iconpaths);
+  if (!onlyShowInDesktops.empty()) processDesktops(showFromDesktops, onlyShowInDesktops);
 }
 
 /* This function is used to get the single value before the = sign.
@@ -224,4 +225,24 @@ void DesktopFile::matchIcon(string iconDef, vector<string> iconpaths)
     }
   }
 }
-  
+
+/* This function handles desktop entries that specify they should only be displayed in certain
+ * desktops. If the user specifies that OnlyShowIn entries from a matching desktop should be displayed
+ * then the function will return and the nodisplay value will be left untouched. If not, it will be set
+ * to true */
+void DesktopFile::processDesktops(vector<string> showInDesktops, vector<string> onlyShowInDesktops)
+{ //First check for all or none
+  for (unsigned int x = 0; x < showInDesktops.size(); x++)
+  { if (showInDesktops[x] == "all") return;
+    if (showInDesktops[x] == "none" && !onlyShowInDesktops.empty())
+    { nodisplay = true;
+      return;
+    }
+  }
+  //Now loop through the entry OnlyShowIn desktops
+  for (unsigned int x = 0; x < onlyShowInDesktops.size(); x++)
+  { if (find(showInDesktops.begin(), showInDesktops.end(), onlyShowInDesktops[x]) != showInDesktops.end())
+      return;
+  }
+  nodisplay = true;
+}
