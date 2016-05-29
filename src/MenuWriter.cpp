@@ -238,8 +238,9 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
 
   switch(wmID)
   { case mwm :
-      cout << "Menu " << category << endl << "{" << endl;
-      cout << "\t" << setw(longest) << left << category << "\t" << "f.title" << endl;
+      catName = '"' + category + '"';
+      cout << "Menu " << catName << endl << "{" << endl;
+      cout << "\t" << setw(longest) << left << catName << "\t" << "f.title" << endl;
       for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
       { entryName = '"' + files[it->first]->name + '"';
         entryExec = '"' + files[it->first]->exec + '"';
@@ -259,7 +260,8 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
       cout << "}" << endl << endl;
       break;
     case fvwm :
-      cout << "AddToMenu " << setw(10) << left << category << "\t" << setw(longest) << left << category << "\tTitle" << endl;
+      catName = '"' + category + '"';
+      cout << "AddToMenu " << setw(10) << left << catName << "\t" << setw(longest) << left << catName << "\tTitle" << endl;
       for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
       { if (useIcons && files[it->first]->icon != "\0") entryName = '"' + files[it->first]->name + " %" + files[it->first]->icon + "%" + '"';
         else entryName = '"' + files[it->first]->name + '"';
@@ -275,7 +277,7 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
         if (catIcon != "\0") catName = '(' + category + ") <" + catIcon + '>';
         else catName = '(' + category + ')';
       }
-      else catName = '(' + category + ')';
+      else catName = "(\"" + category + "\")";
       cout << "\t[submenu] " + catName + " {}" << endl;
       for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
       { if (useIcons && files[it->first]->icon != "\0") entryExec = '{' + files[it->first]->exec + "} <" + files[it->first]->icon + ">";
@@ -316,7 +318,8 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
       break;   
     case windowmaker :
       if (catNumber == 0) cout << "(\n  " << '"' << menuName << '"' << ',' << endl;
-      cout << "  (\n    " << category << ',' << endl;
+      catName = '"' + category + '"';
+      cout << "  (\n    " << catName << ',' << endl;
       for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
       { entryName = '"' + files[it->first]->name + '"';
         entryExec = '"' + files[it->first]->exec + '"';
@@ -361,7 +364,9 @@ void MenuWriter::writeMainMenu(vector<string> usedCats, int catNumber, int wmID,
         cout << "Menu " << menuName << endl << "{" << endl;
         cout << "\t" << setw(longest) << left << menuName << "\t" << "f.title" << endl;
         for (int x = 0; x < catNumber; x++)
-          cout << "\t" << setw(longest) << left << usedCats[x] << "\t" << "f.menu  " << usedCats[x] << endl;
+        { catNameWithQuotes = '"' + string(usedCats[x]) + '"';
+          cout << "\t" << setw(longest) << left << catNameWithQuotes << "\t" << "f.menu  " << catNameWithQuotes << endl;
+        }
         cout << "}" << endl << endl;
         break;
       case twm :
@@ -383,7 +388,7 @@ void MenuWriter::writeMainMenu(vector<string> usedCats, int catNumber, int wmID,
             else catNameWithQuotes = '"' + string(usedCats[x]) + '"';
           }
           else catNameWithQuotes = '"' + string(usedCats[x]) + '"';
-          cout << "+\t\t\t" << setw(longest) << left << catNameWithQuotes << "\t" << "Popup  " << usedCats[x] << endl;
+          cout << "+\t\t\t" << setw(longest) << left << catNameWithQuotes << "\t" << "Popup  " << '"' + usedCats[x] + '"' << endl;
         }
         cout << endl;
         break;

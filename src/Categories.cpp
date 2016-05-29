@@ -47,11 +47,6 @@ void Categories::getCategoryParams()
     if (id == "Name") name = DesktopFile::getSingleValue(line);
     if (id == "Icon") icon = DesktopFile::getSingleValue(line);
   }
-
-  /* Some wm's don't like category names with spaces and some
-   * picked up categories will have spaces - looking at you 
-   * 'Chromium Apps' !!! */
-  replace(name.begin(), name.end(), ' ', '_');
 }
 
 /* A function to loop through xdg .menu files, looking for
