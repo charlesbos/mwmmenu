@@ -285,10 +285,10 @@ int main(int argc, char *argv[])
 
   /* Find custom desktop entry categories */
   vector<string> catDirs = {"/usr/share/desktop-directories"};
-  string menuDir = "\0";
+  vector<string> menuDirs = {"/etc/xdg/menus"}; 
   if (homedir.c_str() != NULL) 
   { catDirs.push_back(homedir + "/.local/share/desktop-directories");
-    menuDir = homedir + "/.config/menus/applications-merged";
+    menuDirs.push_back(homedir + "/.config/menus/applications-merged");
   }
   vector<string> catPaths;
   vector<string> menuPaths;
@@ -299,12 +299,12 @@ int main(int argc, char *argv[])
     }
     catch (boost::filesystem::filesystem_error) { continue; }
   }
-  if (menuDir != "\0")
+  for (unsigned int x = 0; x < menuDirs.size(); x++)
   { try
-    { for (boost::filesystem::recursive_directory_iterator i(menuDir), end; i != end; ++i)
+    { for (boost::filesystem::recursive_directory_iterator i(menuDirs[x]), end; i != end; ++i)
         if (!is_directory(i->path())) menuPaths.push_back(i->path().string());
     }
-    catch (boost::filesystem::filesystem_error) { ; }
+    catch (boost::filesystem::filesystem_error) { continue; }
   }
   int catCounter = 0;
   Categories **cats = new Categories*[catPaths.size()];
