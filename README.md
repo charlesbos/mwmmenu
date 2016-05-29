@@ -16,3 +16,11 @@ Dependencies:
 * boost-libs
 * boost (makedep)
 * g++ (makedep)
+
+Extra features:
+* Exclude or include entries/categories from the command line
+* Add entries/icons from non-standard locations
+* Support for menu icons
+* Support for non-standard categories such as Chromium Apps
+
+(See mwmmenu -h for a full list of options)
