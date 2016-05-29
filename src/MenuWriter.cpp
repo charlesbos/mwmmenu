@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string>
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
@@ -289,7 +290,10 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
       for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
       { if (useIcons && files[it->first]->icon != "\0") entryExec = '{' + files[it->first]->exec + "} <" + files[it->first]->icon + ">";
         else entryExec = '{' + files[it->first]->exec + '}';
-        entryName = '(' + files[it->first]->name + ')';
+        entryName = files[it->first]->name;
+        //If a name has brackets, we need to escape the closing bracket or it will be missed out
+        if (entryName.find(string(")").c_str()) != string::npos) entryName.insert(static_cast<int>(entryName.find_last_of(')')), string("\\").c_str());
+        entryName = '(' + entryName + ')';
         cout << "\t\t[exec] " << setw(longest) << left << entryName << " " << entryExec << endl;
       }
       cout << "\t[end]" << endl;
