@@ -277,7 +277,7 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
         if (catIcon != "\0") catName = '(' + category + ") <" + catIcon + '>';
         else catName = '(' + category + ')';
       }
-      else catName = "(\"" + category + "\")";
+      else catName = '(' + category + ')';
       cout << "\t[submenu] " + catName + " {}" << endl;
       for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
       { if (useIcons && files[it->first]->icon != "\0") entryExec = '{' + files[it->first]->exec + "} <" + files[it->first]->icon + ">";
