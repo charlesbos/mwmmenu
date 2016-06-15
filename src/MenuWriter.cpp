@@ -27,13 +27,12 @@
 
 //WM id numbers
 #define mwm 0
-#define twm 1
-#define fvwm 2
-#define fluxbox 3
-#define openbox 4
-#define olvwm 5
-#define windowmaker 6
-#define icewm 7
+#define fvwm 1
+#define fluxbox 2
+#define openbox 3
+#define olvwm 4
+#define windowmaker 5
+#define icewm 6
 
 MenuWriter::MenuWriter(DesktopFile **files, 
                        int filesLength, 
@@ -197,11 +196,9 @@ int MenuWriter::getLongestNameLength()
 
 //Return an integer identifying which window manager, menus should be produced for
 int MenuWriter::getWmID()
-{ if (windowmanager == "TWM") return twm;
-  if (windowmanager == "FVWM") return fvwm;
+{ if (windowmanager == "FVWM") return fvwm;
   if (windowmanager == "Fluxbox") return fluxbox;
   if (windowmanager == "Openbox") return openbox;
-  if (windowmanager == "Blackbox") return fluxbox; //Fluxbox menus work in Blackbox
   if (windowmanager == "Olvwm") return olvwm;
   if (windowmanager == "Windowmaker") return windowmaker;
   if (windowmanager == "IceWM") return icewm;
@@ -258,17 +255,6 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
 
   switch(wmID)
   { case mwm :
-      catName = '"' + category + '"';
-      cout << "Menu " << catName << endl << "{" << endl;
-      cout << "\t" << setw(longest) << left << catName << "\t" << "f.title" << endl;
-      for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-      { entryName = '"' + files[it->first]->name + '"';
-        entryExec = '"' + files[it->first]->exec + '"';
-        cout << "\t" << setw(longest) << left << entryName << "\t" << "f.exec " << entryExec << endl;
-      }
-      cout << "}" << endl << endl;
-      break;
-    case twm :
       catName = '"' + category + '"';
       cout << "menu " << catName << endl << "{" << endl;
       cout << setw(longest) << left << catName << "\t" << "f.title" << endl;
@@ -384,16 +370,6 @@ void MenuWriter::writeMainMenu(vector<string> usedCats, int catNumber, int wmID,
 
     switch(wmID)
     { case mwm :
-        menuNameWithQuotes = '"' + menuName + '"';
-        cout << "Menu " << menuNameWithQuotes << endl << "{" << endl;
-        cout << "\t" << setw(longest) << left << menuNameWithQuotes << "\t" << "f.title" << endl;
-        for (int x = 0; x < catNumber; x++)
-        { catNameWithQuotes = '"' + string(usedCats[x]) + '"';
-          cout << "\t" << setw(longest) << left << catNameWithQuotes << "\t" << "f.menu  " << catNameWithQuotes << endl;
-        }
-        cout << "}" << endl << endl;
-        break;
-      case twm :
         menuNameWithQuotes = '"' + menuName + '"';
         cout << "menu " << menuNameWithQuotes << endl << "{" << endl;
         cout << setw(longest) << left << menuNameWithQuotes << "\t" << "f.title" << endl;

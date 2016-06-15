@@ -51,12 +51,10 @@ void usage()
   cout << "  -add_desktop_paths: add extra search paths for desktop entries." << endl << endl;
   cout << "  -add_icon_paths: add extra search paths for icons." << endl << endl;
   cout << "Menu format options:" << endl;
-  cout << "  # No format argument: produce menus for MWM" << endl;
-  cout << "  -twm: produce menus for TWM" << endl;
+  cout << "  # No format argument: produce menus for MWM or TWM" << endl;
   cout << "  -fvwm: produce menus for FVWM" << endl;
-  cout << "  -fluxbox: produce menus for Fluxbox" << endl;
+  cout << "  -fluxbox: produce menus for Fluxbox or Blackbox" << endl;
   cout << "  -openbox: produce menus for Openbox" << endl;
-  cout << "  -blackbox: produce menus for Blackbox" << endl;
   cout << "  -olvwm: produce menus for Olvwm" << endl;
   cout << "  -windowmaker: produce menus for Windowmaker" << endl;
   cout << "  -icewm: produce menus for IceWM" << endl;
@@ -164,20 +162,12 @@ int main(int argc, char *argv[])
     { windowmanager = "FVWM";
       continue;
     }
-    if (strcmp(argv[x], "-twm") == 0) 
-    { windowmanager = "TWM";
-      continue;
-    }
     if (strcmp(argv[x], "-fluxbox") == 0) 
     { windowmanager = "Fluxbox";
       continue;
     }
     if (strcmp(argv[x], "-openbox") == 0) 
     { windowmanager = "Openbox";
-      continue;
-    }
-    if (strcmp(argv[x], "-blackbox") == 0) 
-    { windowmanager = "Blackbox";
       continue;
     }
     if (strcmp(argv[x], "-olvwm") == 0) 
@@ -230,8 +220,6 @@ int main(int argc, char *argv[])
     }
   }
   if (windowmanager == "MWM" || 
-      windowmanager == "TWM" || 
-      windowmanager == "Blackbox" || 
       windowmanager == "Olvwm" ||
       windowmanager == "Windowmaker") 
     useIcons = false;
