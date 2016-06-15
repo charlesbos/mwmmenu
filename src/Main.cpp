@@ -275,27 +275,29 @@ int main(int argc, char *argv[])
   }
 
   /* Find custom desktop entry categories */
-  vector<string> catDirs = {"/usr/share/desktop-directories"};
-  vector<string> menuDirs = {"/etc/xdg/menus"}; 
-  if (homedir.c_str() != NULL) 
-  { catDirs.push_back(homedir + "/.local/share/desktop-directories");
-    menuDirs.push_back(homedir + "/.config/menus/applications-merged");
-  }
   vector<string> catPaths;
   vector<string> menuPaths;
-  for (unsigned int x = 0; x < catDirs.size(); x++)
-  { try
-    { for (boost::filesystem::recursive_directory_iterator i(catDirs[x]), end; i != end; ++i)
-        if (!is_directory(i->path())) catPaths.push_back(i->path().string());
+  if (!noCustomCats)
+  { vector<string> catDirs = {"/usr/share/desktop-directories"};
+    vector<string> menuDirs = {"/etc/xdg/menus"}; 
+    if (homedir.c_str() != NULL) 
+    { catDirs.push_back(homedir + "/.local/share/desktop-directories");
+      menuDirs.push_back(homedir + "/.config/menus/applications-merged");
     }
-    catch (boost::filesystem::filesystem_error) { continue; }
-  }
-  for (unsigned int x = 0; x < menuDirs.size(); x++)
-  { try
-    { for (boost::filesystem::recursive_directory_iterator i(menuDirs[x]), end; i != end; ++i)
-        if (!is_directory(i->path())) menuPaths.push_back(i->path().string());
+    for (unsigned int x = 0; x < catDirs.size(); x++)
+    { try
+      { for (boost::filesystem::recursive_directory_iterator i(catDirs[x]), end; i != end; ++i)
+	  if (!is_directory(i->path())) catPaths.push_back(i->path().string());
+      }
+      catch (boost::filesystem::filesystem_error) { continue; }
     }
-    catch (boost::filesystem::filesystem_error) { continue; }
+    for (unsigned int x = 0; x < menuDirs.size(); x++)
+    { try
+      { for (boost::filesystem::recursive_directory_iterator i(menuDirs[x]), end; i != end; ++i)
+	  if (!is_directory(i->path())) menuPaths.push_back(i->path().string());
+      }
+      catch (boost::filesystem::filesystem_error) { continue; }
+    }
   }
   int catCounter = 0;
   Categories **cats = new Categories*[catPaths.size()];
