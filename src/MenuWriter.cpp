@@ -257,11 +257,11 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
   { case mwm :
       catName = '"' + category + '"';
       cout << "menu " << catName << endl << "{" << endl;
-      cout << setw(longest) << left << catName << "\t" << "f.title" << endl;
+      cout << "\t" << setw(longest) << left << catName << "\t" << "f.title" << endl;
       for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
       { entryName = '"' + files[it->first]->name + '"';
         entryExec = "\"exec " + files[it->first]->exec + " &" + '"';
-        cout << setw(longest) << left << entryName << "\t" << "f.exec " << entryExec << endl;
+        cout << "\t" << setw(longest) << left << entryName << "\t" << "f.exec " << entryExec << endl;
       }
       cout << "}" << endl << endl;
       break;
@@ -372,10 +372,10 @@ void MenuWriter::writeMainMenu(vector<string> usedCats, int catNumber, int wmID,
     { case mwm :
         menuNameWithQuotes = '"' + menuName + '"';
         cout << "menu " << menuNameWithQuotes << endl << "{" << endl;
-        cout << setw(longest) << left << menuNameWithQuotes << "\t" << "f.title" << endl;
+        cout << "\t" << setw(longest) << left << menuNameWithQuotes << "\t" << "f.title" << endl;
         for (int x = 0; x < catNumber; x++)
         { catNameWithQuotes = '"' + string(usedCats[x]) + '"';
-          cout << setw(longest) << left << catNameWithQuotes << "\t" << "f.menu  " << catNameWithQuotes << endl;
+          cout << "\t" << setw(longest) << left << catNameWithQuotes << "\t" << "f.menu  " << catNameWithQuotes << endl;
         }
         cout << "}" << endl << endl;
         break;
