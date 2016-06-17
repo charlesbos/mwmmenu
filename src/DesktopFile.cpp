@@ -221,7 +221,8 @@ void DesktopFile::matchIcon(string iconDef, vector<string> iconpaths, string ico
    * full path. Note that the first matching icon found will be the one that is chosen */
   for (unsigned int x = 0; x < iconpaths.size(); x++)
   { string iconName = iconpaths[x].substr(iconpaths[x].find_last_of("/") + 1, iconpaths[x].find_last_of(".") - iconpaths[x].find_last_of("/") - 1);
-    if (iconDef == iconName)
+    string iconNameWithExtension = iconpaths[x].substr(iconpaths[x].find_last_of("/") + 1, string::npos);
+    if (iconDef == iconName || iconDef == iconNameWithExtension)
     { icon = iconpaths[x];
       break;
     }
