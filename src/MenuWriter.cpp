@@ -212,9 +212,6 @@ string MenuWriter::getCategoryIcon(string catName)
 { string nameGuard = "categories";
   bool customCategory = false;
 
-  //There is no icon for education so use the science one instead
-  if (catName == "Education") catName = "Science";
-
   //If it's a custom category, use its icon definition instead
   for (unsigned int x = 0; x < sizeof(cats) / sizeof(cats[0]); x++)
   { if (catName == cats[x]->name)
@@ -230,6 +227,11 @@ string MenuWriter::getCategoryIcon(string catName)
   { if (catName.find("/") != string::npos && catName.find(iconSize) != string::npos)
       return catName;
   }
+  //There is no icon for education so use the science one instead
+  if (catName == "Education") catName = "Science";
+  //Chromium App category has chromium-browser as its icon def but chromium does
+  //not provide an icon called chromium-browser so change it to just chromium
+  if (catName == "chromium-browser") catName = "chromium";
 
   /* The main search loop. Here we try to match the category name against icon paths, checking
    * that the word 'categories' appears somewhere in the path, as well as checking for size */
