@@ -249,7 +249,8 @@ string MenuWriter::getCategoryIcon(string catName)
 
 /* This function is called multiple times. Each time, it prints out the submenu
  * for a given category. It might also print out the 'main' menu if the wm requires
- * it. See the _main cases */
+ * it. Currently, only MWM and FVWM use this. The main menu code is called if the
+ * category string is "\0" */
 void MenuWriter::writeMenu(vector< pair<int,string> > positions, string category, int wmID, int catNumber, int maxCatNumber, int longest, vector<string> usedCats)
 { string entryName;
   string entryExec;
