@@ -66,8 +66,7 @@ class MenuWriter
     int getWmID();
     string getCategoryIcon(string catName);
 
-    void writeCategoryMenu(vector< pair<int,string> > positions, string category, int wmID, int catNumber, int maxCatNumber, int longest);
-    void writeMainMenu(vector<string> usedCats, int catNumber, int wmID, int longest);
+    void writeMenu(vector< pair<int,string> > positions, string category, int wmID, int catNumber, int maxCatNumber, int longest, vector<string> usedCats);
 };
 
 #endif
