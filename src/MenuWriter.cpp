@@ -337,7 +337,12 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, string category
     case openbox :
       if (catNumber == 0) cout << "<openbox_pipe_menu xmlns=\"http://openbox.org/3.4/menu\">" << endl << endl;
       catName = '"' + category + '"';
-      cout << "<menu id=" << catName << " label=" << catName << ">" << endl;
+      if (useIcons)
+      { string catIcon = getCategoryIcon(category);
+        if (catIcon != "\0") cout << "<menu id=" << catName << " label=" << catName << " icon=" << '"' + catIcon + '"' << ">" << endl;
+        else cout << "<menu id=" << catName << " label=" << catName << ">" << endl;
+      }
+      else cout << "<menu id=" << catName << " label=" << catName << ">" << endl;
       for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
       { if (useIcons && files[it->first]->icon != "\0") 
           entryName = '"' + files[it->first]->name + '"' + " icon=\"" + files[it->first]->icon + "\">";
