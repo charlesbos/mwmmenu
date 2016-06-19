@@ -300,6 +300,7 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
       if (catNumber == maxCatNumber) cout << "[end]" << endl;
       break;
     case openbox :
+      if (catNumber == 0) cout << "<openbox_pipe_menu xmlns=\"http://openbox.org/3.4/menu\">" << endl << endl;
       catName = '"' + category + '"';
       cout << "<menu id=" << catName << " label=" << catName << ">" << endl;
       for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
@@ -314,6 +315,7 @@ void MenuWriter::writeCategoryMenu(vector< pair<int,string> > positions, string 
         cout << "\t</item>" << endl;
       }
       cout << "</menu>" << endl << endl;
+      if (catNumber == maxCatNumber) cout << "</openbox_pipe_menu>" << endl << endl;
       break;
     case olvwm :
       if (catNumber == 0) cout << setw(longest) << left << '"' + menuName + '"' << "MENU" << endl << endl;
@@ -399,18 +401,7 @@ void MenuWriter::writeMainMenu(vector<string> usedCats, int catNumber, int wmID,
         //Do nothing here, main menu needs to be handled in the writeCategoryMenu function
         break;
       case openbox :
-        menuNameWithQuotes = '"' + menuName + '"';
-        cout << "<menu id=" << menuNameWithQuotes << " label=" << menuNameWithQuotes << ">" << endl;
-        for (int x = 0; x < catNumber; x++)
-        { if (useIcons)
-          { string catIcon = getCategoryIcon(string(usedCats[x]));
-            if (catIcon != "\0") catNameWithQuotes = '"' + string(usedCats[x]) + '"' + " icon=\"" + catIcon + "\"/>";
-            else catNameWithQuotes = '"' + string(usedCats[x]) + "\"/>";
-          }
-          else catNameWithQuotes = '"' + string(usedCats[x]) + "\"/>";
-          cout << "\t<menu id=" << setw(longest) << left << catNameWithQuotes << endl;
-        }
-        cout << "</menu>" << endl << endl;
+        //Do nothing here, main menu needs to be handled in the writeCategoryMenu function
         break;
       case olvwm :
         //Do nothing here, main menu needs to be handled in the writeCategoryMenu function
