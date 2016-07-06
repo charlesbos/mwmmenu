@@ -299,52 +299,35 @@ int main(int argc, char *argv[])
       catch (boost::filesystem::filesystem_error) { continue; }
     }
   }
-  int catCounter = 0;
-  Category **cats = new Category*[catPaths.size()];
+  vector<Category> cats;
   for (unsigned int x = 0; x < catPaths.size(); x++)
-  { Category *c = new Category(catPaths[x].c_str(), menuPaths);
-    if (c->name != "\0" && !c->incEntries.empty())
-    { cats[catCounter] = c;
-      catCounter++;
-    }  
+  { Category c = Category(catPaths[x].c_str(), menuPaths);
+    if (c.name != "\0" && !c.incEntries.empty()) cats.push_back(c);
   }
 
-  //Create array of DesktopFile, using each path in the paths vector
-  DesktopFile **files = new DesktopFile*[paths.size()];
-  int counter = 0;
+  //Create vector of DesktopFile, using each path in the paths vector
+  vector<DesktopFile> files;
   for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
-  { DesktopFile *df = new DesktopFile((*it).c_str(), splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats, catCounter, noCustomCats, iconSize);
+  { DesktopFile df = DesktopFile((*it).c_str(), splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats, iconSize);
     /* If a name or exec wasn't found we cannot add an entry to our menu so ignore
      * these objects */
-    if (df->name != "\0" && df->exec != "\0")
-    { files[counter] = df;
-      counter++;
-    }
+    if (df.name != "\0" && df.exec != "\0") files.push_back(df);
   }
 
-  //Create MwmMenuWriter object, passing it the array of DesktopFile
+  //Create MenuWriter object, passing it the array of DesktopFile
   //This object will cause the menus to be printed
-  MenuWriter *mw = new MenuWriter(files, 
-                                  counter, 
-                                  menuName, 
-                                  windowmanager, 
-                                  useIcons, 
-                                  iconpaths, 
-                                  splitCommaArgs(exclude), 
-                                  splitCommaArgs(excludeMatching), 
-                                  splitCommaArgs(excludeCategories),
-                                  iconSize,
-                                  splitCommaArgs(include),
-                                  splitCommaArgs(excludedFilenames),
-                                  cats,
-                                  catCounter);
-
-  //Memory cleanup
-  delete mw;
-  for (int x = 0; x < counter; x++) delete files[x];
-  delete[] files;
-  for (int x = 0; x < catCounter; x++) delete cats[x];
-  delete cats;
+  MenuWriter(files, 
+	     menuName, 
+	     windowmanager, 
+	     useIcons, 
+	     iconpaths, 
+	     splitCommaArgs(exclude), 
+	     splitCommaArgs(excludeMatching), 
+	     splitCommaArgs(excludeCategories),
+	     iconSize,
+	     splitCommaArgs(include),
+	     splitCommaArgs(excludedFilenames),
+	     cats);
 
   return 0;
 }

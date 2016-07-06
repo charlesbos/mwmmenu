@@ -37,6 +37,14 @@ Category::Category(const char *dirFile, vector<string> menuFiles)
   }
 }
 
+Category::Category(const Category& c)
+{ this->name = c.name;
+  this->icon = c.icon;
+  this->incEntries = c.incEntries;
+}
+
+Category& Category::operator=(const Category& c) { return *this; }
+
 /* A function to get the category name and icon definition */
 void Category::getCategoryParams()
 { string line;

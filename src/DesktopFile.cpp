@@ -26,7 +26,7 @@
 
 DesktopFile::DesktopFile() {}
 
-DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Category **cats, int customCatNum, bool noCustomCats, string iconSize) 
+DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category> cats, string iconSize) 
 { this->filename = filename;
   this->name = "\0";
   this->exec = "\0";
@@ -36,14 +36,25 @@ DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, 
   dfile.open(filename);
   if (!dfile); //If we cannot open the file, do nothing. The object will keep its initial values
   else
-  { populate(showFromDesktops, useIcons, iconpaths, cats, customCatNum, noCustomCats, iconSize);
+  { populate(showFromDesktops, useIcons, iconpaths, cats, iconSize);
     dfile.close();
   }
 }
 
+DesktopFile::DesktopFile(const DesktopFile& df)
+{ this->filename = df.filename;
+  this->name = df.name;
+  this->exec = df.exec;
+  this->categories = df.categories;
+  this->nodisplay = df.nodisplay;
+  this->icon = df.icon;
+}
+
+DesktopFile& DesktopFile::operator=(const DesktopFile& df) { return *this; }
+
 /* This function fetches the required values (Name, Exec, Categories and NoDisplay)
  * and then assigns the results to the appropriate instance variables */
-void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Category **cats, int customCatNum, bool noCustomCats, string iconSize)
+void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category> cats, string iconSize)
 { string line;
   string iconDef = "\0";
   vector<string> onlyShowInDesktops;
@@ -91,7 +102,7 @@ void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vecto
     }
   }
 
-  processCategories(cats, customCatNum, noCustomCats);
+  processCategories(cats);
   if (useIcons && iconDef != "\0") matchIcon(iconDef, iconpaths, iconSize);
   if (!onlyShowInDesktops.empty()) processDesktops(showFromDesktops, onlyShowInDesktops);
 }
@@ -171,7 +182,7 @@ vector<string> DesktopFile::getMultiValue(string line)
  * displayed in menus, to group multiple multimedia categories into one,
  * to strip out possible duplicates and to add a catchall category if no
  * base categories are present */
-void DesktopFile::processCategories(Category **cats, int customCatNum, bool noCustomCats)
+void DesktopFile::processCategories(vector<Category> cats)
 { vector<string> baseCategories = {"AudioVideo", "Audio", "Video", "Development", "Education", "Game", "Graphics", 
                                    "Network", "Office", "Science", "Settings", "System", "Utility"};
   vector<string>::iterator it = categories.begin();
@@ -190,12 +201,12 @@ void DesktopFile::processCategories(Category **cats, int customCatNum, bool noCu
   set<string> temp(categories.begin(), categories.end());
   categories.assign(temp.begin(), temp.end());
 
-  //Add any custom categories, if appropriate
-  if (!noCustomCats)
+  //Add any custom categories
+  if (!cats.empty())
   { string baseFilename = filename.substr(filename.find_last_of("/") + 1, filename.size() - filename.find_last_of("/") - 1);
-    for (int x = 0; x < customCatNum; x++)
-    { for (unsigned int y = 0; y < cats[x]->incEntries.size(); y++)
-	if (cats[x]->incEntries[y] == baseFilename) categories.push_back(cats[x]->name);
+    for (unsigned int x = 0; x < cats.size(); x++)
+    { for (unsigned int y = 0; y < cats[x].incEntries.size(); y++)
+	if (cats[x].incEntries[y] == baseFilename) categories.push_back(cats[x].name);
     }
   }
 

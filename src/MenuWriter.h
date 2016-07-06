@@ -25,8 +25,7 @@
 
 class MenuWriter
 { public:
-    MenuWriter(DesktopFile **files, 
-               int filesLength, 
+    MenuWriter(vector<DesktopFile> files, 
                string menuName, 
                string windowmanager, 
                bool useIcons, 
@@ -37,14 +36,12 @@ class MenuWriter
                string iconSize, 
                vector<string> include, 
                vector<string> excludedFilenames, 
-               Category **cats, 
-               int customCatNum);
+               vector<Category> cats);
 
   private:
-    DesktopFile **files;
-    Category **cats;
-    int customCatNum;
+    vector<DesktopFile> files;
     int filesLength;
+    vector<Category> cats;
     string menuName;
     string windowmanager;
     bool useIcons;

@@ -34,8 +34,7 @@
 #define windowmaker 5
 #define icewm 6
 
-MenuWriter::MenuWriter(DesktopFile **files, 
-                       int filesLength, 
+MenuWriter::MenuWriter(vector<DesktopFile> files, 
                        string menuName, 
                        string windowmanager, 
                        bool useIcons, 
@@ -46,12 +45,10 @@ MenuWriter::MenuWriter(DesktopFile **files,
                        string iconSize, 
                        vector<string> include, 
                        vector<string> excludedFilenames, 
-                       Category **cats,
-                       int customCatNum)
+                       vector<Category> cats)
 { this->files = files;
   this->cats = cats;
-  this->customCatNum = customCatNum;
-  this->filesLength = filesLength;
+  this->filesLength = files.size();
   this->menuName = menuName;
   this->windowmanager = windowmanager;
   this->useIcons = useIcons;
@@ -72,7 +69,7 @@ MenuWriter::MenuWriter(DesktopFile **files,
 void MenuWriter::printHandler()
 { vector<string> validCatsArr = {"Accessories", "Development", "Education", "Game", "Graphics", "Multimedia", "Internet",
                                  "Office", "Other", "Science", "Settings", "System"};
-  for (int x = 0; x < customCatNum; x++) validCatsArr.push_back(cats[x]->name);
+  for (unsigned int x = 0; x < cats.size(); x++) validCatsArr.push_back(cats[x].name);
   sort(validCatsArr.begin(), validCatsArr.end());
   int validCatsLength = validCatsArr.size();
   vector<string> usedCats;
@@ -123,9 +120,9 @@ vector< pair<int,string> > MenuWriter::getPositionsPerCat(string category)
 
   for (int x = 0; x < filesLength; x++)
   { //If the entry matches the category, add it but if NoDisplay is true, then don't
-    if (find(files[x]->categories.begin(), files[x]->categories.end(), category) != files[x]->categories.end()
-      && files[x]->nodisplay != true)
-    { pair<int,string> p(x, files[x]->name);
+    if (find(files[x].categories.begin(), files[x].categories.end(), category) != files[x].categories.end()
+      && files[x].nodisplay != true)
+    { pair<int,string> p(x, files[x].name);
       positions.push_back(p);
     }
   }
@@ -145,13 +142,13 @@ vector< pair<int,string> > MenuWriter::getPositionsPerCat(string category)
 void MenuWriter::entryDisplayHandler()
 { if (!exclude.empty())
   { for (int x = 0; x < filesLength; x++)
-      if (find(exclude.begin(), exclude.end(), files[x]->name) != exclude.end()) files[x]->nodisplay = true;
+      if (find(exclude.begin(), exclude.end(), files[x].name) != exclude.end()) files[x].nodisplay = true;
   }
   if (!excludeMatching.empty())
   { for (int x = 0; x < filesLength; x++)
     { for (unsigned int y = 0; y < excludeMatching.size(); y++)
-      { if (files[x]->name.find(excludeMatching[y]) != string::npos)
-        { files[x]->nodisplay = true;
+      { if (files[x].name.find(excludeMatching[y]) != string::npos)
+        { files[x].nodisplay = true;
           break;
         }
       }
@@ -159,11 +156,11 @@ void MenuWriter::entryDisplayHandler()
   }
   if (!excludedFilenames.empty())
   { for (int x = 0; x < filesLength; x++)
-      if (find(excludedFilenames.begin(), excludedFilenames.end(), files[x]->filename) != excludedFilenames.end()) files[x]->nodisplay = true;
+      if (find(excludedFilenames.begin(), excludedFilenames.end(), files[x].filename) != excludedFilenames.end()) files[x].nodisplay = true;
   }
   if (!include.empty())
   { for (int x = 0; x < filesLength; x++)
-      if (find(include.begin(), include.end(), files[x]->name) != include.end()) files[x]->nodisplay = false;
+      if (find(include.begin(), include.end(), files[x].name) != include.end()) files[x].nodisplay = false;
   }
 }
 
@@ -187,9 +184,9 @@ int MenuWriter::getLongestNameLength()
      * icon path after the exec so we don't want to add that extra length to the name in
      * this case */
     if (useIcons && windowmanager != "Fluxbox")
-    { if (files[x]->name.size() + files[x]->icon.size() > longest) longest = files[x]->name.size() + files[x]->icon.size(); }
+    { if (files[x].name.size() + files[x].icon.size() > longest) longest = files[x].name.size() + files[x].icon.size(); }
     else
-    { if (files[x]->name.size() > longest) longest = files[x]->name.size(); }
+    { if (files[x].name.size() > longest) longest = files[x].name.size(); }
   }
 
   return longest + 10;
@@ -214,9 +211,9 @@ string MenuWriter::getCategoryIcon(string catName)
   bool customCategory = false;
 
   //If it's a custom category, use its icon definition instead
-  for (unsigned int x = 0; x < sizeof(cats) / sizeof(cats[0]); x++)
-  { if (catName == cats[x]->name)
-    { catName = cats[x]->icon;
+  for (unsigned int x = 0; x < cats.size(); x++)
+  { if (catName == cats[x].name)
+    { catName = cats[x].icon;
       nameGuard = "/"; //If its custom, we know the icondef is valid so remove the guard
       customCategory = true;
       break;
@@ -267,8 +264,8 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, string category
 	cout << "menu " << catName << endl << "{" << endl;
 	cout << "\t" << setw(longest) << left << catName << "\t" << "f.title" << endl;
 	for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-	{ entryName = '"' + files[it->first]->name + '"';
-	  entryExec = "\"exec " + files[it->first]->exec + " &" + '"';
+	{ entryName = '"' + files[it->first].name + '"';
+	  entryExec = "\"exec " + files[it->first].exec + " &" + '"';
 	  cout << "\t" << setw(longest) << left << entryName << "\t" << "f.exec " << entryExec << endl;
 	}
 	cout << "}" << endl << endl;
@@ -291,9 +288,9 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, string category
       { catName = '"' + category + '"';
 	cout << "AddToMenu " << setw(15) << left << catName << "\t" << setw(longest) << left << catName << "\tTitle" << endl;
 	for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-	{ if (useIcons && files[it->first]->icon != "\0") entryName = '"' + files[it->first]->name + " %" + files[it->first]->icon + "%" + '"';
-	  else entryName = '"' + files[it->first]->name + '"';
-	  entryExec = files[it->first]->exec;
+	{ if (useIcons && files[it->first].icon != "\0") entryName = '"' + files[it->first].name + " %" + files[it->first].icon + "%" + '"';
+	  else entryName = '"' + files[it->first].name + '"';
+	  entryExec = files[it->first].exec;
 	  cout << "+\t\t\t\t" << setw(longest) << left << entryName << "\t" << "Exec " << entryExec << endl;
 	}
 	cout << endl;
@@ -323,9 +320,9 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, string category
       else catName = '(' + category + ')';
       cout << "\t[submenu] " + catName + " {}" << endl;
       for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-      { if (useIcons && files[it->first]->icon != "\0") entryExec = '{' + files[it->first]->exec + "} <" + files[it->first]->icon + ">";
-        else entryExec = '{' + files[it->first]->exec + '}';
-        entryName = files[it->first]->name;
+      { if (useIcons && files[it->first].icon != "\0") entryExec = '{' + files[it->first].exec + "} <" + files[it->first].icon + ">";
+        else entryExec = '{' + files[it->first].exec + '}';
+        entryName = files[it->first].name;
         //If a name has brackets, we need to escape the closing bracket or it will be missed out
         if (entryName.find(string(")").c_str()) != string::npos) entryName.insert(static_cast<int>(entryName.find_last_of(')')), string("\\").c_str());
         entryName = '(' + entryName + ')';
@@ -344,10 +341,10 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, string category
       }
       else cout << "<menu id=" << catName << " label=" << catName << ">" << endl;
       for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-      { if (useIcons && files[it->first]->icon != "\0") 
-          entryName = '"' + files[it->first]->name + '"' + " icon=\"" + files[it->first]->icon + "\">";
-        else entryName = '"' + files[it->first]->name + "\">";
-        entryExec = files[it->first]->exec;
+      { if (useIcons && files[it->first].icon != "\0") 
+          entryName = '"' + files[it->first].name + '"' + " icon=\"" + files[it->first].icon + "\">";
+        else entryName = '"' + files[it->first].name + "\">";
+        entryExec = files[it->first].exec;
         cout << "\t<item label=" << setw(longest) << left << entryName << endl;
         cout << "\t\t<action name=\"Execute\">" << endl;
         cout << "\t\t\t<execute>" << entryExec << "</execute>" << endl;
@@ -362,8 +359,8 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, string category
       catName = '"' + category + '"';
       cout << setw(longest) << left << catName << "MENU" << endl;
       for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-      { entryName = '"' + files[it->first]->name + '"';
-        entryExec = files[it->first]->exec;
+      { entryName = '"' + files[it->first].name + '"';
+        entryExec = files[it->first].exec;
         cout << setw(longest) << left << entryName << entryExec << endl;
       }
       cout << setw(longest) << left << catName << "END PIN" << endl << endl;
@@ -374,8 +371,8 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, string category
       catName = '"' + category + '"';
       cout << "  (\n    " << catName << ',' << endl;
       for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-      { entryName = '"' + files[it->first]->name + '"';
-        entryExec = '"' + files[it->first]->exec + '"';
+      { entryName = '"' + files[it->first].name + '"';
+        entryExec = '"' + files[it->first].exec + '"';
         cout << "    (" << entryName << ", " << "EXEC, " << entryExec << ")";
         if ((it - positions.begin()) != (positions.end() - positions.begin() - 1)) cout << ',' << endl;
         else cout << endl;
@@ -392,9 +389,9 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, string category
       else catName = '"' + category + "\" folder";
       cout << "menu " << catName << " {" << endl;
       for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-      { if (useIcons && files[it->first]->icon != "\0") entryName = '"' + files[it->first]->name + '"' + " " + files[it->first]->icon;
-        else entryName = '"' + files[it->first]->name + "\" -";
-        entryExec = files[it->first]->exec;
+      { if (useIcons && files[it->first].icon != "\0") entryName = '"' + files[it->first].name + '"' + " " + files[it->first].icon;
+        else entryName = '"' + files[it->first].name + "\" -";
+        entryExec = files[it->first].exec;
         cout << "\tprog " + entryName + " " + entryExec << endl;
       }
       cout << "}\n" << endl;

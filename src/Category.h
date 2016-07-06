@@ -28,6 +28,9 @@ class Category
   public:
     Category();
     Category(const char *dirFile, vector<string> menuFiles);
+    Category(const Category& c);
+
+    Category& operator=(const Category& c);
 
     string name;
     string icon;
