@@ -27,13 +27,13 @@
 
 using namespace std;
 
-class Categories;
+class Category;
 
 class DesktopFile
 {
   public:
     DesktopFile();
-    DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Categories **cats, int customCatNum, bool noCustomCats, string iconSize);
+    DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Category **cats, int customCatNum, bool noCustomCats, string iconSize);
 
     string filename;
     string name;
@@ -49,9 +49,9 @@ class DesktopFile
   private:
     ifstream dfile;
 
-    void populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Categories **cats, int customCatNum, bool noCustomCats, string iconSize);
+    void populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Category **cats, int customCatNum, bool noCustomCats, string iconSize);
     void matchIcon(string iconDef, vector<string> iconpaths, string iconSize);
-    void processCategories(Categories **cats, int customCatNum, bool noCustomCats);
+    void processCategories(Category **cats, int customCatNum, bool noCustomCats);
     void processDesktops(vector<string> showFromDesktops, vector<string> onlyShowInDesktops);
 };
 

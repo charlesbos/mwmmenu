@@ -24,7 +24,7 @@
 #include "boost/filesystem.hpp"
 #include "DesktopFile.h"
 #include "MenuWriter.h"
-#include "Categories.h"
+#include "Category.h"
 
 void usage()
 { cout << "mwmmenu - creates application menus for MWM and other window managers." << endl << endl;
@@ -300,9 +300,9 @@ int main(int argc, char *argv[])
     }
   }
   int catCounter = 0;
-  Categories **cats = new Categories*[catPaths.size()];
+  Category **cats = new Category*[catPaths.size()];
   for (unsigned int x = 0; x < catPaths.size(); x++)
-  { Categories *c = new Categories(catPaths[x].c_str(), menuPaths);
+  { Category *c = new Category(catPaths[x].c_str(), menuPaths);
     if (c->name != "\0" && !c->incEntries.empty())
     { cats[catCounter] = c;
       catCounter++;

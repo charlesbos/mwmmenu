@@ -22,11 +22,11 @@
 #include <set>
 #include <string.h>
 #include "DesktopFile.h"
-#include "Categories.h"
+#include "Category.h"
 
 DesktopFile::DesktopFile() {}
 
-DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Categories **cats, int customCatNum, bool noCustomCats, string iconSize) 
+DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Category **cats, int customCatNum, bool noCustomCats, string iconSize) 
 { this->filename = filename;
   this->name = "\0";
   this->exec = "\0";
@@ -43,7 +43,7 @@ DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, 
 
 /* This function fetches the required values (Name, Exec, Categories and NoDisplay)
  * and then assigns the results to the appropriate instance variables */
-void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Categories **cats, int customCatNum, bool noCustomCats, string iconSize)
+void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, Category **cats, int customCatNum, bool noCustomCats, string iconSize)
 { string line;
   string iconDef = "\0";
   vector<string> onlyShowInDesktops;
@@ -171,7 +171,7 @@ vector<string> DesktopFile::getMultiValue(string line)
  * displayed in menus, to group multiple multimedia categories into one,
  * to strip out possible duplicates and to add a catchall category if no
  * base categories are present */
-void DesktopFile::processCategories(Categories **cats, int customCatNum, bool noCustomCats)
+void DesktopFile::processCategories(Category **cats, int customCatNum, bool noCustomCats)
 { vector<string> baseCategories = {"AudioVideo", "Audio", "Video", "Development", "Education", "Game", "Graphics", 
                                    "Network", "Office", "Science", "Settings", "System", "Utility"};
   vector<string>::iterator it = categories.begin();

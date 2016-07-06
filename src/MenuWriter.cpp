@@ -23,7 +23,7 @@
 #include <iostream>
 #include <iomanip>
 #include "MenuWriter.h"
-#include "Categories.h"
+#include "Category.h"
 
 //WM id numbers
 #define mwm 0
@@ -46,7 +46,7 @@ MenuWriter::MenuWriter(DesktopFile **files,
                        string iconSize, 
                        vector<string> include, 
                        vector<string> excludedFilenames, 
-                       Categories **cats,
+                       Category **cats,
                        int customCatNum)
 { this->files = files;
   this->cats = cats;

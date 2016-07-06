@@ -37,12 +37,12 @@ class MenuWriter
                string iconSize, 
                vector<string> include, 
                vector<string> excludedFilenames, 
-               Categories **cats, 
+               Category **cats, 
                int customCatNum);
 
   private:
     DesktopFile **files;
-    Categories **cats;
+    Category **cats;
     int customCatNum;
     int filesLength;
     string menuName;

@@ -18,16 +18,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CATEGORIES_H_
-#define _CATEGORIES_H_
+#ifndef _CATEGORY_H_
+#define _CATEGORY_H_
 
 #include "DesktopFile.h"
 
-class Categories
+class Category
 {
   public:
-    Categories();
-    Categories(const char *dirFile, vector<string> menuFiles);
+    Category();
+    Category(const char *dirFile, vector<string> menuFiles);
 
     string name;
     string icon;

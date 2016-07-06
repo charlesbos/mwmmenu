@@ -19,11 +19,11 @@
  */
 
 #include <algorithm>
-#include "Categories.h"
+#include "Category.h"
 
-Categories::Categories() {}
+Category::Category() {}
 
-Categories::Categories(const char *dirFile, vector<string> menuFiles)
+Category::Category(const char *dirFile, vector<string> menuFiles)
 { this->dirFile = dirFile;
   this->menuFiles = menuFiles;
   name = "\0";
@@ -38,7 +38,7 @@ Categories::Categories(const char *dirFile, vector<string> menuFiles)
 }
 
 /* A function to get the category name and icon definition */
-void Categories::getCategoryParams()
+void Category::getCategoryParams()
 { string line;
 
   while (!dir_f.eof())
@@ -53,7 +53,7 @@ void Categories::getCategoryParams()
  * files that correspond to this category and from that file
  * learning about any desktop entry filenames that belong to
  * this category */
-void Categories::getIncludedFiles()
+void Category::getIncludedFiles()
 { for (unsigned int x = 0; x < menuFiles.size(); x++)
   { menu_f.open(menuFiles[x]);
     if (!menu_f) continue;
@@ -84,7 +84,7 @@ void Categories::getIncludedFiles()
 /* An xdg .menu file specific function for getting the line
  * id. In thei case, the id will be tags like <Directory>
  * or <Include> */
-string Categories::getID(string line)
+string Category::getID(string line)
 { vector<char> readChars;
   readChars.reserve(10);
   char c = '\0';
@@ -109,7 +109,7 @@ string Categories::getID(string line)
  * value. This should be a value between two enclosing tags.
  * For instance, for the line <tag>value</tag> then this
  * should return the string "value" */
-string Categories::getSingleValue(string line)
+string Category::getSingleValue(string line)
 { vector<char> readChars;
   readChars.reserve(10);
   char c = '\0';
