@@ -243,8 +243,7 @@ int main(int argc, char *argv[])
     catch (boost::filesystem::filesystem_error) { continue; }
   }
 
-  /* Get vector of string pairs. Each pair contains the icon filename and the
-   * full path to the icon */
+  //Get string vector of paths to icons
   vector<string> iconpaths;
   if (useIcons)
   { iconpaths.reserve(500);
@@ -276,7 +275,8 @@ int main(int argc, char *argv[])
 
   /* Create categories
    * Note that for baseCategories we combine Audio, Video and AudioVideo into Multimedia. We also rename Network to Internet and
-   * Utility to Accessories as this is what is commonly done elsewhere */
+   * Utility to Accessories as this is what is commonly done elsewhere. Otherwise, our categories are the same as the freedesktop.org
+   * base categories */
   vector<string> baseCategories = {"Accessories", "Development", "Education", "Game", "Graphics", "Multimedia", "Internet",
                                    "Office", "Other", "Science", "Settings", "System"};
   vector<string> catPaths;
@@ -320,13 +320,10 @@ int main(int argc, char *argv[])
   vector<DesktopFile> files;
   for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
   { DesktopFile df = DesktopFile((*it).c_str(), splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats, iconSize);
-    /* If a name or exec wasn't found we cannot add an entry to our menu so ignore
-     * these objects */
     if (df.name != "\0" && df.exec != "\0") files.push_back(df);
   }
 
-  //Create MenuWriter object, passing it the array of DesktopFile
-  //This object will cause the menus to be printed
+  //Create a MenuWriter which will write the menu out to the console
   MenuWriter(files, 
 	     menuName, 
 	     windowmanager, 

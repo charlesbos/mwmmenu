@@ -23,6 +23,7 @@
 
 Category::Category() {}
 
+//Constructor for custom categories
 Category::Category(const char *dirFile, vector<string> menuFiles, bool useIcons, vector<string> iconpaths, string iconSize)
 { this->dirFile = dirFile;
   this->menuFiles = menuFiles;
@@ -38,6 +39,7 @@ Category::Category(const char *dirFile, vector<string> menuFiles, bool useIcons,
   }
 }
 
+//Constructor for base categories
 Category::Category(string name, bool useIcons, vector<string> iconpaths, string iconSize)
 { this->name = name;
   icon = "\0";
@@ -158,13 +160,14 @@ string Category::getSingleValue(string line)
   return string(readChars.begin(), readChars.end());
 }
 
-/* Cycle through list of icon paths and attempt to match the category
- * name against a category icon of the appropriate size. Return null
- * character if we can't find one */
+/* Try to set a path to an icon. If the category is custom, we might already
+ * have an icon definition. Otherwise, we try and determine it from the category
+ * name */
 void Category::getCategoryIcon(vector<string> iconpaths, string iconSize)
-{ string nameGuard = "categories";
+{ string nameGuard = "categories"; //If it's a base category, we want to get the icon from the freedesktop categories directory
   string iconDef;
 
+  //Set the icon definition, either the one we already have or the category name
   if (icon != "\0") iconDef = icon;
   else iconDef = name;
 
@@ -172,12 +175,12 @@ void Category::getCategoryIcon(vector<string> iconpaths, string iconSize)
    * a true definition, then there is nothing more to do so we exit here*/
   if (icon != "\0" && icon.find("/") != string::npos && icon.find(iconSize) != string::npos) return;
 
-  if (icon != "\0") nameGuard = "/"; //If we already have a definition, don't bother with the guard
+  if (icon != "\0") nameGuard = "/"; //If we already have a definition, we can get the icon from any directory
 
   //Workarounds
   //There is no icon for education so use the science one instead
   if (iconDef == "Education") iconDef = "Science";
-  //Chromium App category has chromium-browser as its icon def but chromium does
+  //Chromium Apps category has chromium-browser as its icon def but chromium does
   //not provide an icon called chromium-browser so change it to just chromium
   if (iconDef == "chromium-browser") iconDef = "chromium";
 

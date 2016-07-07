@@ -31,10 +31,10 @@ DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, 
 { this->filename = filename;
   this->name = "\0";
   this->exec = "\0";
-  this->nodisplay = false; //Always assume entries are displayed unless entry specifies otherwise
+  this->nodisplay = false;
   this->icon = "\0";
   dfile.open(filename);
-  if (!dfile); //If we cannot open the file, do nothing. The object will keep its initial values
+  if (!dfile);
   else
   { populate(showFromDesktops, useIcons, iconpaths, cats, iconSize);
     dfile.close();
@@ -58,8 +58,9 @@ DesktopFile& DesktopFile::operator=(const DesktopFile& df)
   return *this;
 }
 
-/* This function fetches the required values (Name, Exec, Categories and NoDisplay)
- * and then assigns the results to the appropriate instance variables */
+/* This function fetches the required values (Name, Exec, Categories and NoDisplay etc
+ * and then assigns the results to the appropriate instance variables or passes the results
+ * to the appropriate function */
 void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats, string iconSize)
 { string line;
   string iconDef = "\0";
@@ -145,14 +146,14 @@ string DesktopFile::getSingleValue(string line)
   while (counter < line.size())
   { c = line[counter];
     if (startFilling) readChars.push_back(c);
-    if (c == '=') startFilling = true; //Make sure we only get the value, not the id as well
+    if (c == '=') startFilling = true;
     counter++;
   }
 
   //Some names include a trailing space. For matching, it's best if we remove these
   if (readChars[readChars.size() - 1] == ' ') readChars.erase(readChars.end() - 1);
   value = string(readChars.begin(), readChars.end());
-  //Throw away field codes like %F, MWM doesn't appear to handle these
+  //Throw away field codes like %F, most WMs don't appear to handle these
   string::iterator fieldCode = find(value.begin(), value.end(), '%');
   if (fieldCode != value.end()) value.erase(fieldCode - 1, value.end());
 
@@ -173,9 +174,9 @@ vector<string> DesktopFile::getMultiValue(string line)
 
   while (counter < line.size())
   { c = line[counter];
-    if (startFilling && c != ';') readChars.push_back(c); //Add chars to our buffer array, but avoid the semi-colons
+    if (startFilling && c != ';') readChars.push_back(c);
     if (c == '=') startFilling = true;
-    if (c == ';') //Categories are seperated with semi-colons so add to vector when we encounter them
+    if (c == ';')
     { values.push_back(string(readChars.begin(), readChars.end()));
       readChars.clear();
     }
@@ -185,10 +186,8 @@ vector<string> DesktopFile::getMultiValue(string line)
   return values;
 }
 
-/* This function is used to strip out categories that are not supposed to be
- * displayed in menus, to group multiple multimedia categories into one,
- * to strip out possible duplicates and to add a catchall category if no
- * base categories are present */
+/* Add the desktop entry to the appropriate categories, based on what was read from the
+ * file. If we can't find a category, add the entry to the Other category which is a catchall */
 void DesktopFile::processCategories(vector<Category>& cats, vector<string> foundCategories)
 { bool hasCategory = false;
   vector<string>::iterator it = foundCategories.begin();

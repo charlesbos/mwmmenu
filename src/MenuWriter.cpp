@@ -58,10 +58,9 @@ MenuWriter::MenuWriter(vector<DesktopFile> files,
   printHandler();
 }
 
-/* This function calls the other functions to group the desktop entries by category
- * and then print out each menu. It then calls the function to write the main menu
- * which should contain entries for all the category menus used (but not the ones 
- * not used) */
+/* Handles the fetching of the vector indexes the desktop entries assigned to each category,
+ * the exclusion of categories or entries based on command line arguments and then the printing
+ * of the menus themselves */
 void MenuWriter::printHandler()
 { int validCatsLength = cats.size();
   vector<Category> usedCats;
@@ -88,6 +87,7 @@ void MenuWriter::printHandler()
   { writeMenu(usedPositions[x], usedCats[x], wmID, usedCounter, maxCatNum - 1, longest, usedCats);
     usedCounter++;
   }
+  //For WMs which require a menu which sources the individual category menus
   if (wmID == mwm && !usedCats.empty()) writeMenu(vector< pair<int,string> >(), Category(), wmID, usedCounter, maxCatNum - 1, longest, usedCats);
   if (wmID == fvwm && !usedCats.empty()) writeMenu(vector< pair<int,string> >(), Category(), wmID, usedCounter, maxCatNum - 1, longest, usedCats);
 }
@@ -104,7 +104,7 @@ bool sortPairs(pair<int,string> p1, pair<int,string> p2)
 
 /* This function is used to determine which entries should be printed for a given category.
  * It returns a vector of pairs where each pair contains the index of the DesktopFile
- * object in the DesktopFi;e array and the name of the entry. The name is collected only so
+ * object in the DesktopFile array and the name of the entry. The name is collected only so
  * that we can alphabetically sort the menu entries */
 vector< pair<int,string> > MenuWriter::getPositionsPerCat(Category category)
 { vector< pair<int,string> > positions;
@@ -123,13 +123,8 @@ vector< pair<int,string> > MenuWriter::getPositionsPerCat(Category category)
 }
 
 /* Function to filter out desktop entries specified from the command line
- * as entries that should be excluded. We do this by checking if an entry
- * name fully or partially matches the names specified on the command line
- * as appropriate and then setting the nodisplay value for that DesktopFile
- * to true if so 
- *
- * Now it also forces the inclusion of any specified desktop entries that
- * hav a no display value of true */
+ * based on various criteria. The entries are excluded simply be setting the
+ * nodisplay value to true */
 void MenuWriter::entryDisplayHandler()
 { if (!exclude.empty())
   { for (int x = 0; x < filesLength; x++)
