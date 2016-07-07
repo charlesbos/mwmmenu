@@ -46,7 +46,6 @@ MenuWriter::MenuWriter(vector<DesktopFile> files,
                        vector<Category> cats)
 { this->files = files;
   this->cats = cats;
-  filesLength = files.size();
   this->menuName = menuName;
   this->windowmanager = windowmanager;
   this->useIcons = useIcons;
@@ -102,7 +101,7 @@ vector< pair<int,string> > MenuWriter::getPositionsPerCat(Category category)
 { vector< pair<int,string> > positions;
   positions.reserve(20);
 
-  for (int x = 0; x < filesLength; x++)
+  for (unsigned int x = 0; x < files.size(); x++)
   { if (find(category.incEntries.begin(), category.incEntries.end(), files[x].name) != category.incEntries.end() 
         && files[x].nodisplay != true)
     { pair<int,string> p(x, files[x].name);
@@ -118,11 +117,11 @@ vector< pair<int,string> > MenuWriter::getPositionsPerCat(Category category)
  * nodisplay value to true */
 void MenuWriter::entryDisplayHandler()
 { if (!exclude.empty())
-  { for (int x = 0; x < filesLength; x++)
+  { for (unsigned int x = 0; x < files.size(); x++)
       if (find(exclude.begin(), exclude.end(), files[x].name) != exclude.end()) files[x].nodisplay = true;
   }
   if (!excludeMatching.empty())
-  { for (int x = 0; x < filesLength; x++)
+  { for (unsigned int x = 0; x < files.size(); x++)
     { for (unsigned int y = 0; y < excludeMatching.size(); y++)
       { if (files[x].name.find(excludeMatching[y]) != string::npos)
         { files[x].nodisplay = true;
@@ -132,11 +131,11 @@ void MenuWriter::entryDisplayHandler()
     }
   }
   if (!excludedFilenames.empty())
-  { for (int x = 0; x < filesLength; x++)
+  { for (unsigned int x = 0; x < files.size(); x++)
       if (find(excludedFilenames.begin(), excludedFilenames.end(), files[x].filename) != excludedFilenames.end()) files[x].nodisplay = true;
   }
   if (!include.empty())
-  { for (int x = 0; x < filesLength; x++)
+  { for (unsigned int x = 0; x < files.size(); x++)
       if (find(include.begin(), include.end(), files[x].name) != include.end()) files[x].nodisplay = false;
   }
 }
@@ -155,7 +154,7 @@ bool MenuWriter::checkExcludedCategories(string category)
 int MenuWriter::getLongestNameLength()
 { unsigned int longest = 0;
 
-  for (int x = 0; x < filesLength; x++)
+  for (unsigned int x = 0; x < files.size(); x++)
   { /* Most wm menus seem to define an icon path after the entry name so for the longest
      * name we need to add the length of the icon path on. However Fluxbox defines the
      * icon path after the exec so we don't want to add that extra length to the name in

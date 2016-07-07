@@ -38,7 +38,6 @@ class MenuWriter
 
   private:
     vector<DesktopFile> files;
-    int filesLength;
     vector<Category> cats;
     string menuName;
     string windowmanager;
