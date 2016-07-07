@@ -62,7 +62,11 @@ Category& Category::operator=(const Category& c)
 }
 
 bool Category::operator<(const Category& c)
-{ if (this->name < c.name) return true;
+{ string name_a = this->name;
+  string name_b = c.name;
+  for (unsigned int x = 0; x < name_a.size(); x++) name_a.at(x) = tolower(name_a.at(x));
+  for (unsigned int x = 0; x < name_b.size(); x++) name_b.at(x) = tolower(name_b.at(x));
+  if (name_a < name_b) return true;
   else return false;
 }
 
