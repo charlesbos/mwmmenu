@@ -61,9 +61,8 @@ MenuWriter::MenuWriter(vector<DesktopFile> files,
  * the exclusion of categories or entries based on command line arguments and then the printing
  * of the menus themselves */
 void MenuWriter::printHandler()
-{ int validCatsLength = cats.size();
-  vector<Category> usedCats;
-  vector< vector< pair<int,string> > > usedPositions;
+{ vector<Category> usedCats;
+  vector< vector<int> > usedPositions;
   int usedCounter = 0;
   int maxCatNum = 0;
   int wmID = getWmID();
@@ -72,8 +71,8 @@ void MenuWriter::printHandler()
   entryDisplayHandler();
 
   //First, get the usedCategories and files array indexes of the corresponding entries
-  for (int x = 0; x < validCatsLength; x++)
-  { vector< pair<int,string> > positions = getPositionsPerCat(cats[x]);
+  for (unsigned int x = 0; x < cats.size(); x++)
+  { vector<int> positions = getPositionsPerCat(cats[x]);
     if (!positions.empty() && !checkExcludedCategories(cats[x].name)) 
     { usedPositions.push_back(positions);
       usedCats.push_back(cats[x]);
@@ -87,26 +86,20 @@ void MenuWriter::printHandler()
     usedCounter++;
   }
   //For WMs which require a menu which sources the individual category menus
-  if (wmID == mwm && !usedCats.empty()) writeMenu(vector< pair<int,string> >(), Category(), wmID, usedCounter, maxCatNum - 1, longest, usedCats);
-  if (wmID == fvwm && !usedCats.empty()) writeMenu(vector< pair<int,string> >(), Category(), wmID, usedCounter, maxCatNum - 1, longest, usedCats);
+  if (wmID == mwm && !usedCats.empty()) writeMenu(vector<int>(), Category(), wmID, usedCounter, maxCatNum - 1, longest, usedCats);
+  if (wmID == fvwm && !usedCats.empty()) writeMenu(vector<int>(), Category(), wmID, usedCounter, maxCatNum - 1, longest, usedCats);
 }
 
-/* This function is used to determine which entries should be printed for a given category.
- * It returns a vector of pairs where each pair contains the index of the DesktopFile
- * object in the DesktopFile array and the name of the entry.
- *
- * FIXME: as we're no longer sorting the desktop entries here, we no longer need to collect
- * the name. This function should now return a vector of ints only */
-vector< pair<int,string> > MenuWriter::getPositionsPerCat(Category category)
-{ vector< pair<int,string> > positions;
+/* This function return the indeces in the files vector for the DesktopFile objects
+ * belonging to a given category */
+vector<int> MenuWriter::getPositionsPerCat(Category category)
+{ vector<int> positions;
   positions.reserve(20);
 
   for (unsigned int x = 0; x < files.size(); x++)
   { if (find(category.incEntries.begin(), category.incEntries.end(), files[x].name) != category.incEntries.end() 
         && files[x].nodisplay != true)
-    { pair<int,string> p(x, files[x].name);
-      positions.push_back(p);
-    }
+      positions.push_back(x);
   }
 
   return positions;
@@ -183,7 +176,7 @@ int MenuWriter::getWmID()
  * for a given category. It might also print out the 'main' menu if the wm requires
  * it. Currently, only MWM and FVWM use this. The main menu code is called if the
  * category string is "\0" */
-void MenuWriter::writeMenu(vector< pair<int,string> > positions, Category cat, int wmID, int catNumber, int maxCatNumber, int longest, vector<Category> usedCats)
+void MenuWriter::writeMenu(vector<int> positions, Category cat, int wmID, int catNumber, int maxCatNumber, int longest, vector<Category> usedCats)
 { string category = cat.name;
   string catIcon = cat.icon;
   string entryName;
@@ -200,9 +193,9 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, Category cat, i
       { catName = '"' + category + '"';
 	cout << "menu " << catName << endl << "{" << endl;
 	cout << "\t" << setw(longest) << left << catName << "\t" << "f.title" << endl;
-	for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-	{ entryName = '"' + files[it->first].name + '"';
-	  entryExec = "\"exec " + files[it->first].exec + " &" + '"';
+	for (vector<int>::iterator it = positions.begin(); it < positions.end(); it++)
+	{ entryName = '"' + files[*it].name + '"';
+	  entryExec = "\"exec " + files[*it].exec + " &" + '"';
 	  cout << "\t" << setw(longest) << left << entryName << "\t" << "f.exec " << entryExec << endl;
 	}
 	cout << "}" << endl << endl;
@@ -224,10 +217,10 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, Category cat, i
       if (category != "\0")
       { catName = '"' + category + '"';
 	cout << "AddToMenu " << setw(15) << left << catName << "\t" << setw(longest) << left << catName << "\tTitle" << endl;
-	for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-	{ if (useIcons && files[it->first].icon != "\0") entryName = '"' + files[it->first].name + " %" + files[it->first].icon + "%" + '"';
-	  else entryName = '"' + files[it->first].name + '"';
-	  entryExec = files[it->first].exec;
+	for (vector<int>::iterator it = positions.begin(); it < positions.end(); it++)
+	{ if (useIcons && files[*it].icon != "\0") entryName = '"' + files[*it].name + " %" + files[*it].icon + "%" + '"';
+	  else entryName = '"' + files[*it].name + '"';
+	  entryExec = files[*it].exec;
 	  cout << "+\t\t\t\t" << setw(longest) << left << entryName << "\t" << "Exec " << entryExec << endl;
 	}
 	cout << endl;
@@ -255,10 +248,10 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, Category cat, i
       }
       else catName = '(' + category + ')';
       cout << "\t[submenu] " + catName + " {}" << endl;
-      for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-      { if (useIcons && files[it->first].icon != "\0") entryExec = '{' + files[it->first].exec + "} <" + files[it->first].icon + ">";
-        else entryExec = '{' + files[it->first].exec + '}';
-        entryName = files[it->first].name;
+      for (vector<int>::iterator it = positions.begin(); it < positions.end(); it++)
+      { if (useIcons && files[*it].icon != "\0") entryExec = '{' + files[*it].exec + "} <" + files[*it].icon + ">";
+        else entryExec = '{' + files[*it].exec + '}';
+        entryName = files[*it].name;
         //If a name has brackets, we need to escape the closing bracket or it will be missed out
         if (entryName.find(string(")").c_str()) != string::npos) entryName.insert(static_cast<int>(entryName.find_last_of(')')), string("\\").c_str());
         entryName = '(' + entryName + ')';
@@ -275,11 +268,11 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, Category cat, i
         else cout << "<menu id=" << catName << " label=" << catName << ">" << endl;
       }
       else cout << "<menu id=" << catName << " label=" << catName << ">" << endl;
-      for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-      { if (useIcons && files[it->first].icon != "\0") 
-          entryName = '"' + files[it->first].name + '"' + " icon=\"" + files[it->first].icon + "\">";
-        else entryName = '"' + files[it->first].name + "\">";
-        entryExec = files[it->first].exec;
+      for (vector<int>::iterator it = positions.begin(); it < positions.end(); it++)
+      { if (useIcons && files[*it].icon != "\0") 
+          entryName = '"' + files[*it].name + '"' + " icon=\"" + files[*it].icon + "\">";
+        else entryName = '"' + files[*it].name + "\">";
+        entryExec = files[*it].exec;
         cout << "\t<item label=" << setw(longest) << left << entryName << endl;
         cout << "\t\t<action name=\"Execute\">" << endl;
         cout << "\t\t\t<execute>" << entryExec << "</execute>" << endl;
@@ -293,9 +286,9 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, Category cat, i
       if (catNumber == 0) cout << setw(longest) << left << '"' + menuName + '"' << "MENU" << endl << endl;
       catName = '"' + category + '"';
       cout << setw(longest) << left << catName << "MENU" << endl;
-      for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-      { entryName = '"' + files[it->first].name + '"';
-        entryExec = files[it->first].exec;
+      for (vector<int>::iterator it = positions.begin(); it < positions.end(); it++)
+      { entryName = '"' + files[*it].name + '"';
+        entryExec = files[*it].exec;
         cout << setw(longest) << left << entryName << entryExec << endl;
       }
       cout << setw(longest) << left << catName << "END PIN" << endl << endl;
@@ -305,9 +298,9 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, Category cat, i
       if (catNumber == 0) cout << "(\n  " << '"' << menuName << '"' << ',' << endl;
       catName = '"' + category + '"';
       cout << "  (\n    " << catName << ',' << endl;
-      for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-      { entryName = '"' + files[it->first].name + '"';
-        entryExec = '"' + files[it->first].exec + '"';
+      for (vector<int>::iterator it = positions.begin(); it < positions.end(); it++)
+      { entryName = '"' + files[*it].name + '"';
+        entryExec = '"' + files[*it].exec + '"';
         cout << "    (" << entryName << ", " << "EXEC, " << entryExec << ")";
         if ((it - positions.begin()) != (positions.end() - positions.begin() - 1)) cout << ',' << endl;
         else cout << endl;
@@ -322,10 +315,10 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, Category cat, i
       }
       else catName = '"' + category + "\" folder";
       cout << "menu " << catName << " {" << endl;
-      for (vector< pair<int,string> >::iterator it = positions.begin(); it < positions.end(); it++)
-      { if (useIcons && files[it->first].icon != "\0") entryName = '"' + files[it->first].name + '"' + " " + files[it->first].icon;
-        else entryName = '"' + files[it->first].name + "\" -";
-        entryExec = files[it->first].exec;
+      for (vector<int>::iterator it = positions.begin(); it < positions.end(); it++)
+      { if (useIcons && files[*it].icon != "\0") entryName = '"' + files[*it].name + '"' + " " + files[*it].icon;
+        else entryName = '"' + files[*it].name + "\" -";
+        entryExec = files[*it].exec;
         cout << "\tprog " + entryName + " " + entryExec << endl;
       }
       cout << "}\n" << endl;

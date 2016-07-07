@@ -52,12 +52,12 @@ class MenuWriter
     void entryDisplayHandler();
     bool checkExcludedCategories(string category);
 
-    vector< pair<int,string> > getPositionsPerCat(Category category);
+    vector<int> getPositionsPerCat(Category category);
     int getLongestNameLength();
 
     int getWmID();
 
-    void writeMenu(vector< pair<int,string> > positions, Category cat, int wmID, int catNumber, int maxCatNumber, int longest, vector<Category> usedCats);
+    void writeMenu(vector<int> positions, Category cat, int wmID, int catNumber, int maxCatNumber, int longest, vector<Category> usedCats);
 };
 
 #endif
