@@ -94,8 +94,10 @@ void MenuWriter::printHandler()
 
 /* This function is used to determine which entries should be printed for a given category.
  * It returns a vector of pairs where each pair contains the index of the DesktopFile
- * object in the DesktopFile array and the name of the entry. The name is collected only so
- * that we can alphabetically sort the menu entries */
+ * object in the DesktopFile array and the name of the entry.
+ *
+ * FIXME: as we're no longer sorting the desktop entries here, we no longer need to collect
+ * the name. This function should now return a vector of ints only */
 vector< pair<int,string> > MenuWriter::getPositionsPerCat(Category category)
 { vector< pair<int,string> > positions;
   positions.reserve(20);
