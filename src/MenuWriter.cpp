@@ -92,16 +92,6 @@ void MenuWriter::printHandler()
   if (wmID == fvwm && !usedCats.empty()) writeMenu(vector< pair<int,string> >(), Category(), wmID, usedCounter, maxCatNum - 1, longest, usedCats);
 }
 
-/* This function is used by the sort function to sort the menu entries for each category
- * by name (which is the second half of the pair. All chars are converted to upper case
- * to avoid lower case being treated as greater */
-bool sortPairs(pair<int,string> p1, pair<int,string> p2)
-{ for (unsigned int x = 0; x < p1.second.size(); x++) p1.second[x] = toupper(p1.second[x]);
-  for (unsigned int x = 0; x < p2.second.size(); x++) p2.second[x] = toupper(p2.second[x]);
-  if (p1.second < p2.second) return true;
-  else return false;
-}
-
 /* This function is used to determine which entries should be printed for a given category.
  * It returns a vector of pairs where each pair contains the index of the DesktopFile
  * object in the DesktopFile array and the name of the entry. The name is collected only so
@@ -118,7 +108,6 @@ vector< pair<int,string> > MenuWriter::getPositionsPerCat(Category category)
     }
   }
 
-  sort(positions.begin(), positions.end(), sortPairs);
   return positions;
 }
 

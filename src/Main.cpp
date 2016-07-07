@@ -322,6 +322,7 @@ int main(int argc, char *argv[])
   { DesktopFile df = DesktopFile((*it).c_str(), splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats, iconSize);
     if (df.name != "\0" && df.exec != "\0") files.push_back(df);
   }
+  sort(files.begin(), files.end());
 
   //Create a MenuWriter which will write the menu out to the console
   MenuWriter(files, 

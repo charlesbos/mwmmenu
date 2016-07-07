@@ -58,6 +58,15 @@ DesktopFile& DesktopFile::operator=(const DesktopFile& df)
   return *this;
 }
 
+bool DesktopFile::operator<(const DesktopFile& df)
+{ string name_a = this->name;
+  string name_b = df.name;
+  for (unsigned int x = 0; x < name_a.size(); x++) name_a.at(x) = tolower(name_a.at(x));
+  for (unsigned int x = 0; x < name_b.size(); x++) name_b.at(x) = tolower(name_b.at(x));
+  if (name_a < name_b) return true;
+  else return false;
+}
+
 /* This function fetches the required values (Name, Exec, Categories and NoDisplay etc
  * and then assigns the results to the appropriate instance variables or passes the results
  * to the appropriate function */
