@@ -312,7 +312,7 @@ int main(int argc, char *argv[])
   //Create the custom categories (if there are any)
   for (unsigned int x = 0; x < catPaths.size(); x++)
   { Category c = Category(catPaths[x].c_str(), menuPaths, useIcons, iconpaths, iconSize);
-    if (c.name != "\0" && !c.incEntryFiles.empty()) cats.push_back(c);
+    if (c.name != "\0") cats.push_back(c);
   }
   sort(cats.begin(), cats.end());
 
