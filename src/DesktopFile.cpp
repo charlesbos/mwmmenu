@@ -23,14 +23,14 @@
 #include <string.h>
 #include "DesktopFile.h"
 #include "Category.h"
+#include <iostream>
 
 DesktopFile::DesktopFile() {}
 
-DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category> cats, string iconSize) 
+DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats, string iconSize) 
 { this->filename = filename;
   this->name = "\0";
   this->exec = "\0";
-  this->categories = vector<string>();
   this->nodisplay = false; //Always assume entries are displayed unless entry specifies otherwise
   this->icon = "\0";
   dfile.open(filename);
@@ -45,19 +45,26 @@ DesktopFile::DesktopFile(const DesktopFile& df)
 { this->filename = df.filename;
   this->name = df.name;
   this->exec = df.exec;
-  this->categories = df.categories;
   this->nodisplay = df.nodisplay;
   this->icon = df.icon;
 }
 
-DesktopFile& DesktopFile::operator=(const DesktopFile& df) { return *this; }
+DesktopFile& DesktopFile::operator=(const DesktopFile& df)
+{ this->filename = df.filename;
+  this->name = df.name;
+  this->exec = df.exec;
+  this->nodisplay = df.nodisplay;
+  this->icon = df.icon;
+  return *this;
+}
 
 /* This function fetches the required values (Name, Exec, Categories and NoDisplay)
  * and then assigns the results to the appropriate instance variables */
-void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category> cats, string iconSize)
+void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats, string iconSize)
 { string line;
   string iconDef = "\0";
   vector<string> onlyShowInDesktops;
+  vector<string> foundCategories;
   bool started = false;
 
   while (!dfile.eof())
@@ -83,7 +90,7 @@ void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vecto
       continue;
     }
     if (id == "Categories")
-    { categories = getMultiValue(line);
+    { foundCategories = getMultiValue(line);
       continue;
     }
     if (id == "NoDisplay")
@@ -102,7 +109,7 @@ void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vecto
     }
   }
 
-  processCategories(cats);
+  processCategories(cats, foundCategories);
   if (useIcons && iconDef != "\0") matchIcon(iconDef, iconpaths, iconSize);
   if (!onlyShowInDesktops.empty()) processDesktops(showFromDesktops, onlyShowInDesktops);
 }
@@ -182,36 +189,43 @@ vector<string> DesktopFile::getMultiValue(string line)
  * displayed in menus, to group multiple multimedia categories into one,
  * to strip out possible duplicates and to add a catchall category if no
  * base categories are present */
-void DesktopFile::processCategories(vector<Category> cats)
-{ vector<string> baseCategories = {"AudioVideo", "Audio", "Video", "Development", "Education", "Game", "Graphics", 
-                                   "Network", "Office", "Science", "Settings", "System", "Utility"};
-  vector<string>::iterator it = categories.begin();
+void DesktopFile::processCategories(vector<Category>& cats, vector<string> foundCategories)
+{ bool hasCategory = false;
+  vector<string>::iterator it = foundCategories.begin();
 
-  while (it < categories.end())
-  { //Throw away non-base categories
-    if (find(baseCategories.begin(), baseCategories.end(), *it) == baseCategories.end()) it = categories.erase(it);
-    //Convert some base categories to more commonly used categories
-    if (*it == "AudioVideo" || *it == "Audio" || *it == "Video") *it = "Multimedia";
+  //Convert some base categories to more commonly used categories
+  while (it < foundCategories.end())
+  { if (*it == "AudioVideo" || *it == "Audio" || *it == "Video") *it = "Multimedia";
     if (*it == "Network") *it = "Internet";
     if (*it == "Utility") *it = "Accessories";
     it++;
   }
 
-  //Convert to set and back again to remove duplicates
-  set<string> temp(categories.begin(), categories.end());
-  categories.assign(temp.begin(), temp.end());
-
-  //Add any custom categories
-  if (!cats.empty())
-  { string baseFilename = filename.substr(filename.find_last_of("/") + 1, filename.size() - filename.find_last_of("/") - 1);
-    for (unsigned int x = 0; x < cats.size(); x++)
-    { for (unsigned int y = 0; y < cats[x].incEntries.size(); y++)
-	if (cats[x].incEntries[y] == baseFilename) categories.push_back(cats[x].name);
+  //Loop through our category objects, adding the desktop entry name to the category if appropriate
+  for (unsigned int x = 0; x < cats.size(); x++)
+  { //Add to category if foundCategories contains the category name
+    if (find(foundCategories.begin(), foundCategories.end(), cats[x].name) != foundCategories.end()) 
+    { cats[x].incEntries.push_back(name);
+      hasCategory = true;
+      continue;
+    }
+    //Add to category if the category specifies a particular desktop file by filename
+    string baseFilename = filename.substr(filename.find_last_of("/") + 1, filename.size() - filename.find_last_of("/") - 1);
+    if (find(cats[x].incEntryFiles.begin(), cats[x].incEntryFiles.end(), baseFilename) != cats[x].incEntryFiles.end())
+    { cats[x].incEntries.push_back(name);
+      hasCategory = true;
     }
   }
 
   //If an entry ends up with no categories, give the entry the catchall category
-  if (categories.empty()) categories.push_back("Other");
+  if (!hasCategory)
+  { for (unsigned int x = 0; x < cats.size(); x++)
+    { if (cats[x].name == "Other")
+      { cats[x].incEntries.push_back(name);
+        break;
+      }
+    }
+  }
 }
 
 /* Function which attempts to find the full path for a desktop entry by going

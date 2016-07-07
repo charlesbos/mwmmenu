@@ -38,25 +38,21 @@ MenuWriter::MenuWriter(vector<DesktopFile> files,
                        string menuName, 
                        string windowmanager, 
                        bool useIcons, 
-                       vector<string> iconpaths, 
                        vector<string> exclude, 
                        vector<string> excludeMatching, 
                        vector<string> excludeCategories, 
-                       string iconSize, 
                        vector<string> include, 
                        vector<string> excludedFilenames, 
                        vector<Category> cats)
 { this->files = files;
   this->cats = cats;
-  this->filesLength = files.size();
+  filesLength = files.size();
   this->menuName = menuName;
   this->windowmanager = windowmanager;
   this->useIcons = useIcons;
-  this->iconpaths = iconpaths;
   this->exclude = exclude;
   this->excludeMatching = excludeMatching;
   this->excludeCategories = excludeCategories;
-  this->iconSize = iconSize;
   this->include = include;
   this->excludedFilenames = excludedFilenames;
   printHandler();
@@ -67,12 +63,8 @@ MenuWriter::MenuWriter(vector<DesktopFile> files,
  * which should contain entries for all the category menus used (but not the ones 
  * not used) */
 void MenuWriter::printHandler()
-{ vector<string> validCatsArr = {"Accessories", "Development", "Education", "Game", "Graphics", "Multimedia", "Internet",
-                                 "Office", "Other", "Science", "Settings", "System"};
-  for (unsigned int x = 0; x < cats.size(); x++) validCatsArr.push_back(cats[x].name);
-  sort(validCatsArr.begin(), validCatsArr.end());
-  int validCatsLength = validCatsArr.size();
-  vector<string> usedCats;
+{ int validCatsLength = cats.size();
+  vector<Category> usedCats;
   vector< vector< pair<int,string> > > usedPositions;
   int usedCounter = 0;
   int maxCatNum = 0;
@@ -83,10 +75,10 @@ void MenuWriter::printHandler()
 
   //First, get the usedCategories and files array indexes of the corresponding entries
   for (int x = 0; x < validCatsLength; x++)
-  { vector< pair<int,string> > positions = getPositionsPerCat(validCatsArr[x]);
-    if (!positions.empty() && !checkExcludedCategories(validCatsArr[x])) 
+  { vector< pair<int,string> > positions = getPositionsPerCat(cats[x]);
+    if (!positions.empty() && !checkExcludedCategories(cats[x].name)) 
     { usedPositions.push_back(positions);
-      usedCats.push_back(validCatsArr[x]);
+      usedCats.push_back(cats[x]);
       maxCatNum++;
     }
   }
@@ -96,8 +88,8 @@ void MenuWriter::printHandler()
   { writeMenu(usedPositions[x], usedCats[x], wmID, usedCounter, maxCatNum - 1, longest, usedCats);
     usedCounter++;
   }
-  if (wmID == mwm && !usedCats.empty()) writeMenu(vector< pair<int,string> >(), "\0", wmID, usedCounter, maxCatNum - 1, longest, usedCats);
-  if (wmID == fvwm && !usedCats.empty()) writeMenu(vector< pair<int,string> >(), "\0", wmID, usedCounter, maxCatNum - 1, longest, usedCats);
+  if (wmID == mwm && !usedCats.empty()) writeMenu(vector< pair<int,string> >(), Category(), wmID, usedCounter, maxCatNum - 1, longest, usedCats);
+  if (wmID == fvwm && !usedCats.empty()) writeMenu(vector< pair<int,string> >(), Category(), wmID, usedCounter, maxCatNum - 1, longest, usedCats);
 }
 
 /* This function is used by the sort function to sort the menu entries for each category
@@ -114,14 +106,13 @@ bool sortPairs(pair<int,string> p1, pair<int,string> p2)
  * It returns a vector of pairs where each pair contains the index of the DesktopFile
  * object in the DesktopFi;e array and the name of the entry. The name is collected only so
  * that we can alphabetically sort the menu entries */
-vector< pair<int,string> > MenuWriter::getPositionsPerCat(string category)
+vector< pair<int,string> > MenuWriter::getPositionsPerCat(Category category)
 { vector< pair<int,string> > positions;
   positions.reserve(20);
 
   for (int x = 0; x < filesLength; x++)
-  { //If the entry matches the category, add it but if NoDisplay is true, then don't
-    if (find(files[x].categories.begin(), files[x].categories.end(), category) != files[x].categories.end()
-      && files[x].nodisplay != true)
+  { if (find(category.incEntries.begin(), category.incEntries.end(), files[x].name) != category.incEntries.end() 
+        && files[x].nodisplay != true)
     { pair<int,string> p(x, files[x].name);
       positions.push_back(p);
     }
@@ -203,53 +194,14 @@ int MenuWriter::getWmID()
   else return mwm;
 }
 
-/* Cycle through list of icon paths and attempt to match the category
- * name against a category icon of the appropriate size. Return null
- * character if we can't find one */
-string MenuWriter::getCategoryIcon(string catName)
-{ string nameGuard = "categories";
-  bool customCategory = false;
-
-  //If it's a custom category, use its icon definition instead
-  for (unsigned int x = 0; x < cats.size(); x++)
-  { if (catName == cats[x].name)
-    { catName = cats[x].icon;
-      nameGuard = "/"; //If its custom, we know the icondef is valid so remove the guard
-      customCategory = true;
-      break;
-    }
-  }
-  /* This is a kludge. If the custom category icon definition is a full path instead of
-   * a true definition, then return the full path instead of searching the standard locations */
-  if (customCategory)
-  { if (catName.find("/") != string::npos && catName.find(iconSize) != string::npos)
-      return catName;
-  }
-  //There is no icon for education so use the science one instead
-  if (catName == "Education") catName = "Science";
-  //Chromium App category has chromium-browser as its icon def but chromium does
-  //not provide an icon called chromium-browser so change it to just chromium
-  if (catName == "chromium-browser") catName = "chromium";
-
-  /* The main search loop. Here we try to match the category name against icon paths, checking
-   * that the word 'categories' appears somewhere in the path, as well as checking for size */
-  catName.at(0) = tolower(catName.at(0));
-  for (unsigned int x = 0; x < iconpaths.size(); x++)
-    if (iconpaths[x].find(iconSize) != string::npos
-        && iconpaths[x].find(nameGuard) != string::npos
-        && iconpaths[x].find(catName) != string::npos)
-      return iconpaths[x];
-
-  //If we can't find anything at all, then return this
-  return "\0";
-}
-
 /* This function is called multiple times. Each time, it prints out the submenu
  * for a given category. It might also print out the 'main' menu if the wm requires
  * it. Currently, only MWM and FVWM use this. The main menu code is called if the
  * category string is "\0" */
-void MenuWriter::writeMenu(vector< pair<int,string> > positions, string category, int wmID, int catNumber, int maxCatNumber, int longest, vector<string> usedCats)
-{ string entryName;
+void MenuWriter::writeMenu(vector< pair<int,string> > positions, Category cat, int wmID, int catNumber, int maxCatNumber, int longest, vector<Category> usedCats)
+{ string category = cat.name;
+  string catIcon = cat.icon;
+  string entryName;
   string entryExec;
   string catName;
   string menuNameWithQuotes;
@@ -275,7 +227,7 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, string category
 	cout << "menu " << menuNameWithQuotes << endl << "{" << endl;
 	cout << "\t" << setw(longest) << left << menuNameWithQuotes << "\t" << "f.title" << endl;
 	for (int x = 0; x < catNumber; x++)
-	{ catNameWithQuotes = '"' + string(usedCats[x]) + '"';
+	{ catNameWithQuotes = '"' + string(usedCats[x].name) + '"';
 	  cout << "\t" << setw(longest) << left << catNameWithQuotes << "\t" << "f.menu  " << catNameWithQuotes << endl;
 	}
 	cout << "}" << endl << endl;
@@ -300,12 +252,12 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, string category
 	cout << "AddToMenu " << setw(15) << left << menuNameWithQuotes << "\t" << setw(longest) << left << menuNameWithQuotes << "\tTitle" << endl;
 	for (int x = 0; x < catNumber; x++)
 	{ if (useIcons)
-	  { string catIcon = getCategoryIcon(string(usedCats[x]));
-	    if (catIcon != "\0") catNameWithQuotes = '"' + string(usedCats[x]) + " %" + catIcon + "%" + '"';
-	    else catNameWithQuotes = '"' + string(usedCats[x]) + '"';
+	  { catIcon = usedCats[x].icon;
+            if (catIcon != "\0") catNameWithQuotes = '"' + string(usedCats[x].name) + " %" + catIcon + "%" + '"';
+	    else catNameWithQuotes = '"' + string(usedCats[x].name) + '"';
 	  }
-	  else catNameWithQuotes = '"' + string(usedCats[x]) + '"';
-	  cout << "+\t\t\t\t" << setw(longest) << left << catNameWithQuotes << "\t" << "Popup  " << '"' + usedCats[x] + '"' << endl;
+	  else catNameWithQuotes = '"' + string(usedCats[x].name) + '"';
+	  cout << "+\t\t\t\t" << setw(longest) << left << catNameWithQuotes << "\t" << "Popup  " << '"' + usedCats[x].name + '"' << endl;
 	}
         cout << endl;
       }
@@ -313,8 +265,7 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, string category
     case fluxbox :
       if (catNumber == 0) cout << "[submenu] (" << menuName << ')' << endl;
       if (useIcons)
-      { string catIcon = getCategoryIcon(category);
-        if (catIcon != "\0") catName = '(' + category + ") <" + catIcon + '>';
+      { if (catIcon != "\0") catName = '(' + category + ") <" + catIcon + '>';
         else catName = '(' + category + ')';
       }
       else catName = '(' + category + ')';
@@ -335,8 +286,7 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, string category
       if (catNumber == 0) cout << "<openbox_pipe_menu xmlns=\"http://openbox.org/3.4/menu\">" << endl << endl;
       catName = '"' + category + '"';
       if (useIcons)
-      { string catIcon = getCategoryIcon(category);
-        if (catIcon != "\0") cout << "<menu id=" << catName << " label=" << catName << " icon=" << '"' + catIcon + '"' << ">" << endl;
+      { if (catIcon != "\0") cout << "<menu id=" << catName << " label=" << catName << " icon=" << '"' + catIcon + '"' << ">" << endl;
         else cout << "<menu id=" << catName << " label=" << catName << ">" << endl;
       }
       else cout << "<menu id=" << catName << " label=" << catName << ">" << endl;
@@ -382,8 +332,7 @@ void MenuWriter::writeMenu(vector< pair<int,string> > positions, string category
       break;
     case icewm :
       if (useIcons)
-      { string catIcon = getCategoryIcon(category);
-        if (catIcon != "\0") catName = '"' + category + "\" " + catIcon;
+      { if (catIcon != "\0") catName = '"' + category + "\" " + catIcon;
         else catName = '"' + category + "\" -";
       }
       else catName = '"' + category + "\" folder";

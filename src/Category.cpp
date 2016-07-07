@@ -23,7 +23,7 @@
 
 Category::Category() {}
 
-Category::Category(const char *dirFile, vector<string> menuFiles)
+Category::Category(const char *dirFile, vector<string> menuFiles, bool useIcons, vector<string> iconpaths, string iconSize)
 { this->dirFile = dirFile;
   this->menuFiles = menuFiles;
   name = "\0";
@@ -34,16 +34,35 @@ Category::Category(const char *dirFile, vector<string> menuFiles)
   { getCategoryParams();
     getIncludedFiles();
     dir_f.close();
+    if (useIcons) getCategoryIcon(iconpaths, iconSize);
   }
+}
+
+Category::Category(string name, bool useIcons, vector<string> iconpaths, string iconSize)
+{ this->name = name;
+  icon = "\0";
+  if (useIcons) getCategoryIcon(iconpaths, iconSize);
 }
 
 Category::Category(const Category& c)
 { this->name = c.name;
   this->icon = c.icon;
   this->incEntries = c.incEntries;
+  this->incEntryFiles = c.incEntryFiles;
 }
 
-Category& Category::operator=(const Category& c) { return *this; }
+Category& Category::operator=(const Category& c)
+{ this->name = c.name;
+  this->icon = c.icon;
+  this->incEntries = c.incEntries;
+  this->incEntryFiles = c.incEntryFiles;
+  return *this;
+}
+
+bool Category::operator<(const Category& c)
+{ if (this->name < c.name) return true;
+  else return false;
+}
 
 /* A function to get the category name and icon definition */
 void Category::getCategoryParams()
@@ -84,7 +103,7 @@ void Category::getIncludedFiles()
     }
     if (!files.empty()) 
       for (unsigned int x = 0; x < files.size(); x++)
-        incEntries.push_back(files[x]);
+        incEntryFiles.push_back(files[x]);
     menu_f.close();
   }
 }
@@ -137,4 +156,40 @@ string Category::getSingleValue(string line)
   }
 
   return string(readChars.begin(), readChars.end());
+}
+
+/* Cycle through list of icon paths and attempt to match the category
+ * name against a category icon of the appropriate size. Return null
+ * character if we can't find one */
+void Category::getCategoryIcon(vector<string> iconpaths, string iconSize)
+{ string nameGuard = "categories";
+  string iconDef;
+
+  if (icon != "\0") iconDef = icon;
+  else iconDef = name;
+
+  /* This is a kludge. If we already have an icon definition and it is a full path instead of
+   * a true definition, then there is nothing more to do so we exit here*/
+  if (icon != "\0" && icon.find("/") != string::npos && icon.find(iconSize) != string::npos) return;
+
+  if (icon != "\0") nameGuard = "/"; //If we already have a definition, don't bother with the guard
+
+  //Workarounds
+  //There is no icon for education so use the science one instead
+  if (iconDef == "Education") iconDef = "Science";
+  //Chromium App category has chromium-browser as its icon def but chromium does
+  //not provide an icon called chromium-browser so change it to just chromium
+  if (iconDef == "chromium-browser") iconDef = "chromium";
+
+  /* The main search loop. Here we try to match the category name against icon paths, checking
+   * that the word 'categories' appears somewhere in the path, as well as checking for size */
+  iconDef.at(0) = tolower(iconDef.at(0));
+  for (unsigned int x = 0; x < iconpaths.size(); x++)
+  { if (iconpaths[x].find(iconSize) != string::npos
+        && iconpaths[x].find(nameGuard) != string::npos
+        && iconpaths[x].find(iconDef) != string::npos)
+    { icon = iconpaths[x];
+      return;
+    }
+  }
 }

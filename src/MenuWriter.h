@@ -29,11 +29,9 @@ class MenuWriter
                string menuName, 
                string windowmanager, 
                bool useIcons, 
-               vector<string> iconpaths, 
                vector<string> exclude, 
                vector<string> excludeMatching, 
                vector<string> excludeCategories, 
-               string iconSize, 
                vector<string> include, 
                vector<string> excludedFilenames, 
                vector<Category> cats);
@@ -45,11 +43,9 @@ class MenuWriter
     string menuName;
     string windowmanager;
     bool useIcons;
-    vector<string> iconpaths;
     vector<string> exclude;
     vector<string> excludeMatching;
     vector<string> excludeCategories;
-    string iconSize;
     vector<string> include;
     vector<string> excludedFilenames;
 
@@ -57,13 +53,12 @@ class MenuWriter
     void entryDisplayHandler();
     bool checkExcludedCategories(string category);
 
-    vector< pair<int,string> > getPositionsPerCat(string category);
+    vector< pair<int,string> > getPositionsPerCat(Category category);
     int getLongestNameLength();
 
     int getWmID();
-    string getCategoryIcon(string catName);
 
-    void writeMenu(vector< pair<int,string> > positions, string category, int wmID, int catNumber, int maxCatNumber, int longest, vector<string> usedCats);
+    void writeMenu(vector< pair<int,string> > positions, Category cat, int wmID, int catNumber, int maxCatNumber, int longest, vector<Category> usedCats);
 };
 
 #endif

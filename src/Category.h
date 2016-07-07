@@ -27,14 +27,17 @@ class Category
 {
   public:
     Category();
-    Category(const char *dirFile, vector<string> menuFiles);
+    Category(const char *dirFile, vector<string> menuFiles, bool useIcons, vector<string> iconpaths, string iconSize);
+    Category(string name, bool useIcons, vector<string> iconpaths, string iconSize);
     Category(const Category& c);
 
     Category& operator=(const Category& c);
+    bool operator<(const Category& c);
 
     string name;
     string icon;
     vector<string> incEntries;
+    vector<string> incEntryFiles;
 
     static string getID(string line);
     static string getSingleValue(string line);
@@ -47,6 +50,7 @@ class Category
 
     void getCategoryParams();
     void getIncludedFiles();
+    void getCategoryIcon(vector<string> iconpaths, string iconSize);
 };
 
 #endif

@@ -274,7 +274,11 @@ int main(int argc, char *argv[])
     }
   }
 
-  /* Find custom desktop entry categories */
+  /* Create categories
+   * Note that for baseCategories we combine Audio, Video and AudioVideo into Multimedia. We also rename Network to Internet and
+   * Utility to Accessories as this is what is commonly done elsewhere */
+  vector<string> baseCategories = {"Accessories", "Development", "Education", "Game", "Graphics", "Multimedia", "Internet",
+                                   "Office", "Other", "Science", "Settings", "System"};
   vector<string> catPaths;
   vector<string> menuPaths;
   if (!noCustomCats)
@@ -300,10 +304,17 @@ int main(int argc, char *argv[])
     }
   }
   vector<Category> cats;
-  for (unsigned int x = 0; x < catPaths.size(); x++)
-  { Category c = Category(catPaths[x].c_str(), menuPaths);
-    if (c.name != "\0" && !c.incEntries.empty()) cats.push_back(c);
+  //Create the base categories
+  for (unsigned int x = 0; x < baseCategories.size(); x++)
+  { Category c = Category(baseCategories[x], useIcons, iconpaths, iconSize);
+    cats.push_back(c);
   }
+  //Create the custom categories (if there are any)
+  for (unsigned int x = 0; x < catPaths.size(); x++)
+  { Category c = Category(catPaths[x].c_str(), menuPaths, useIcons, iconpaths, iconSize);
+    if (c.name != "\0" && !c.incEntryFiles.empty()) cats.push_back(c);
+  }
+  sort(cats.begin(), cats.end());
 
   //Create vector of DesktopFile, using each path in the paths vector
   vector<DesktopFile> files;
@@ -320,11 +331,9 @@ int main(int argc, char *argv[])
 	     menuName, 
 	     windowmanager, 
 	     useIcons, 
-	     iconpaths, 
 	     splitCommaArgs(exclude), 
 	     splitCommaArgs(excludeMatching), 
 	     splitCommaArgs(excludeCategories),
-	     iconSize,
 	     splitCommaArgs(include),
 	     splitCommaArgs(excludedFilenames),
 	     cats);
