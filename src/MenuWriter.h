@@ -27,7 +27,7 @@ class MenuWriter
 { public:
     MenuWriter(vector<DesktopFile> files, 
                string menuName, 
-               string windowmanager, 
+               int windowmanager, 
                bool useIcons, 
                vector<string> exclude, 
                vector<string> excludeMatching, 
@@ -40,7 +40,7 @@ class MenuWriter
     vector<DesktopFile> files;
     vector<Category> cats;
     string menuName;
-    string windowmanager;
+    int windowmanager;
     bool useIcons;
     vector<string> exclude;
     vector<string> excludeMatching;
@@ -55,9 +55,7 @@ class MenuWriter
     vector<int> getPositionsPerCat(Category category);
     int getLongestNameLength();
 
-    int getWmID();
-
-    void writeMenu(vector<int> positions, Category cat, int wmID, int catNumber, int maxCatNumber, int longest, vector<Category> usedCats);
+    void writeMenu(vector<int> positions, Category cat, int catNumber, int maxCatNumber, int longest, vector<Category> usedCats);
 };
 
 #endif

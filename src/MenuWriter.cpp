@@ -36,7 +36,7 @@
 
 MenuWriter::MenuWriter(vector<DesktopFile> files, 
                        string menuName, 
-                       string windowmanager, 
+                       int windowmanager, 
                        bool useIcons, 
                        vector<string> exclude, 
                        vector<string> excludeMatching, 
@@ -65,7 +65,6 @@ void MenuWriter::printHandler()
   vector< vector<int> > usedPositions;
   int usedCounter = 0;
   int maxCatNum = 0;
-  int wmID = getWmID();
   int longest = getLongestNameLength();
 
   entryDisplayHandler();
@@ -82,12 +81,12 @@ void MenuWriter::printHandler()
 
   //Now write the menus
   for (int x = 0; x < maxCatNum; x++)
-  { writeMenu(usedPositions[x], usedCats[x], wmID, usedCounter, maxCatNum - 1, longest, usedCats);
+  { writeMenu(usedPositions[x], usedCats[x], usedCounter, maxCatNum - 1, longest, usedCats);
     usedCounter++;
   }
   //For WMs which require a menu which sources the individual category menus
-  if (wmID == mwm && !usedCats.empty()) writeMenu(vector<int>(), Category(), wmID, usedCounter, maxCatNum - 1, longest, usedCats);
-  if (wmID == fvwm && !usedCats.empty()) writeMenu(vector<int>(), Category(), wmID, usedCounter, maxCatNum - 1, longest, usedCats);
+  if (windowmanager == mwm && !usedCats.empty()) writeMenu(vector<int>(), Category(), usedCounter, maxCatNum - 1, longest, usedCats);
+  if (windowmanager == fvwm && !usedCats.empty()) writeMenu(vector<int>(), Category(), usedCounter, maxCatNum - 1, longest, usedCats);
 }
 
 /* This function return the indeces in the files vector for the DesktopFile objects
@@ -152,7 +151,7 @@ int MenuWriter::getLongestNameLength()
      * name we need to add the length of the icon path on. However Fluxbox defines the
      * icon path after the exec so we don't want to add that extra length to the name in
      * this case */
-    if (useIcons && windowmanager != "Fluxbox")
+    if (useIcons && windowmanager != fluxbox)
     { if (files[x].name.size() + files[x].icon.size() > longest) longest = files[x].name.size() + files[x].icon.size(); }
     else
     { if (files[x].name.size() > longest) longest = files[x].name.size(); }
@@ -161,22 +160,11 @@ int MenuWriter::getLongestNameLength()
   return longest + 10;
 }
 
-//Return an integer identifying which window manager, menus should be produced for
-int MenuWriter::getWmID()
-{ if (windowmanager == "FVWM") return fvwm;
-  if (windowmanager == "Fluxbox") return fluxbox;
-  if (windowmanager == "Openbox") return openbox;
-  if (windowmanager == "Olvwm") return olvwm;
-  if (windowmanager == "Windowmaker") return windowmaker;
-  if (windowmanager == "IceWM") return icewm;
-  else return mwm;
-}
-
 /* This function is called multiple times. Each time, it prints out the submenu
  * for a given category. It might also print out the 'main' menu if the wm requires
  * it. Currently, only MWM and FVWM use this. The main menu code is called if the
  * category string is "\0" */
-void MenuWriter::writeMenu(vector<int> positions, Category cat, int wmID, int catNumber, int maxCatNumber, int longest, vector<Category> usedCats)
+void MenuWriter::writeMenu(vector<int> positions, Category cat, int catNumber, int maxCatNumber, int longest, vector<Category> usedCats)
 { string category = cat.name; //Variable for the category name
   string catIcon = cat.icon; //Variable for the category icon
   string nameFormatted; //Variable for a formatted version of the name, e.g. quotes added
@@ -184,7 +172,7 @@ void MenuWriter::writeMenu(vector<int> positions, Category cat, int wmID, int ca
   string catFormatted; //Variable for a formatted version of the category name, e.g. quotes added
   string menuFormatted; //Variable for a formatted version of the menu, e.g. quotes added
 
-  switch(wmID)
+  switch(windowmanager)
   { case mwm :
       /* FIXME: code for the category menus and main menus should be integrated to
        * avoid duplication */

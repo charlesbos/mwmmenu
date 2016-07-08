@@ -26,6 +26,15 @@
 #include "MenuWriter.h"
 #include "Category.h"
 
+//WM id numbers
+#define mwm 0
+#define fvwm 1
+#define fluxbox 2
+#define openbox 3
+#define olvwm 4
+#define windowmaker 5
+#define icewm 6
+
 void usage()
 { cout << "mwmmenu - creates application menus for MWM and other window managers." << endl << endl;
   cout << "Usage:" << endl;
@@ -128,7 +137,7 @@ int main(int argc, char *argv[])
 { //Handle args
   string homedir = getenv("HOME");
   string menuName = "Applications";
-  string windowmanager = "MWM";
+  int windowmanager = mwm;
   bool useIcons = false;
   string iconSize = "all";
   string exclude;
@@ -159,27 +168,27 @@ int main(int argc, char *argv[])
       continue;
     }
     if (strcmp(argv[x], "-fvwm") == 0) 
-    { windowmanager = "FVWM";
+    { windowmanager = fvwm;
       continue;
     }
     if (strcmp(argv[x], "-fluxbox") == 0) 
-    { windowmanager = "Fluxbox";
+    { windowmanager = fluxbox;
       continue;
     }
     if (strcmp(argv[x], "-openbox") == 0) 
-    { windowmanager = "Openbox";
+    { windowmanager = openbox;
       continue;
     }
     if (strcmp(argv[x], "-olvwm") == 0) 
-    { windowmanager = "Olvwm";
+    { windowmanager = olvwm;
       continue;
     }
     if (strcmp(argv[x], "-windowmaker") == 0) 
-    { windowmanager = "Windowmaker";
+    { windowmanager = windowmaker;
       continue;
     }
     if (strcmp(argv[x], "-icewm") == 0) 
-    { windowmanager = "IceWM";
+    { windowmanager = icewm;
       continue;
     }
     if (strcmp(argv[x], "-exclude") == 0) 
@@ -219,9 +228,9 @@ int main(int argc, char *argv[])
       continue;
     }
   }
-  if (windowmanager == "MWM" || 
-      windowmanager == "Olvwm" ||
-      windowmanager == "Windowmaker") 
+  if (windowmanager == mwm || 
+      windowmanager == olvwm ||
+      windowmanager == windowmaker) 
     useIcons = false;
   if (iconSize == "all") iconSize = "/"; //All paths will have forward slashes so this makes the check null and void
 
