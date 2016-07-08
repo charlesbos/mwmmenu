@@ -79,10 +79,9 @@ void Category::getCategoryParams()
   }
 }
 
-/* A function to loop through xdg .menu files, looking for
- * files that correspond to this category and from that file
- * learning about any desktop entry filenames that belong to
- * this category */
+/* A function to loop through xdg .menu files, looking for any
+ * desktop entry filenames that have been specified as belonging
+ * to this category */
 void Category::getIncludedFiles()
 { for (unsigned int x = 0; x < menuFiles.size(); x++)
   { menu_f.open(menuFiles[x]);
@@ -112,7 +111,7 @@ void Category::getIncludedFiles()
 }
 
 /* An xdg .menu file specific function for getting the line
- * id. In thei case, the id will be tags like <Directory>
+ * id. In this case, the id will be tags like <Directory>
  * or <Include> */
 string Category::getID(string line)
 { vector<char> readChars;
@@ -166,17 +165,18 @@ string Category::getSingleValue(string line)
  * name */
 void Category::getCategoryIcon(vector<string> iconpaths, string iconSize)
 { string nameGuard = "categories"; //If it's a base category, we want to get the icon from the freedesktop categories directory
-  string iconDef;
+  string iconDef; //The icon definition, from which we try to determine a path to an icon
 
   //Set the icon definition, either the one we already have or the category name
   if (icon != "\0") iconDef = icon;
   else iconDef = name;
 
   /* This is a kludge. If we already have an icon definition and it is a full path instead of
-   * a true definition, then there is nothing more to do so we exit here*/
+   * a true definition, then there is nothing more to do so we exit here */
   if (icon != "\0" && icon.find("/") != string::npos && icon.find(iconSize) != string::npos) return;
 
-  if (icon != "\0") nameGuard = "/"; //If we already have a definition, we can get the icon from any directory
+  //If we already have a definition, we can get the icon from any directory
+  if (icon != "\0") nameGuard = "/";
 
   //Workarounds
   //There is no icon for education so use the science one instead
@@ -186,7 +186,7 @@ void Category::getCategoryIcon(vector<string> iconpaths, string iconSize)
   if (iconDef == "chromium-browser") iconDef = "chromium";
 
   /* The main search loop. Here we try to match the category name against icon paths, checking
-   * that the word 'categories' appears somewhere in the path, as well as checking for size */
+   * that the word 'categories' appears somewhere in the path, as well as a basic check for size */
   iconDef.at(0) = tolower(iconDef.at(0));
   for (unsigned int x = 0; x < iconpaths.size(); x++)
   { if (iconpaths[x].find(iconSize) != string::npos

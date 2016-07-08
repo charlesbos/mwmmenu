@@ -64,7 +64,7 @@ bool DesktopFile::operator<(const DesktopFile& df)
   else return false;
 }
 
-/* This function fetches the required values (Name, Exec, Categories and NoDisplay etc
+/* This function fetches the required values (Name, Exec, Categories, NoDisplay etc)
  * and then assigns the results to the appropriate instance variables or passes the results
  * to the appropriate function */
 void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats, string iconSize)
@@ -193,7 +193,7 @@ vector<string> DesktopFile::getMultiValue(string line)
 }
 
 /* Add the desktop entry to the appropriate categories, based on what was read from the
- * file. If we can't find a category, add the entry to the Other category which is a catchall */
+ * file. If we can't find a category, add the entry to the Other category which is the catchall */
 void DesktopFile::processCategories(vector<Category>& cats, vector<string> foundCategories)
 { bool hasCategory = false;
   vector<string>::iterator it = foundCategories.begin();

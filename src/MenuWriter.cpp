@@ -57,7 +57,7 @@ MenuWriter::MenuWriter(vector<DesktopFile> files,
   printHandler();
 }
 
-/* Handles the fetching of the vector indexes the desktop entries assigned to each category,
+/* Handles the fetching of the vector indeces for the desktop entries assigned to each category,
  * the exclusion of categories or entries based on command line arguments and then the printing
  * of the menus themselves */
 void MenuWriter::printHandler()
@@ -69,7 +69,7 @@ void MenuWriter::printHandler()
 
   entryDisplayHandler();
 
-  //First, get the usedCategories and files array indexes of the corresponding entries
+  //Firstly, get the used categories and files array indeces of the corresponding entries
   for (unsigned int x = 0; x < cats.size(); x++)
   { vector<int> positions = getPositionsPerCat(cats[x]);
     if (!positions.empty() && !checkExcludedCategories(cats[x].name)) 
@@ -105,7 +105,7 @@ vector<int> MenuWriter::getPositionsPerCat(Category category)
 }
 
 /* Function to filter out desktop entries specified from the command line
- * based on various criteria. The entries are excluded simply be setting the
+ * based on various criteria. The entries are excluded simply by setting the
  * nodisplay value to true */
 void MenuWriter::entryDisplayHandler()
 { if (!exclude.empty())
@@ -161,9 +161,9 @@ int MenuWriter::getLongestNameLength()
 }
 
 /* This function is called multiple times. Each time, it prints out the submenu
- * for a given category. It might also print out the 'main' menu if the wm requires
- * it. Currently, only MWM and FVWM use this. The main menu code is called if the
- * category string is "\0" */
+ * for a given category. Some WMs (MWM and FVWM) require a menu which sources
+ * the individual category menus. Such a menu will be printed for those window managers
+ * if the category name is an empty string */
 void MenuWriter::writeMenu(vector<int> positions, Category cat, int catNumber, int maxCatNumber, int longest, vector<Category> usedCats)
 { string category = cat.name; //Variable for the category name
   string catIcon = cat.icon; //Variable for the category icon
