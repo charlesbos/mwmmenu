@@ -78,7 +78,7 @@ string getIconTheme(string homedir)
   if (!themefile) return "\0";
   else
   { string line;
-    char c = '\0';
+    char c;
     unsigned int counter = 0;
     while (!themefile.eof())
     { getline(themefile, line);
@@ -347,4 +347,4 @@ int main(int argc, char *argv[])
 
   return 0;
 }
-  
+

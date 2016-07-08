@@ -29,10 +29,7 @@ DesktopFile::DesktopFile() {}
 
 DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats, string iconSize) 
 { this->filename = filename;
-  this->name = "\0";
-  this->exec = "\0";
   this->nodisplay = false;
-  this->icon = "\0";
   dfile.open(filename);
   if (!dfile);
   else
@@ -72,7 +69,7 @@ bool DesktopFile::operator<(const DesktopFile& df)
  * to the appropriate function */
 void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats, string iconSize)
 { string line;
-  string iconDef = "\0";
+  string iconDef;
   vector<string> onlyShowInDesktops;
   vector<string> foundCategories;
   bool started = false;
@@ -129,7 +126,7 @@ void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vecto
 string DesktopFile::getID(string line)
 { vector<char> readChars;
   readChars.reserve(10);
-  char c = '\0';
+  char c;
   unsigned int counter = 0;
 
   while (counter < line.size())
@@ -148,7 +145,7 @@ string DesktopFile::getSingleValue(string line)
 { vector<char> readChars;
   readChars.reserve(10);
   string value;
-  char c = '\0';
+  char c;
   bool startFilling = false;
   unsigned int counter = 0;
 
@@ -177,7 +174,7 @@ vector<string> DesktopFile::getMultiValue(string line)
   vector<char> readChars;
   values.reserve(5);
   readChars.reserve(10);
-  char c = '\0';
+  char c;
   bool startFilling = false;
   unsigned int counter = 0;
 

@@ -27,8 +27,6 @@ Category::Category() {}
 Category::Category(const char *dirFile, vector<string> menuFiles, bool useIcons, vector<string> iconpaths, string iconSize)
 { this->dirFile = dirFile;
   this->menuFiles = menuFiles;
-  name = "\0";
-  icon = "\0";
   dir_f.open(dirFile);
   if (!dir_f);
   else
@@ -42,7 +40,6 @@ Category::Category(const char *dirFile, vector<string> menuFiles, bool useIcons,
 //Constructor for base categories
 Category::Category(string name, bool useIcons, vector<string> iconpaths, string iconSize)
 { this->name = name;
-  icon = "\0";
   if (useIcons) getCategoryIcon(iconpaths, iconSize);
 }
 
@@ -120,7 +117,7 @@ void Category::getIncludedFiles()
 string Category::getID(string line)
 { vector<char> readChars;
   readChars.reserve(10);
-  char c = '\0';
+  char c;
   unsigned int counter = 0;
   bool startFilling = false;
 
@@ -145,7 +142,7 @@ string Category::getID(string line)
 string Category::getSingleValue(string line)
 { vector<char> readChars;
   readChars.reserve(10);
-  char c = '\0';
+  char c;
   unsigned int counter = 0;
   bool startFilling = false;
 
