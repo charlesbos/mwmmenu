@@ -63,7 +63,6 @@ MenuWriter::MenuWriter(vector<DesktopFile> files,
 void MenuWriter::printHandler()
 { vector<Category> usedCats;
   vector< vector<int> > usedPositions;
-  int maxCatNum = 0;
   int longest = getLongestNameLength();
 
   entryDisplayHandler();
@@ -74,16 +73,15 @@ void MenuWriter::printHandler()
     if (!positions.empty() && !checkExcludedCategories(cats[x].name)) 
     { usedPositions.push_back(positions);
       usedCats.push_back(cats[x]);
-      maxCatNum++;
     }
   }
 
   //Now write the menus
-  for (int x = 0; x < maxCatNum; x++)
-    writeMenu(usedPositions[x], usedCats[x], x, maxCatNum - 1, longest, usedCats);
+  for (unsigned int x = 0; x < usedCats.size(); x++)
+    writeMenu(usedPositions[x], usedCats[x], x, usedCats.size() - 1, longest, usedCats);
   //For WMs which require a menu which sources the individual category menus
-  if (windowmanager == mwm && !usedCats.empty()) writeMenu(vector<int>(), Category(), usedCats.size(), maxCatNum - 1, longest, usedCats);
-  if (windowmanager == fvwm && !usedCats.empty()) writeMenu(vector<int>(), Category(), usedCats.size(), maxCatNum - 1, longest, usedCats);
+  if (windowmanager == mwm && !usedCats.empty()) writeMenu(vector<int>(), Category(), usedCats.size(), usedCats.size() - 1, longest, usedCats);
+  if (windowmanager == fvwm && !usedCats.empty()) writeMenu(vector<int>(), Category(), usedCats.size(), usedCats.size() - 1, longest, usedCats);
 }
 
 /* This function return the indeces in the files vector for the DesktopFile objects
