@@ -240,10 +240,7 @@ void DesktopFile::processCategories(vector<Category>& cats, vector<string> found
  * through a list of icons, attempting to match the icon entry in the entry
  * against each icon path */
 void DesktopFile::matchIcon(string iconDef, vector<string> iconpaths, string iconSize)
-{ /* This is a bit of a kludge. An icon definition should just be the name of the icon without
-   * the full path or the file extension. But sometimes, desktop entry icon definitions are
-   * full paths to icons so in that case just set that path as the icon and don't bother
-   * searching in the standard locations */
+{ //This is a kludge. If the iconDef is a path then just use that and return
   if (iconDef.find("/") != string::npos)
   { if (iconDef.find(iconSize) != string::npos) 
     { icon = iconDef;
