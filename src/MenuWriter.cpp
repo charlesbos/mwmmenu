@@ -78,10 +78,10 @@ void MenuWriter::printHandler()
 
   //Now write the menus
   for (unsigned int x = 0; x < usedCats.size(); x++)
-    writeMenu(usedPositions[x], usedCats[x], x, usedCats.size() - 1, longest, usedCats);
+    writeMenu(usedPositions[x], x, longest, usedCats);
   //For WMs which require a menu which sources the individual category menus
-  if (windowmanager == mwm && !usedCats.empty()) writeMenu(vector<int>(), Category(), usedCats.size(), usedCats.size() - 1, longest, usedCats);
-  if (windowmanager == fvwm && !usedCats.empty()) writeMenu(vector<int>(), Category(), usedCats.size(), usedCats.size() - 1, longest, usedCats);
+  if (windowmanager == mwm && !usedCats.empty()) writeMenu(vector<int>(), usedCats.size(), longest, usedCats);
+  if (windowmanager == fvwm && !usedCats.empty()) writeMenu(vector<int>(), usedCats.size(), longest, usedCats);
 }
 
 /* This function return the indeces in the files vector for the DesktopFile objects
@@ -158,10 +158,11 @@ int MenuWriter::getLongestNameLength()
 /* This function is called multiple times. Each time, it prints out the submenu
  * for a given category. Some WMs (MWM and FVWM) require a menu which sources
  * the individual category menus. Such a menu will be printed for those window managers
- * if the category name is an empty string */
-void MenuWriter::writeMenu(vector<int> positions, Category cat, int catNumber, int maxCatNumber, int longest, vector<Category> usedCats)
-{ string category = cat.name; //Variable for the category name
-  string catIcon = cat.icon; //Variable for the category icon
+ * if an empty vector of indeces is provided */
+void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, vector<Category> usedCats)
+{ string category = usedCats[catNumber].name; //Variable for the category name
+  string catIcon = usedCats[catNumber].icon; //Variable for the category icon
+  int maxCatNumber = usedCats.size() - 1;  //Variable for knowing when the last category has been reached
   string nameFormatted; //Variable for a formatted version of the name, e.g. quotes added
   string execFormatted; //Variable for a formatted version of the exec, e.g. quotes added
   string catFormatted; //Variable for a formatted version of the category name, e.g. quotes added
@@ -171,7 +172,7 @@ void MenuWriter::writeMenu(vector<int> positions, Category cat, int catNumber, i
   { case mwm :
       /* FIXME: code for the category menus and main menus should be integrated to
        * avoid duplication */
-      if (category != "\0")
+      if (!positions.empty())
       { catFormatted = '"' + category + '"';
 	cout << "menu " << catFormatted << endl << "{" << endl;
 	cout << "\t" << setw(longest) << left << catFormatted << "\t" << "f.title" << endl;
@@ -196,7 +197,7 @@ void MenuWriter::writeMenu(vector<int> positions, Category cat, int catNumber, i
     case fvwm :
       /* FIXME: code for the category menus and main menus should be integrated to
        * avoid duplication */
-      if (category != "\0")
+      if (!positions.empty())
       { catFormatted = '"' + category + '"';
 	cout << "AddToMenu " << setw(15) << left << catFormatted << "\t" << setw(longest) << left << catFormatted << "\tTitle" << endl;
 	for (vector<int>::iterator it = positions.begin(); it < positions.end(); it++)

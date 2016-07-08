@@ -55,7 +55,7 @@ class MenuWriter
     vector<int> getPositionsPerCat(Category category);
     int getLongestNameLength();
 
-    void writeMenu(vector<int> positions, Category cat, int catNumber, int maxCatNumber, int longest, vector<Category> usedCats);
+    void writeMenu(vector<int> positions, int catNumber, int longest, vector<Category> usedCats);
 };
 
 #endif
