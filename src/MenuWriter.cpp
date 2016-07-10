@@ -80,8 +80,8 @@ void MenuWriter::printHandler()
   for (unsigned int x = 0; x < usedCats.size(); x++)
     writeMenu(usedPositions[x], x, longest, usedCats);
   //For WMs which require a menu which sources the individual category menus
-  if (windowmanager == mwm && !usedCats.empty()) writeMenu(vector<int>(), usedCats.size(), longest, usedCats);
-  if (windowmanager == fvwm && !usedCats.empty()) writeMenu(vector<int>(), usedCats.size(), longest, usedCats);
+  if (windowmanager == mwm && !usedCats.empty()) writeMenu(vector<int>(), 0, longest, usedCats);
+  if (windowmanager == fvwm && !usedCats.empty()) writeMenu(vector<int>(), 0, longest, usedCats);
 }
 
 /* This function return the indeces in the files vector for the DesktopFile objects
@@ -187,7 +187,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, ve
       { menuFormatted = '"' + menuName + '"';
 	cout << "menu " << menuFormatted << endl << "{" << endl;
 	cout << "\t" << setw(longest) << left << menuFormatted << "\t" << "f.title" << endl;
-	for (int x = 0; x < catNumber; x++)
+	for (unsigned int x = 0; x < usedCats.size(); x++)
 	{ catFormatted = '"' + string(usedCats[x].name) + '"';
 	  cout << "\t" << setw(longest) << left << catFormatted << "\t" << "f.menu  " << catFormatted << endl;
 	}
@@ -211,7 +211,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, ve
       else
       { menuFormatted = '"' + menuName + '"';
 	cout << "AddToMenu " << setw(15) << left << menuFormatted << "\t" << setw(longest) << left << menuFormatted << "\tTitle" << endl;
-	for (int x = 0; x < catNumber; x++)
+	for (unsigned int x = 0; x < usedCats.size(); x++)
 	{ if (useIcons)
 	  { catIcon = usedCats[x].icon;
             if (catIcon != "\0") catFormatted = '"' + string(usedCats[x].name) + " %" + catIcon + "%" + '"';
