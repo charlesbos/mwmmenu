@@ -170,8 +170,6 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, ve
 
   switch(windowmanager)
   { case mwm :
-      /* FIXME: code for the category menus and main menus should be integrated to
-       * avoid duplication */
       if (!positions.empty())
       { catFormatted = '"' + category + '"';
 	cout << "menu " << catFormatted << endl << "{" << endl;
@@ -195,8 +193,6 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, ve
       }
       break;
     case fvwm :
-      /* FIXME: code for the category menus and main menus should be integrated to
-       * avoid duplication */
       if (!positions.empty())
       { catFormatted = '"' + category + '"';
 	cout << "AddToMenu " << setw(15) << left << catFormatted << "\t" << setw(longest) << left << catFormatted << "\tTitle" << endl;
