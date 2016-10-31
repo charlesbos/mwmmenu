@@ -1,8 +1,8 @@
 CC = g++
-CXXFLAGS = -Wall -std=c++11 -lboost_system -lboost_filesystem
+CXXFLAGS = -Wall -std=c++11 -static -lboost_system -lboost_filesystem
 
 all: 
-	$(CC) $(CXXFLAGS) src/Main.cpp src/DesktopFile.cpp src/MenuWriter.cpp src/Category.cpp -o mwmmenu
+	$(CC) src/Main.cpp src/DesktopFile.cpp src/MenuWriter.cpp src/Category.cpp -o mwmmenu $(CXXFLAGS)
 
 clean:
 	if [ -f mwmmenu ]; then rm mwmmenu; fi
