@@ -2,7 +2,7 @@
  * mwmmenu - a program to produce application menus for MWM and other window 
  * managers, based on freedesktop.org desktop entries.
  *
- * Copyright (C) 2015  Charles Bos
+ * Copyright (C) 2015	Charles Bos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -11,11 +11,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.	If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef _CATEGORY_H_
@@ -25,32 +25,32 @@
 
 class Category
 {
-  public:
-    Category();
-    Category(const char *dirFile, vector<string> menuFiles, bool useIcons, vector<string> iconpaths, string iconSize);
-    Category(string name, bool useIcons, vector<string> iconpaths, string iconSize);
-    Category(const Category& c);
+	public:
+		Category();
+		Category(const char *dirFile, vector<string> menuFiles, bool useIcons, vector<string> iconpaths, string iconSize);
+		Category(string name, bool useIcons, vector<string> iconpaths, string iconSize);
+		Category(const Category& c);
 
-    Category& operator=(const Category& c);
-    bool operator<(const Category& c);
+		Category& operator=(const Category& c);
+		bool operator<(const Category& c);
 
-    string name;
-    string icon;
-    vector<string> incEntries;
-    vector<string> incEntryFiles;
+		string name;
+		string icon;
+		vector<string> incEntries;
+		vector<string> incEntryFiles;
 
-    static string getID(string line);
-    static string getSingleValue(string line);
+		static string getID(string line);
+		static string getSingleValue(string line);
 
-  private:
-    string dirFile;
-    vector<string> menuFiles;
-    ifstream dir_f;
-    ifstream menu_f;
+	private:
+		string dirFile;
+		vector<string> menuFiles;
+		ifstream dir_f;
+		ifstream menu_f;
 
-    void getCategoryParams();
-    void getIncludedFiles();
-    void getCategoryIcon(vector<string> iconpaths, string iconSize);
+		void getCategoryParams();
+		void getIncludedFiles();
+		void getCategoryIcon(vector<string> iconpaths, string iconSize);
 };
 
 #endif

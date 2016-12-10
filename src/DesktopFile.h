@@ -2,7 +2,7 @@
  * mwmmenu - a program to produce application menus for MWM and other window 
  * managers, based on freedesktop.org desktop entries.
  *
- * Copyright (C) 2015  Charles Bos
+ * Copyright (C) 2015	Charles Bos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -11,11 +11,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.	If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef _DESKTOP_FILE_H_
@@ -31,31 +31,31 @@ class Category;
 
 class DesktopFile
 {
-  public:
-    DesktopFile();
-    DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats, string iconSize);
-    DesktopFile(const DesktopFile& df);
+	public:
+		DesktopFile();
+		DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats, string iconSize);
+		DesktopFile(const DesktopFile& df);
 
-    DesktopFile& operator=(const DesktopFile& df);
-    bool operator<(const DesktopFile& df);
+		DesktopFile& operator=(const DesktopFile& df);
+		bool operator<(const DesktopFile& df);
 
-    string filename;
-    string name;
-    string exec;
-    bool nodisplay;
-    string icon;
+		string filename;
+		string name;
+		string exec;
+		bool nodisplay;
+		string icon;
 
-    static string getID(string line);
-    static string getSingleValue(string line);
-    static vector<string> getMultiValue(string line);
+		static string getID(string line);
+		static string getSingleValue(string line);
+		static vector<string> getMultiValue(string line);
  
-  private:
-    ifstream dfile;
+	private:
+		ifstream dfile;
 
-    void populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats, string iconSize);
-    void matchIcon(string iconDef, vector<string> iconpaths, string iconSize);
-    void processCategories(vector<Category>& cats, vector<string> foundCategories);
-    void processDesktops(vector<string> showFromDesktops, vector<string> onlyShowInDesktops);
+		void populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats, string iconSize);
+		void matchIcon(string iconDef, vector<string> iconpaths, string iconSize);
+		void processCategories(vector<Category>& cats, vector<string> foundCategories);
+		void processDesktops(vector<string> showFromDesktops, vector<string> onlyShowInDesktops);
 };
 
 #endif
