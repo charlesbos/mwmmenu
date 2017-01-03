@@ -133,6 +133,14 @@ vector<string> splitCommaArgs(string arg)
 	return splitArgs;
 }
 
+//A function to make sure we only add unique categories to the categories list
+void addCategory(Category &c, vector<Category> &categories)
+{	for (unsigned int x = 0; x < categories.size(); x++) {
+		if (categories[x].name == c.name) return;
+	}
+	categories.push_back(c);
+}
+
 int main(int argc, char *argv[])
 {	//Handle args
 	string homedir = getenv("HOME");
@@ -321,7 +329,7 @@ int main(int argc, char *argv[])
 	//Create the custom categories (if there are any)
 	for (unsigned int x = 0; x < catPaths.size(); x++)
 	{	Category c = Category(catPaths[x].c_str(), menuPaths, useIcons, iconpaths, iconSize);
-		if (c.name != "\0") cats.push_back(c);
+		if (c.name != "\0") addCategory(c, cats);
 	}
 	sort(cats.begin(), cats.end());
 
