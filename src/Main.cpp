@@ -2,7 +2,7 @@
  * mwmmenu - a program to produce application menus for MWM and other window 
  * managers, based on freedesktop.org desktop entries.
  *
- * Copyright (C) 2015	Charles Bos
+ * Copyright (C) 2015  Charles Bos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,35 +38,35 @@
 void usage()
 {	cout << "mwmmenu - creates application menus for MWM and other window managers." << endl << endl;
 	cout << "Usage:" << endl;
-	cout << "	# Note: all options must be spaced." << endl;
-	cout << "	mwmmenu [OPTIONS]" << endl << endl;
+	cout << "    # Note: all options must be spaced." << endl;
+	cout << "    mwmmenu [OPTIONS]" << endl << endl;
 	cout << "Options:" << endl;
-	cout << "	-h, -help: show this dialogue" << endl << endl;
-	cout << "	-n, -name: name used for the main menu - by default, use Applications" << endl << endl;
-	cout << "	-i, -icons: use icons with menu entries, only compatible with some window managers" << endl << endl;
-	cout << "	-icon_size: choose size of icons used in menus. Can be 16x16, 32x32... or scalable or all. The default is all." << endl << endl;
-	cout << "	-no_custom_categories: do not add entries to or print non-standard categories, 'Other' will be used instead if required. " << endl << endl;
-	cout << "	# Note: " << endl;
-	cout << "	* The following options accept a single string which can contain multiple parameters." << endl;
-	cout << "	* Multiple parameters should be separated by commas: e.g. -option Param1,Param2,Param3" << endl;
-	cout << "	* If the option asks for a name, assume it means a name as specified in an entry file, e.g. Name=Firefox." << endl;
-	cout << "	* If a parameter contains spaces, that paramater must be enclosed in quotes." << endl << endl;
-	cout << "	-exclude: do not add desktop entries that have the names specified." << endl << endl;
-	cout << "	-exclude_matching: do not add desktop entries where the entry's name contains one of the strings specified." << endl << endl;
-	cout << "	-exclude_categories: do not print category menus for the following category names." << endl << endl;
-	cout << "	-exclude_by_filename: exclude desktop entries based on their full paths." << endl << endl;
-	cout << "	-include: force entries with the following names to be included in menus even if their no display value is true." << endl << endl;
-	cout << "	-show_from_desktops: show entries from the specified desktops if OnlyShowIn is set. Can be values like GNOME or XFCE. Can also be none or all, The default is all." << endl << endl;
-	cout << "	-add_desktop_paths: add extra search paths for desktop entries." << endl << endl;
-	cout << "	-add_icon_paths: add extra search paths for icons." << endl << endl;
+	cout << "    -h, -help: show this dialogue" << endl << endl;
+	cout << "    -n, -name: name used for the main menu - by default, use Applications" << endl << endl;
+	cout << "    -i, -icons: use icons with menu entries, only compatible with some window managers" << endl << endl;
+	cout << "    -icon_size: choose size of icons used in menus. Can be 16x16, 32x32... or scalable or all. The default is all." << endl << endl;
+	cout << "    -no_custom_categories: do not add entries to or print non-standard categories, 'Other' will be used instead if required. " << endl << endl;
+	cout << "    # Note: " << endl;
+	cout << "    * The following options accept a single string which can contain multiple parameters." << endl;
+	cout << "    * Multiple parameters should be separated by commas: e.g. -option Param1,Param2,Param3" << endl;
+	cout << "    * If the option asks for a name, assume it means a name as specified in an entry file, e.g. Name=Firefox." << endl;
+	cout << "    * If a parameter contains spaces, that paramater must be enclosed in quotes." << endl << endl;
+	cout << "    -exclude: do not add desktop entries that have the names specified." << endl << endl;
+	cout << "    -exclude_matching: do not add desktop entries where the entry's name contains one of the strings specified." << endl << endl;
+	cout << "    -exclude_categories: do not print category menus for the following category names." << endl << endl;
+	cout << "    -exclude_by_filename: exclude desktop entries based on their full paths." << endl << endl;
+	cout << "    -include: force entries with the following names to be included in menus even if their no display value is true." << endl << endl;
+	cout << "    -show_from_desktops: show entries from the specified desktops if OnlyShowIn is set. Can be values like GNOME or XFCE. Can also be none or all, The default is all." << endl << endl;
+	cout << "    -add_desktop_paths: add extra search paths for desktop entries." << endl << endl;
+	cout << "    -add_icon_paths: add extra search paths for icons." << endl << endl;
 	cout << "Menu format options:" << endl;
-	cout << "	# No format argument: produce menus for MWM or TWM" << endl;
-	cout << "	-fvwm: produce menus for FVWM" << endl;
-	cout << "	-fluxbox: produce menus for Fluxbox or Blackbox" << endl;
-	cout << "	-openbox: produce menus for Openbox" << endl;
-	cout << "	-olvwm: produce menus for Olvwm" << endl;
-	cout << "	-windowmaker: produce menus for Windowmaker" << endl;
-	cout << "	-icewm: produce menus for IceWM" << endl;
+	cout << "    # No format argument: produce menus for MWM or TWM" << endl;
+	cout << "    -fvwm: produce menus for FVWM" << endl;
+	cout << "    -fluxbox: produce menus for Fluxbox or Blackbox" << endl;
+	cout << "    -openbox: produce menus for Openbox" << endl;
+	cout << "    -olvwm: produce menus for Olvwm" << endl;
+	cout << "    -windowmaker: produce menus for Windowmaker" << endl;
+	cout << "    -icewm: produce menus for IceWM" << endl;
 }
 
 //Function that attempts to get the user icon theme from ~/.gtkrc-2.0
@@ -257,7 +257,7 @@ int main(int argc, char *argv[])
 		{	for (boost::filesystem::recursive_directory_iterator i(appdirs[x]), end; i != end; ++i)
 				if (!is_directory(i->path())) paths.push_back(i->path().string());
 		}
-		catch (boost::filesystem::filesystem_error) {	continue; }
+		catch (boost::filesystem::filesystem_error) { continue; }
 	}
 
 	//Get string vector of paths to icons
@@ -286,7 +286,7 @@ int main(int argc, char *argv[])
 					}
 				}
 			}
-			catch (boost::filesystem::filesystem_error) {	continue; }
+			catch (boost::filesystem::filesystem_error) { continue; }
 		}
 	}
 
@@ -295,7 +295,7 @@ int main(int argc, char *argv[])
 	 * Utility to Accessories as this is what is commonly done elsewhere. Otherwise, our categories are the same as the freedesktop.org
 	 * base categories */
 	vector<string> baseCategories = {"Accessories", "Development", "Education", "Game", "Graphics", "Multimedia", "Internet",
-																	 "Office", "Other", "Science", "Settings", "System"};
+									"Office", "Other", "Science", "Settings", "System"};
 	vector<string> catPaths;
 	vector<string> menuPaths;
 	if (!noCustomCats)
@@ -308,16 +308,16 @@ int main(int argc, char *argv[])
 		for (unsigned int x = 0; x < catDirs.size(); x++)
 		{	try
 			{	for (boost::filesystem::recursive_directory_iterator i(catDirs[x]), end; i != end; ++i)
-		if (!is_directory(i->path())) catPaths.push_back(i->path().string());
+					if (!is_directory(i->path())) catPaths.push_back(i->path().string());
 			}
-			catch (boost::filesystem::filesystem_error) {	continue; }
+			catch (boost::filesystem::filesystem_error) { continue; }
 		}
 		for (unsigned int x = 0; x < menuDirs.size(); x++)
 		{	try
 			{	for (boost::filesystem::recursive_directory_iterator i(menuDirs[x]), end; i != end; ++i)
-		if (!is_directory(i->path())) menuPaths.push_back(i->path().string());
+					if (!is_directory(i->path())) menuPaths.push_back(i->path().string());
 			}
-			catch (boost::filesystem::filesystem_error) {	continue; }
+			catch (boost::filesystem::filesystem_error) { continue; }
 		}
 	}
 	vector<Category> cats;

@@ -2,7 +2,7 @@
  * mwmmenu - a program to produce application menus for MWM and other window 
  * managers, based on freedesktop.org desktop entries.
  *
- * Copyright (C) 2015	Charles Bos
+ * Copyright (C) 2015  Charles Bos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
