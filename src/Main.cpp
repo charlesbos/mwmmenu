@@ -30,10 +30,11 @@
 #define mwm 0
 #define fvwm 1
 #define fluxbox 2
-#define openbox 3
-#define olvwm 4
-#define windowmaker 5
-#define icewm 6
+#define openbox_static 3
+#define openbox_pipe 4
+#define olvwm 5
+#define windowmaker 6
+#define icewm 7
 
 void usage()
 {	cout << "mwmmenu - creates application menus for MWM and other window managers." << endl << endl;
@@ -63,7 +64,8 @@ void usage()
 	cout << "    # No format argument: produce menus for MWM or TWM" << endl;
 	cout << "    -fvwm: produce menus for FVWM" << endl;
 	cout << "    -fluxbox: produce menus for Fluxbox or Blackbox" << endl;
-	cout << "    -openbox: produce menus for Openbox" << endl;
+	cout << "    -openbox_static: produce static menus for Openbox" << endl;
+	cout << "    -openbox_pipe: produce pipe menus for Openbox" << endl;
 	cout << "    -olvwm: produce menus for Olvwm" << endl;
 	cout << "    -windowmaker: produce menus for Windowmaker" << endl;
 	cout << "    -icewm: produce menus for IceWM" << endl;
@@ -183,8 +185,12 @@ int main(int argc, char *argv[])
 		{	windowmanager = fluxbox;
 			continue;
 		}
-		if (strcmp(argv[x], "-openbox") == 0) 
-		{	windowmanager = openbox;
+		if (strcmp(argv[x], "-openbox_static") == 0) 
+		{	windowmanager = openbox_static;
+			continue;
+		}
+		if (strcmp(argv[x], "-openbox_pipe") == 0) 
+		{	windowmanager = openbox_pipe;
 			continue;
 		}
 		if (strcmp(argv[x], "-olvwm") == 0) 

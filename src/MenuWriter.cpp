@@ -29,10 +29,11 @@
 #define mwm 0
 #define fvwm 1
 #define fluxbox 2
-#define openbox 3
-#define olvwm 4
-#define windowmaker 5
-#define icewm 6
+#define openbox_static 3
+#define openbox_pipe 4
+#define olvwm 5
+#define windowmaker 6
+#define icewm 7
 
 MenuWriter::MenuWriter(vector<DesktopFile> files, 
 				string menuName, 
@@ -82,6 +83,7 @@ void MenuWriter::printHandler()
 	//For WMs which require a menu which sources the individual category menus
 	if (windowmanager == mwm && !usedCats.empty()) writeMenu(vector<int>(), 0, longest, usedCats);
 	if (windowmanager == fvwm && !usedCats.empty()) writeMenu(vector<int>(), 0, longest, usedCats);
+	if (windowmanager == openbox_static && !usedCats.empty()) writeMenu(vector<int>(), 0, longest, usedCats);
 }
 
 /* This function return the indeces in the files vector for the DesktopFile objects
@@ -239,7 +241,43 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, ve
 			cout << "\t[end]" << endl;
 			if (catNumber == maxCatNumber) cout << "[end]" << endl;
 			break;
-		case openbox :
+		case openbox_static :
+			if (!positions.empty())
+			{	catFormatted = '"' + category + '"';
+				if (useIcons)
+				{	if (catIcon != "\0") cout << "<menu id=" << catFormatted << " label=" << catFormatted << " icon=" << '"' + catIcon + '"' << ">" << endl;
+					else cout << "<menu id=" << catFormatted << " label=" << catFormatted << ">" << endl;
+				}
+				else cout << "<menu id=" << catFormatted << " label=" << catFormatted << ">" << endl;
+				for (vector<int>::iterator it = positions.begin(); it < positions.end(); it++)
+				{	if (useIcons && files[*it].icon != "\0") 
+						nameFormatted = '"' + files[*it].name + '"' + " icon=\"" + files[*it].icon + "\">";
+					else nameFormatted = '"' + files[*it].name + "\">";
+					execFormatted = files[*it].exec;
+					cout << "\t<item label=" << setw(longest) << left << nameFormatted << endl;
+					cout << "\t\t<action name=\"Execute\">" << endl;
+					cout << "\t\t\t<execute>" << execFormatted << "</execute>" << endl;
+					cout << "\t\t</action>" << endl;
+					cout << "\t</item>" << endl;
+				}
+				cout << "</menu>" << endl << endl;
+			}
+			else
+			{	menuFormatted = '"' + menuName + '"';
+				cout << "<menu id=" << menuFormatted << " label=" << menuFormatted << ">" << endl;
+				for (unsigned int x = 0; x < usedCats.size(); x++)
+				{ 	if (useIcons)
+				  	{ 	catIcon = usedCats[x].icon;
+						if (catIcon != "\0") catFormatted = '"' + string(usedCats[x].name) + '"' + " icon=\"" + catIcon + "\"/>";
+						else catFormatted = '"' + string(usedCats[x].name) + "\"/>";
+				  	}
+				  	else catFormatted = '"' + string(usedCats[x].name) + "\"/>";
+				  	cout << "\t<menu id=" << setw(longest) << left << catFormatted << endl;
+				}
+				cout << "</menu>" << endl << endl;
+			}
+			break;
+		case openbox_pipe :
 			if (catNumber == 0) cout << "<openbox_pipe_menu xmlns=\"http://openbox.org/3.4/menu\">" << endl << endl;
 			catFormatted = '"' + category + '"';
 			if (useIcons)
