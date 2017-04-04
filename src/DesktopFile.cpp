@@ -23,7 +23,6 @@
 #include <string.h>
 #include "DesktopFile.h"
 #include "Category.h"
-#include <iostream>
 
 DesktopFile::DesktopFile() {}
 
