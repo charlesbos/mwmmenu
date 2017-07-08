@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
 	string excludeCategories;
 	string excludedFilenames;
 	string include;
-	string showFromDesktops = "all";
+	string showFromDesktops = "none";
 	string extraDesktopPaths;
 	string extraIconPaths;
 	bool noCustomCats = false;
