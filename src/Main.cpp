@@ -57,7 +57,7 @@ void usage()
 	cout << "    -exclude_categories: do not print category menus for the following category names." << endl << endl;
 	cout << "    -exclude_by_filename: exclude desktop entries based on their full paths." << endl << endl;
 	cout << "    -include: force entries with the following names to be included in menus even if their no display value is true." << endl << endl;
-	cout << "    -show_from_desktops: show entries from the specified desktops if OnlyShowIn is set. Can be values like GNOME or XFCE. Can also be none or all, The default is all." << endl << endl;
+	cout << "    -show_from_desktops: show entries from the specified desktops if OnlyShowIn is set. Can be values like GNOME or XFCE. Can also be none or all, The default is none." << endl << endl;
 	cout << "    -add_desktop_paths: add extra search paths for desktop entries." << endl << endl;
 	cout << "    -add_icon_paths: add extra search paths for icons." << endl << endl;
 	cout << "Menu format options:" << endl;
