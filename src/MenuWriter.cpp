@@ -197,6 +197,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, ve
 		case fvwm :
 			if (!positions.empty())
 			{	catFormatted = '"' + category + '"';
+				cout << "DestroyMenu " << catFormatted << endl;
 				cout << "AddToMenu " << setw(15) << left << catFormatted << "\t" << setw(longest) << left << catFormatted << "\tTitle" << endl;
 				for (vector<int>::iterator it = positions.begin(); it < positions.end(); it++)
 				{	if (useIcons && files[*it].icon != "\0") nameFormatted = '"' + files[*it].name + " %" + files[*it].icon + "%" + '"';
@@ -208,6 +209,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, ve
 			}
 			else
 			{	menuFormatted = '"' + menuName + '"';
+				cout << "DestroyMenu " << menuFormatted << endl;
 				cout << "AddToMenu " << setw(15) << left << menuFormatted << "\t" << setw(longest) << left << menuFormatted << "\tTitle" << endl;
 				for (unsigned int x = 0; x < usedCats.size(); x++)
 				{	if (useIcons)
