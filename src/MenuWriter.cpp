@@ -82,11 +82,12 @@ void MenuWriter::printHandler()
 	for (unsigned int x = 0; x < usedCats.size(); x++)
 		writeMenu(usedPositions[x], x, longest, usedCats);
 	//For WMs which require a menu which sources the individual category menus
-	if (windowmanager == mwm && !usedCats.empty()) writeMenu(vector<int>(), 0, longest, usedCats);
-	if ((windowmanager == fvwm_static || windowmanager == fvwm_dynamic) 
-			&& !usedCats.empty()) 
+	if ((windowmanager == mwm ||
+			windowmanager == fvwm_static ||
+			windowmanager == fvwm_dynamic ||
+			windowmanager == openbox_static) &&
+			!usedCats.empty())
 		writeMenu(vector<int>(), 0, longest, usedCats);
-	if (windowmanager == openbox_static && !usedCats.empty()) writeMenu(vector<int>(), 0, longest, usedCats);
 }
 
 /* This function return the indeces in the files vector for the DesktopFile objects
