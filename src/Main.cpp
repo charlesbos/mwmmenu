@@ -28,13 +28,14 @@
 
 //WM id numbers
 #define mwm 0
-#define fvwm 1
-#define fluxbox 2
-#define openbox_static 3
-#define openbox_pipe 4
-#define olvwm 5
-#define windowmaker 6
-#define icewm 7
+#define fvwm_static 1
+#define fvwm_dynamic 2
+#define fluxbox 3
+#define openbox_static 4
+#define openbox_pipe 5
+#define olvwm 6
+#define windowmaker 7
+#define icewm 8
 
 void usage()
 {	cout << "mwmmenu - creates application menus for MWM and other window managers." << endl << endl;
@@ -62,7 +63,8 @@ void usage()
 	cout << "    -add_icon_paths: add extra search paths for icons." << endl << endl;
 	cout << "Menu format options:" << endl;
 	cout << "    # No format argument: produce menus for MWM or TWM" << endl;
-	cout << "    -fvwm: produce menus for FVWM" << endl;
+	cout << "    -fvwm_static: produce static menus for FVWM" << endl;
+	cout << "    -fvwm_dynamic: produce dynamic menus for FVWM" << endl;
 	cout << "    -fluxbox: produce menus for Fluxbox or Blackbox" << endl;
 	cout << "    -openbox_static: produce static menus for Openbox" << endl;
 	cout << "    -openbox_pipe: produce pipe menus for Openbox" << endl;
@@ -177,8 +179,12 @@ int main(int argc, char *argv[])
 		{	if (x + 1 < argc) iconSize = argv[x + 1];
 			continue;
 		}
-		if (strcmp(argv[x], "-fvwm") == 0) 
-		{	windowmanager = fvwm;
+		if (strcmp(argv[x], "-fvwm_static") == 0) 
+		{	windowmanager = fvwm_static;
+			continue;
+		}
+		if (strcmp(argv[x], "-fvwm_dynamic") == 0) 
+		{	windowmanager = fvwm_dynamic;
 			continue;
 		}
 		if (strcmp(argv[x], "-fluxbox") == 0) 

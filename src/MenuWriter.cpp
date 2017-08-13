@@ -27,13 +27,14 @@
 
 //WM id numbers
 #define mwm 0
-#define fvwm 1
-#define fluxbox 2
-#define openbox_static 3
-#define openbox_pipe 4
-#define olvwm 5
-#define windowmaker 6
-#define icewm 7
+#define fvwm_static 1
+#define fvwm_dynamic 2
+#define fluxbox 3
+#define openbox_static 4
+#define openbox_pipe 5
+#define olvwm 6
+#define windowmaker 7
+#define icewm 8
 
 MenuWriter::MenuWriter(vector<DesktopFile> files, 
 				string menuName, 
@@ -82,7 +83,9 @@ void MenuWriter::printHandler()
 		writeMenu(usedPositions[x], x, longest, usedCats);
 	//For WMs which require a menu which sources the individual category menus
 	if (windowmanager == mwm && !usedCats.empty()) writeMenu(vector<int>(), 0, longest, usedCats);
-	if (windowmanager == fvwm && !usedCats.empty()) writeMenu(vector<int>(), 0, longest, usedCats);
+	if ((windowmanager == fvwm_static || windowmanager == fvwm_dynamic) 
+			&& !usedCats.empty()) 
+		writeMenu(vector<int>(), 0, longest, usedCats);
 	if (windowmanager == openbox_static && !usedCats.empty()) writeMenu(vector<int>(), 0, longest, usedCats);
 }
 
@@ -194,10 +197,14 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, ve
 				cout << "}" << endl << endl;
 			}
 			break;
-		case fvwm :
+		case fvwm_static:
+		case fvwm_dynamic:
 			if (!positions.empty())
 			{	catFormatted = '"' + category + '"';
-				cout << "DestroyMenu " << catFormatted << endl;
+				if (windowmanager == fvwm_static)
+					cout << "DestroyMenu " << catFormatted << endl;
+				else
+					cout << "DestroyMenu recreate " << catFormatted << endl;
 				cout << "AddToMenu " << setw(15) << left << catFormatted << "\t" << setw(longest) << left << catFormatted << "\tTitle" << endl;
 				for (vector<int>::iterator it = positions.begin(); it < positions.end(); it++)
 				{	if (useIcons && files[*it].icon != "\0") nameFormatted = '"' + files[*it].name + " %" + files[*it].icon + "%" + '"';
@@ -209,7 +216,10 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, ve
 			}
 			else
 			{	menuFormatted = '"' + menuName + '"';
-				cout << "DestroyMenu " << menuFormatted << endl;
+				if (windowmanager == fvwm_static)
+					cout << "DestroyMenu " << menuFormatted << endl;
+				else
+					cout << "DestroyMenu recreate " << menuFormatted << endl;
 				cout << "AddToMenu " << setw(15) << left << menuFormatted << "\t" << setw(longest) << left << menuFormatted << "\tTitle" << endl;
 				for (unsigned int x = 0; x < usedCats.size(); x++)
 				{	if (useIcons)
