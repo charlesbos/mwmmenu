@@ -255,6 +255,8 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, ve
 			if (catNumber == maxCatNumber) cout << "[end]" << endl;
 			break;
 		case openbox_static :
+		case openbox_pipe :
+			if (windowmanager == openbox_pipe && catNumber == 0) cout << "<openbox_pipe_menu xmlns=\"http://openbox.org/3.4/menu\">" << endl << endl;
 			if (!positions.empty())
 			{	catFormatted = '"' + category + '"';
 				if (useIcons)
@@ -274,6 +276,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, ve
 					cout << "\t</item>" << endl;
 				}
 				cout << "</menu>" << endl << endl;
+			if (windowmanager == openbox_pipe && catNumber == maxCatNumber) cout << "</openbox_pipe_menu>" << endl << endl;
 			}
 			else
 			{	menuFormatted = '"' + menuName + '"';
@@ -289,28 +292,6 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, ve
 				}
 				cout << "</menu>" << endl << endl;
 			}
-			break;
-		case openbox_pipe :
-			if (catNumber == 0) cout << "<openbox_pipe_menu xmlns=\"http://openbox.org/3.4/menu\">" << endl << endl;
-			catFormatted = '"' + category + '"';
-			if (useIcons)
-			{	if (catIcon != "\0") cout << "<menu id=" << catFormatted << " label=" << catFormatted << " icon=" << '"' + catIcon + '"' << ">" << endl;
-				else cout << "<menu id=" << catFormatted << " label=" << catFormatted << ">" << endl;
-			}
-			else cout << "<menu id=" << catFormatted << " label=" << catFormatted << ">" << endl;
-			for (vector<int>::iterator it = positions.begin(); it < positions.end(); it++)
-			{	if (useIcons && files[*it].icon != "\0") 
-					nameFormatted = '"' + files[*it].name + '"' + " icon=\"" + files[*it].icon + "\">";
-				else nameFormatted = '"' + files[*it].name + "\">";
-				execFormatted = files[*it].exec;
-				cout << "\t<item label=" << setw(longest) << left << nameFormatted << endl;
-				cout << "\t\t<action name=\"Execute\">" << endl;
-				cout << "\t\t\t<execute>" << execFormatted << "</execute>" << endl;
-				cout << "\t\t</action>" << endl;
-				cout << "\t</item>" << endl;
-			}
-			cout << "</menu>" << endl << endl;
-			if (catNumber == maxCatNumber) cout << "</openbox_pipe_menu>" << endl << endl;
 			break;
 		case olvwm :
 			if (catNumber == 0) cout << setw(longest) << left << '"' + menuName + '"' << "MENU" << endl << endl;
