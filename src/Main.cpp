@@ -46,7 +46,6 @@ void usage()
 	cout << "    -h, -help: show this dialogue" << endl << endl;
 	cout << "    -n, -name: name used for the main menu - by default, use Applications" << endl << endl;
 	cout << "    -i, -icons: use icons with menu entries, only compatible with some window managers" << endl << endl;
-	cout << "    -icon_size: choose size of icons used in menus. Can be 16x16, 32x32... or scalable or all. The default is all." << endl << endl;
 	cout << "    -no_custom_categories: do not add entries to or print non-standard categories, 'Other' will be used instead if required. " << endl << endl;
 	cout << "    # Note: " << endl;
 	cout << "    * The following options accept a single string which can contain multiple parameters." << endl;
@@ -151,7 +150,6 @@ int main(int argc, char *argv[])
 	string menuName = "Applications";
 	int windowmanager = mwm;
 	bool useIcons = false;
-	string iconSize = "all";
 	string exclude;
 	string excludeMatching;
 	string excludeCategories;
@@ -173,10 +171,6 @@ int main(int argc, char *argv[])
 		}
 		if (strcmp(argv[x], "-i") == 0 || strcmp(argv[x], "-icons") == 0)
 		{	useIcons = true;
-			continue;
-		}
-		if (strcmp(argv[x], "-icon_size") == 0) 
-		{	if (x + 1 < argc) iconSize = argv[x + 1];
 			continue;
 		}
 		if (strcmp(argv[x], "-fvwm_static") == 0) 
@@ -252,7 +246,6 @@ int main(int argc, char *argv[])
 			windowmanager == olvwm ||
 			windowmanager == windowmaker) 
 		useIcons = false;
-	if (iconSize == "all") iconSize = "/"; //All paths will have forward slashes so this makes the check null and void
 
 	//Get string vector of paths to .desktop files
 	vector<string> paths;
@@ -293,8 +286,11 @@ int main(int argc, char *argv[])
 			{	for (boost::filesystem::recursive_directory_iterator i(icondirs[x]), end; i != end; ++i)
 				{	if (!is_directory(i->path()))
 					{	string ipath = i->path().string();
-						if (ipath.find(iconSize) != string::npos)
-							iconpaths.push_back(i->path().string());
+						//If icon directory is a XDG one, only add iconpath if it's 16x16
+						if (ipath.find("/usr/share/icons") != string::npos || ipath.find(".local/share/icons") != string::npos)
+						{	if (ipath.find("16x16") == string::npos) continue;
+						}
+						iconpaths.push_back(i->path().string());
 					}
 				}
 			}
@@ -335,12 +331,12 @@ int main(int argc, char *argv[])
 	vector<Category> cats;
 	//Create the base categories
 	for (unsigned int x = 0; x < baseCategories.size(); x++)
-	{	Category c = Category(baseCategories[x], useIcons, iconpaths, iconSize);
+	{	Category c = Category(baseCategories[x], useIcons, iconpaths);
 		cats.push_back(c);
 	}
 	//Create the custom categories (if there are any)
 	for (unsigned int x = 0; x < catPaths.size(); x++)
-	{	Category c = Category(catPaths[x].c_str(), menuPaths, useIcons, iconpaths, iconSize);
+	{	Category c = Category(catPaths[x].c_str(), menuPaths, useIcons, iconpaths);
 		if (c.name != "\0") addCategory(c, cats);
 	}
 	sort(cats.begin(), cats.end());
@@ -348,7 +344,7 @@ int main(int argc, char *argv[])
 	//Create vector of DesktopFile, using each path in the paths vector
 	vector<DesktopFile> files;
 	for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
-	{	DesktopFile df = DesktopFile((*it).c_str(), splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats, iconSize);
+	{	DesktopFile df = DesktopFile((*it).c_str(), splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats);
 		if (df.name != "\0" && df.exec != "\0") files.push_back(df);
 	}
 	sort(files.begin(), files.end());

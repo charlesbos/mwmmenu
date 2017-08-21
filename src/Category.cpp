@@ -24,7 +24,7 @@
 Category::Category() {}
 
 //Constructor for custom categories
-Category::Category(const char *dirFile, vector<string> menuFiles, bool useIcons, vector<string> iconpaths, string iconSize)
+Category::Category(const char *dirFile, vector<string> menuFiles, bool useIcons, vector<string> iconpaths)
 {	this->dirFile = dirFile;
 	this->menuFiles = menuFiles;
 	dir_f.open(dirFile);
@@ -33,14 +33,14 @@ Category::Category(const char *dirFile, vector<string> menuFiles, bool useIcons,
 	{	getCategoryParams();
 		getIncludedFiles();
 		dir_f.close();
-		if (useIcons) getCategoryIcon(iconpaths, iconSize);
+		if (useIcons) getCategoryIcon(iconpaths);
 	}
 }
 
 //Constructor for base categories
-Category::Category(string name, bool useIcons, vector<string> iconpaths, string iconSize)
+Category::Category(string name, bool useIcons, vector<string> iconpaths)
 {	this->name = name;
-	if (useIcons) getCategoryIcon(iconpaths, iconSize);
+	if (useIcons) getCategoryIcon(iconpaths);
 }
 
 Category::Category(const Category& c)
@@ -163,7 +163,7 @@ string Category::getSingleValue(string line)
 /* Try to set a path to an icon. If the category is custom, we might already
  * have an icon definition. Otherwise, we try and determine it from the category
  * name */
-void Category::getCategoryIcon(vector<string> iconpaths, string iconSize)
+void Category::getCategoryIcon(vector<string> iconpaths)
 {	string nameGuard = "categories"; //If it's a base category, we want to get the icon from the freedesktop categories directory
 	string iconDef; //The icon definition, from which we try to determine a path to an icon
 
@@ -173,7 +173,7 @@ void Category::getCategoryIcon(vector<string> iconpaths, string iconSize)
 
 	/* This is a kludge. If we already have an icon definition and it is a full path instead of
 	 * a true definition, then there is nothing more to do so we exit here */
-	if (icon != "\0" && icon.find("/") != string::npos && icon.find(iconSize) != string::npos) return;
+	if (icon != "\0" && icon.find("/") != string::npos) return;
 
 	//If we already have a definition, we can get the icon from any directory
 	if (icon != "\0") nameGuard = "/";
@@ -189,9 +189,7 @@ void Category::getCategoryIcon(vector<string> iconpaths, string iconSize)
 	 * that the word 'categories' appears somewhere in the path, as well as a basic check for size */
 	iconDef.at(0) = tolower(iconDef.at(0));
 	for (unsigned int x = 0; x < iconpaths.size(); x++)
-	{	if (iconpaths[x].find(iconSize) != string::npos
-				&& iconpaths[x].find(nameGuard) != string::npos
-				&& iconpaths[x].find(iconDef) != string::npos)
+	{	if (iconpaths[x].find(nameGuard) != string::npos && iconpaths[x].find(iconDef) != string::npos)
 		{	icon = iconpaths[x];
 			return;
 		}

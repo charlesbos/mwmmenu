@@ -33,7 +33,7 @@ class DesktopFile
 {
 	public:
 		DesktopFile();
-		DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats, string iconSize);
+		DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats);
 		DesktopFile(const DesktopFile& df);
 
 		DesktopFile& operator=(const DesktopFile& df);
@@ -52,8 +52,8 @@ class DesktopFile
 	private:
 		ifstream dfile;
 
-		void populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats, string iconSize);
-		void matchIcon(string iconDef, vector<string> iconpaths, string iconSize);
+		void populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats);
+		void matchIcon(string iconDef, vector<string> iconpaths);
 		void processCategories(vector<Category>& cats, vector<string> foundCategories);
 		void processDesktops(vector<string> showFromDesktops, vector<string> onlyShowInDesktops);
 };
