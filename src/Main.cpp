@@ -38,38 +38,38 @@
 #define icewm 8
 
 void usage()
-{	cout << "mwmmenu - creates application menus for MWM and other window managers." << endl << endl;
-	cout << "Usage:" << endl;
-	cout << "    # Note: all options must be spaced." << endl;
-	cout << "    mwmmenu [OPTIONS]" << endl << endl;
-	cout << "Options:" << endl;
-	cout << "    -h, -help: show this dialogue" << endl << endl;
-	cout << "    -n, -name: name used for the main menu - by default, use Applications" << endl << endl;
-	cout << "    -i, -icons: use icons with menu entries, only compatible with some window managers" << endl << endl;
-	cout << "    -no_custom_categories: do not add entries to or print non-standard categories, 'Other' will be used instead if required. " << endl << endl;
-	cout << "    # Note: " << endl;
-	cout << "    * The following options accept a single string which can contain multiple parameters." << endl;
-	cout << "    * Multiple parameters should be separated by commas: e.g. -option Param1,Param2,Param3" << endl;
-	cout << "    * If the option asks for a name, assume it means a name as specified in an entry file, e.g. Name=Firefox." << endl;
-	cout << "    * If a parameter contains spaces, that paramater must be enclosed in quotes." << endl << endl;
-	cout << "    -exclude: do not add desktop entries that have the names specified." << endl << endl;
-	cout << "    -exclude_matching: do not add desktop entries where the entry's name contains one of the strings specified." << endl << endl;
-	cout << "    -exclude_categories: do not print category menus for the following category names." << endl << endl;
-	cout << "    -exclude_by_filename: exclude desktop entries based on their full paths." << endl << endl;
-	cout << "    -include: force entries with the following names to be included in menus even if their no display value is true." << endl << endl;
-	cout << "    -show_from_desktops: show entries from the specified desktops if OnlyShowIn is set. Can be values like GNOME or XFCE. Can also be none or all, The default is none." << endl << endl;
-	cout << "    -add_desktop_paths: add extra search paths for desktop entries." << endl << endl;
-	cout << "    -add_icon_paths: add extra search paths for icons." << endl << endl;
-	cout << "Menu format options:" << endl;
-	cout << "    # No format argument: produce menus for MWM or TWM" << endl;
-	cout << "    -fvwm_static: produce static menus for FVWM" << endl;
-	cout << "    -fvwm_dynamic: produce dynamic menus for FVWM" << endl;
-	cout << "    -fluxbox: produce menus for Fluxbox or Blackbox" << endl;
-	cout << "    -openbox_static: produce static menus for Openbox" << endl;
-	cout << "    -openbox_pipe: produce pipe menus for Openbox" << endl;
-	cout << "    -olvwm: produce menus for Olvwm" << endl;
-	cout << "    -windowmaker: produce menus for Windowmaker" << endl;
-	cout << "    -icewm: produce menus for IceWM" << endl;
+{	cout << "mwmmenu - creates application menus for MWM and other window managers.\n\n"
+		"Usage:\n"
+		"	# Note: all options must be spaced.\n"
+		"	mwmmenu [OPTIONS]\n"
+		"Options:\n"
+		"	-h, -help: show this dialogue\n\n"
+		"	-n, -name: name used for the main menu - by default, use Applications\n\n"
+		"	-i, -icons: use icons with menu entries, only compatible with some window managers\n\n"
+		"	-no_custom_categories: do not add entries to or print non-standard categories, 'Other' will be used instead if required.\n\n"
+		"	# Note:\n"
+		"	* The following options accept a single string which can contain multiple parameters.\n"
+		"	* Multiple parameters should be separated by commas: e.g. -option Param1,Param2,Param3\n"
+		"	* If the option asks for a name, assume it means a name as specified in an entry file, e.g. Name=Firefox.\n"
+		"	* If a parameter contains spaces, that parameter must be enclosed in quotes.\n\n"
+		"	-exclude: do not add desktop entries that have the names specified.\n\n"
+		"	-exclude_matching: do not add desktop entries where the entry's name contains one of the strings specified.\n\n"
+		"	-exclude_categories: do not print category menus for the following category names.\n\n"
+		"	-exclude_by_filename: exclude desktop entries based on their full paths.\n\n"
+		"	-include: force entries with the following names to be included in menus even if their no display value is true.\n\n"
+		"	-show_from_desktops: show entries from the specified desktops if OnlyShowIn is set. Can be values like GNOME or XFCE. Can also be none or all, The default is none.\n\n"
+		"	-add_desktop_paths: add extra search paths for desktop entries.\n\n"
+		"	-add_icon_paths: add extra search paths for icons.\n\n"
+		"Menu format options:\n"
+		"	# No format argument: produce menus for MWM or TWM\n"
+		"	-fvwm_static: produce static menus for FVWM\n"
+		"	-fvwm_dynamic: produce dynamic menus for FVWM\n"
+		"	-fluxbox: produce menus for Fluxbox or Blackbox\n"
+		"	-openbox_static: produce static menus for Openbox\n"
+		"	-openbox_pipe: produce pipe menus for Openbox\n"
+		"	-olvwm: produce menus for Olvwm\n"
+		"	-windowmaker: produce menus for Windowmaker\n"
+		"	-icewm: produce menus for IceWM\n";
 }
 
 //Function that attempts to get the user icon theme from ~/.gtkrc-2.0
