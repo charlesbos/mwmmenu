@@ -25,10 +25,10 @@
 
 //WM id numbers
 #define mwm 0
-#define fvwm_static 1
+#define fvwm 1
 #define fvwm_dynamic 2
 #define fluxbox 3
-#define openbox_static 4
+#define openbox 4
 #define openbox_pipe 5
 #define olvwm 6
 #define windowmaker 7

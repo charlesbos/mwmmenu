@@ -51,10 +51,10 @@ void usage()
 		"	-add_icon_paths: add extra search paths for icons.\n\n"
 		"Menu format options:\n"
 		"	# No format argument: produce menus for MWM or TWM\n"
-		"	-fvwm_static: produce static menus for FVWM\n"
+		"	-fvwm: produce menus for FVWM\n"
 		"	-fvwm_dynamic: produce dynamic menus for FVWM\n"
 		"	-fluxbox: produce menus for Fluxbox or Blackbox\n"
-		"	-openbox_static: produce static menus for Openbox\n"
+		"	-openbox: produce menus for Openbox\n"
 		"	-openbox_pipe: produce pipe menus for Openbox\n"
 		"	-olvwm: produce menus for Olvwm\n"
 		"	-windowmaker: produce menus for Windowmaker\n"
@@ -162,8 +162,8 @@ int main(int argc, char *argv[])
 		{	useIcons = true;
 			continue;
 		}
-		if (strcmp(argv[x], "-fvwm_static") == 0) 
-		{	windowmanager = fvwm_static;
+		if (strcmp(argv[x], "-fvwm") == 0) 
+		{	windowmanager = fvwm;
 			continue;
 		}
 		if (strcmp(argv[x], "-fvwm_dynamic") == 0) 
@@ -174,8 +174,8 @@ int main(int argc, char *argv[])
 		{	windowmanager = fluxbox;
 			continue;
 		}
-		if (strcmp(argv[x], "-openbox_static") == 0) 
-		{	windowmanager = openbox_static;
+		if (strcmp(argv[x], "-openbox") == 0) 
+		{	windowmanager = openbox;
 			continue;
 		}
 		if (strcmp(argv[x], "-openbox_pipe") == 0) 

@@ -72,9 +72,9 @@ void MenuWriter::printHandler()
 		writeMenu(usedPositions[x], x, longest, usedCats);
 	//For WMs which require a menu which sources the individual category menus
 	if ((windowmanager == mwm ||
-			windowmanager == fvwm_static ||
+			windowmanager == fvwm ||
 			windowmanager == fvwm_dynamic ||
-			windowmanager == openbox_static) &&
+			windowmanager == openbox) &&
 			!usedCats.empty())
 		writeMenu(vector<int>(), 0, longest, usedCats);
 }
@@ -187,11 +187,11 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, ve
 				cout << "}" << endl << endl;
 			}
 			break;
-		case fvwm_static:
-		case fvwm_dynamic:
+		case fvwm :
+		case fvwm_dynamic :
 			if (!positions.empty())
 			{	catFormatted = '"' + category + '"';
-				if (windowmanager == fvwm_static)
+				if (windowmanager == fvwm)
 					cout << "DestroyMenu " << catFormatted << endl;
 				else
 					cout << "DestroyMenu recreate " << catFormatted << endl;
@@ -206,7 +206,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, ve
 			}
 			else
 			{	menuFormatted = '"' + menuName + '"';
-				if (windowmanager == fvwm_static)
+				if (windowmanager == fvwm)
 					cout << "DestroyMenu " << menuFormatted << endl;
 				else
 					cout << "DestroyMenu recreate " << menuFormatted << endl;
@@ -243,7 +243,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, ve
 			cout << "\t[end]" << endl;
 			if (catNumber == maxCatNumber) cout << "[end]" << endl;
 			break;
-		case openbox_static :
+		case openbox :
 		case openbox_pipe :
 			if (windowmanager == openbox_pipe && catNumber == 0) cout << "<openbox_pipe_menu xmlns=\"http://openbox.org/3.4/menu\">" << endl << endl;
 			if (!positions.empty())
