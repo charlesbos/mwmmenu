@@ -26,17 +26,6 @@
 #include "MenuWriter.h"
 #include "Category.h"
 
-//WM id numbers
-#define mwm 0
-#define fvwm_static 1
-#define fvwm_dynamic 2
-#define fluxbox 3
-#define openbox_static 4
-#define openbox_pipe 5
-#define olvwm 6
-#define windowmaker 7
-#define icewm 8
-
 void usage()
 {	cout << "mwmmenu - creates application menus for MWM and other window managers.\n\n"
 		"Usage:\n"
