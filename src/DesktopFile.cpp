@@ -188,6 +188,11 @@ vector<string> DesktopFile::getMultiValue(string line)
 		counter++;
 	}
 
+	//Ensure we get the last category in line if it isn't terminated with a
+	//semi-colon
+	if (!readChars.empty())
+		values.push_back(string(readChars.begin(), readChars.end()));
+
 	return values;
 }
 
