@@ -35,6 +35,8 @@ void usage()
 		"	-h, -help: show this dialogue\n\n"
 		"	-n, -name: name used for the main menu - by default, use Applications\n\n"
 		"	-i, -icons: use icons with menu entries, only compatible with some window managers\n\n"
+		"	-icons_xdg_only: Exclude any non-xdg icons. Note that this will disable the -add_icon_paths option.\n\n"
+		"	-xdg_icons_size: can be 16x16, 32x32 etc. Can also be scalable or all. Note that using all might significantly slow down the program. Also note that this cannot control sizes for non-xdg icons. Defaults to 16x16.\n\n"
 		"	-no_custom_categories: do not add entries to or print non-standard categories, 'Other' will be used instead if required.\n\n"
 		"	# Note:\n"
 		"	* The following options accept a single string which can contain multiple parameters.\n"
@@ -139,6 +141,8 @@ int main(int argc, char *argv[])
 	string menuName = "Applications";
 	int windowmanager = mwm;
 	bool useIcons = false;
+	bool iconsXdgOnly = false;
+	string xdgIconsSize = "16x16";
 	string exclude;
 	string excludeMatching;
 	string excludeCategories;
@@ -160,6 +164,14 @@ int main(int argc, char *argv[])
 		}
 		if (strcmp(argv[x], "-i") == 0 || strcmp(argv[x], "-icons") == 0)
 		{	useIcons = true;
+			continue;
+		}
+		if (strcmp(argv[x], "-icons_xdg_only") == 0) 
+		{	iconsXdgOnly = true;
+			continue;
+		}
+		if (strcmp(argv[x], "-xdg_icons_size") == 0) 
+		{	if (x + 1 < argc) xdgIconsSize = argv[x + 1] ;
 			continue;
 		}
 		if (strcmp(argv[x], "-fvwm") == 0) 
@@ -235,6 +247,7 @@ int main(int argc, char *argv[])
 			windowmanager == olvwm ||
 			windowmanager == windowmaker) 
 		useIcons = false;
+	if (xdgIconsSize == "all") xdgIconsSize = "/";
 
 	//Get string vector of paths to .desktop files
 	vector<string> paths;
@@ -258,14 +271,18 @@ int main(int argc, char *argv[])
 	vector<string> iconpaths;
 	if (useIcons)
 	{	iconpaths.reserve(500);
-		vector<string> icondirs = {"/usr/share/icons/hicolor", "/usr/share/pixmaps", "/usr/local/share/pixmaps"};
+		vector<string> icondirs = {"/usr/share/icons/hicolor"};
+		if (!iconsXdgOnly) 
+		{	icondirs.push_back("/usr/share/pixmaps");
+			icondirs.push_back("/usr/local/share/pixmaps");
+		}
 		if (homedir.c_str() != NULL)
 		{	string themename = getIconTheme(homedir); 
 			icondirs.push_back("/usr/share/icons/" + themename);
 			if (find(icondirs.begin(), icondirs.end(), "/usr/share/icons/gnome") != icondirs.end()) icondirs.push_back("/usr/share/icons/gnome");
 			icondirs.push_back(homedir + "/.local/share/icons");
 		}
-		if (extraIconPaths != "\0")
+		if (extraIconPaths != "\0" && !iconsXdgOnly)
 		{	vector<string> newIPaths = splitCommaArgs(extraIconPaths);
 			for (unsigned int x = 0; x < newIPaths.size(); x++)
 				icondirs.push_back(newIPaths[x]);
@@ -275,9 +292,9 @@ int main(int argc, char *argv[])
 			{	for (boost::filesystem::recursive_directory_iterator i(icondirs[x]), end; i != end; ++i)
 				{	if (!is_directory(i->path()))
 					{	string ipath = i->path().string();
-						//If icon directory is a XDG one, only add iconpath if it's 16x16
+						//If icon directory is a XDG one, only add iconpath if conforms to the chosen size
 						if (ipath.find("/usr/share/icons") != string::npos || ipath.find(".local/share/icons") != string::npos)
-						{	if (ipath.find("16x16") == string::npos) continue;
+						{	if (ipath.find(xdgIconsSize) == string::npos) continue;
 						}
 						iconpaths.push_back(i->path().string());
 					}
