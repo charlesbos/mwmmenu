@@ -72,15 +72,15 @@ void usage()
 "  -add_desktop_paths:    add extra search paths for desktop entries.\n"
 "  -add_icon_paths:       add extra search paths for icons.\n\n"
 "Menu format options:\n"
-"  # No format argument: produce menus for MWM or TWM\n"
-"  -fvwm: produce menus for FVWM\n"
-"  -fvwm_dynamic: produce dynamic menus for FVWM\n"
-"  -fluxbox: produce menus for Fluxbox or Blackbox\n"
-"  -openbox: produce menus for Openbox\n"
-"  -openbox_pipe: produce pipe menus for Openbox\n"
-"  -olvwm: produce menus for Olvwm\n"
-"  -windowmaker: produce menus for Windowmaker\n"
-"  -icewm: produce menus for IceWM\n";
+"  # No format argument:  produce menus for MWM and TWM\n"
+"  -fvwm:                 produce static menus for FVWM\n"
+"  -fvwm_dynamic:         produce dynamic menus for FVWM\n"
+"  -fluxbox:              produce menus for Fluxbox or Blackbox\n"
+"  -openbox:              produce static menus for Openbox\n"
+"  -openbox_pipe:         produce pipe menus for Openbox\n"
+"  -olvwm:                produce menus for Olwm and Olvwm\n"
+"  -windowmaker:          produce menus for Windowmaker\n"
+"  -icewm:                produce menus for IceWM\n";
 }
 
 //Function that attempts to get the user icon theme from ~/.gtkrc-2.0
