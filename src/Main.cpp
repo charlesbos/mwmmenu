@@ -155,6 +155,18 @@ void addCategory(Category &c, vector<Category> &categories)
 	categories.push_back(c);
 }
 
+//A function to check whether a filename (not filepath) already exists in a collection
+//of filepaths. Useful for local overrides for XDG desktop entries and icons.
+bool idExists(string path, vector<string> paths)
+{	string id = path.substr(path.find_last_of("/") + 1, string::npos);
+	for (unsigned int x = 0; x < paths.size(); x++)
+	{	string fID = paths[x].substr(paths[x].find_last_of("/") + 1, string::npos);
+		if (id == fID) return true;
+	}
+	return false;
+}
+
+
 int main(int argc, char *argv[])
 {	//Handle args
 	string homedir = getenv("HOME");
@@ -272,17 +284,20 @@ int main(int argc, char *argv[])
 	//Get string vector of paths to .desktop files
 	vector<string> paths;
 	paths.reserve(300);
-	vector<string> appdirs = {"/usr/share/applications/", "/usr/local/share/applications/"};
-	if (homedir.c_str() != NULL) appdirs.push_back(homedir + "/.local/share/applications/");
+	vector<string> appdirs;
 	if (extraDesktopPaths != "\0")
 	{	vector<string> newDPaths = splitCommaArgs(extraDesktopPaths);
 		for (unsigned int x = 0; x < newDPaths.size(); x++)
 			appdirs.push_back(newDPaths[x]);
 	}
+	if (homedir.c_str() != NULL) appdirs.push_back(homedir + "/.local/share/applications/");
+	appdirs.push_back("/usr/local/share/applications");
+	appdirs.push_back("/usr/share/applications");
 	for (unsigned int x = 0; x < appdirs.size(); x++)
 	{	try
 		{	for (boost::filesystem::recursive_directory_iterator i(appdirs[x]), end; i != end; ++i)
-				if (!is_directory(i->path())) paths.push_back(i->path().string());
+				if (!is_directory(i->path()) && !idExists(i->path().string(), paths)) 
+					paths.push_back(i->path().string());
 		}
 		catch (boost::filesystem::filesystem_error) { continue; }
 	}
@@ -291,21 +306,23 @@ int main(int argc, char *argv[])
 	vector<string> iconpaths;
 	if (useIcons)
 	{	iconpaths.reserve(500);
-		vector<string> icondirs = {"/usr/share/icons/hicolor"};
-		if (!iconsXdgOnly) 
-		{	icondirs.push_back("/usr/share/pixmaps");
-			icondirs.push_back("/usr/local/share/pixmaps");
-		}
-		if (homedir.c_str() != NULL)
-		{	string themename = getIconTheme(homedir); 
-			icondirs.push_back("/usr/share/icons/" + themename);
-			if (find(icondirs.begin(), icondirs.end(), "/usr/share/icons/gnome") != icondirs.end()) icondirs.push_back("/usr/share/icons/gnome");
-			icondirs.push_back(homedir + "/.local/share/icons");
-		}
+		vector<string> icondirs;
 		if (extraIconPaths != "\0" && !iconsXdgOnly)
 		{	vector<string> newIPaths = splitCommaArgs(extraIconPaths);
 			for (unsigned int x = 0; x < newIPaths.size(); x++)
 				icondirs.push_back(newIPaths[x]);
+		}
+		if (homedir.c_str() != NULL)
+		{	icondirs.push_back(homedir + "/.icons");
+			icondirs.push_back(homedir + "/.local/share/icons");
+			string themename = getIconTheme(homedir); 
+			icondirs.push_back("/usr/share/icons/" + themename);
+			if (find(icondirs.begin(), icondirs.end(), "/usr/share/icons/gnome") != icondirs.end()) icondirs.push_back("/usr/share/icons/gnome");
+		}
+		icondirs.push_back("/usr/share/icons/hicolor");
+		if (!iconsXdgOnly) 
+		{	icondirs.push_back("/usr/local/share/pixmaps");
+			icondirs.push_back("/usr/share/pixmaps");
 		}
 		for (unsigned int x = 0; x < icondirs.size(); x++)
 		{	try
@@ -316,7 +333,8 @@ int main(int argc, char *argv[])
 						if (ipath.find("/usr/share/icons") != string::npos || ipath.find(".local/share/icons") != string::npos)
 						{	if (ipath.find(xdgIconsSize) == string::npos) continue;
 						}
-						iconpaths.push_back(i->path().string());
+						if (idExists(ipath, iconpaths)) continue;
+						iconpaths.push_back(ipath);
 					}
 				}
 			}
