@@ -249,7 +249,11 @@ void DesktopFile::matchIcon(string iconDef, vector<string> iconpaths)
 	/* Here we search through the icon locations provided, trying to match the definition to a
 	 * full path. Note that the first matching icon found will be the one that is chosen */
 	for (unsigned int x = 0; x < iconpaths.size(); x++)
-	{	string iconName = iconpaths[x].substr(iconpaths[x].find_last_of("/") + 1, iconpaths[x].find_last_of(".") - iconpaths[x].find_last_of("/") - 1);
+	{	/* FIXME: calling substring on the icon paths in this class is very inefficient as
+		 * as this has to be done for each desktop entry we have. Would be much better to do this
+		 * within main once and then feed the resulting collection into each DesktopFile object.
+		 * That would mean we need only do equality checks in this function which is much cheaper. */
+		string iconName = iconpaths[x].substr(iconpaths[x].find_last_of("/") + 1, iconpaths[x].find_last_of(".") - iconpaths[x].find_last_of("/") - 1);
 		string iconNameWithExtension = iconpaths[x].substr(iconpaths[x].find_last_of("/") + 1, string::npos);
 		if (iconDef == iconName || iconDef == iconNameWithExtension)
 		{	icon = iconpaths[x];
