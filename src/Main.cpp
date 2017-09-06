@@ -160,11 +160,7 @@ void addCategory(Category &c, vector<Category> &categories)
 bool idExists(string path, vector<string> ids)
 {	string id = path.substr(path.find_last_of("/") + 1, string::npos);
 	for (unsigned int x = 0; x < ids.size(); x++)
-	{	if (id == ids[x]) 
-		{	ids.push_back(id);
-			return true;
-		}
-	}
+		if (id == ids[x]) return true;
 	ids.push_back(id);
 	return false;
 }
