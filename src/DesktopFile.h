@@ -27,13 +27,19 @@
 
 using namespace std;
 
+struct IconSpec
+{	string path;
+	string def;
+	string id;
+};
+
 class Category;
 
 class DesktopFile
 {
 	public:
 		DesktopFile();
-		DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats);
+		DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<IconSpec> iconpaths, vector<Category>& cats);
 		DesktopFile(const DesktopFile& df);
 
 		DesktopFile& operator=(const DesktopFile& df);
@@ -52,8 +58,8 @@ class DesktopFile
 	private:
 		ifstream dfile;
 
-		void populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats);
-		void matchIcon(string iconDef, vector<string> iconpaths);
+		void populate(vector<string> showFromDesktops, bool useIcons, vector<IconSpec> iconpaths, vector<Category>& cats);
+		void matchIcon(string iconDef, vector<IconSpec> iconpaths);
 		void processCategories(vector<Category>& cats, vector<string> foundCategories);
 		void processDesktops(vector<string> showFromDesktops, vector<string> onlyShowInDesktops);
 };

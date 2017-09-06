@@ -26,7 +26,7 @@
 
 DesktopFile::DesktopFile() {}
 
-DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats) 
+DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<IconSpec> iconpaths, vector<Category>& cats) 
 {	this->filename = filename;
 	this->nodisplay = false;
 	dfile.open(filename);
@@ -66,7 +66,7 @@ bool DesktopFile::operator<(const DesktopFile& df)
 /* This function fetches the required values (Name, Exec, Categories, NoDisplay etc)
  * and then assigns the results to the appropriate instance variables or passes the results
  * to the appropriate function */
-void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vector<string> iconpaths, vector<Category>& cats)
+void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vector<IconSpec> iconpaths, vector<Category>& cats)
 {	string line;
 	string iconDef;
 	vector<string> onlyShowInDesktops;
@@ -240,7 +240,7 @@ void DesktopFile::processCategories(vector<Category>& cats, vector<string> found
 /* Function which attempts to find the full path for a desktop entry by going
  * through a list of icons, attempting to match the icon entry in the entry
  * against each icon path */
-void DesktopFile::matchIcon(string iconDef, vector<string> iconpaths)
+void DesktopFile::matchIcon(string iconDef, vector<IconSpec> iconpaths)
 {	//This is a kludge. If the iconDef is a path then just use that and return
 	if (iconDef.find("/") != string::npos)
 	{	icon = iconDef;
@@ -249,14 +249,8 @@ void DesktopFile::matchIcon(string iconDef, vector<string> iconpaths)
 	/* Here we search through the icon locations provided, trying to match the definition to a
 	 * full path. Note that the first matching icon found will be the one that is chosen */
 	for (unsigned int x = 0; x < iconpaths.size(); x++)
-	{	/* FIXME: calling substring on the icon paths in this class is very inefficient as
-		 * as this has to be done for each desktop entry we have. Would be much better to do this
-		 * within main once and then feed the resulting collection into each DesktopFile object.
-		 * That would mean we need only do equality checks in this function which is much cheaper. */
-		string iconName = iconpaths[x].substr(iconpaths[x].find_last_of("/") + 1, iconpaths[x].find_last_of(".") - iconpaths[x].find_last_of("/") - 1);
-		string iconNameWithExtension = iconpaths[x].substr(iconpaths[x].find_last_of("/") + 1, string::npos);
-		if (iconDef == iconName || iconDef == iconNameWithExtension)
-		{	icon = iconpaths[x];
+	{	if (iconDef == iconpaths[x].def || iconDef == iconpaths[x].id)
+		{	icon = iconpaths[x].path;
 			break;
 		}
 	}

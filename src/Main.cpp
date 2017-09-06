@@ -303,7 +303,7 @@ int main(int argc, char *argv[])
 	}
 
 	//Get string vector of paths to icons
-	vector<string> iconpaths;
+	vector<IconSpec> iconpaths;
 	vector<string> iconpathIDS;
 	if (useIcons)
 	{	iconpaths.reserve(500);
@@ -336,7 +336,11 @@ int main(int argc, char *argv[])
 						{	if (ipath.find(xdgIconsSize) == string::npos) continue;
 						}
 						if (idExists(ipath, iconpathIDS)) continue;
-						iconpaths.push_back(ipath);
+						IconSpec spec;
+						spec.path = ipath;
+						spec.id = iconpathIDS[iconpathIDS.size() - 1];
+						spec.def = spec.id.substr(spec.id.find_last_of("/") + 1, spec.id.find_last_of(".") - spec.id.find_last_of("/") - 1);
+						iconpaths.push_back(spec);
 					}
 				}
 			}

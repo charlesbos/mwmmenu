@@ -27,8 +27,8 @@ class Category
 {
 	public:
 		Category();
-		Category(const char *dirFile, vector<string> menuFiles, bool useIcons, vector<string> iconpaths);
-		Category(string name, bool useIcons, vector<string> iconpaths);
+		Category(const char *dirFile, vector<string> menuFiles, bool useIcons, vector<IconSpec> iconpaths);
+		Category(string name, bool useIcons, vector<IconSpec> iconpaths);
 		Category(const Category& c);
 
 		Category& operator=(const Category& c);
@@ -50,7 +50,7 @@ class Category
 
 		void getCategoryParams();
 		void getIncludedFiles();
-		void getCategoryIcon(vector<string> iconpaths);
+		void getCategoryIcon(vector<IconSpec> iconpaths);
 };
 
 #endif

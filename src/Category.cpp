@@ -24,7 +24,7 @@
 Category::Category() {}
 
 //Constructor for custom categories
-Category::Category(const char *dirFile, vector<string> menuFiles, bool useIcons, vector<string> iconpaths)
+Category::Category(const char *dirFile, vector<string> menuFiles, bool useIcons, vector<IconSpec> iconpaths)
 {	this->dirFile = dirFile;
 	this->menuFiles = menuFiles;
 	dir_f.open(dirFile);
@@ -38,7 +38,7 @@ Category::Category(const char *dirFile, vector<string> menuFiles, bool useIcons,
 }
 
 //Constructor for base categories
-Category::Category(string name, bool useIcons, vector<string> iconpaths)
+Category::Category(string name, bool useIcons, vector<IconSpec> iconpaths)
 {	this->name = name;
 	if (useIcons) getCategoryIcon(iconpaths);
 }
@@ -163,7 +163,7 @@ string Category::getSingleValue(string line)
 /* Try to set a path to an icon. If the category is custom, we might already
  * have an icon definition. Otherwise, we try and determine it from the category
  * name */
-void Category::getCategoryIcon(vector<string> iconpaths)
+void Category::getCategoryIcon(vector<IconSpec> iconpaths)
 {	string nameGuard = "categories"; //If it's a base category, we want to get the icon from the freedesktop categories directory
 	string iconDef; //The icon definition, from which we try to determine a path to an icon
 
@@ -189,8 +189,8 @@ void Category::getCategoryIcon(vector<string> iconpaths)
 	 * that the word 'categories' appears somewhere in the path, as well as a basic check for size */
 	iconDef.at(0) = tolower(iconDef.at(0));
 	for (unsigned int x = 0; x < iconpaths.size(); x++)
-	{	if (iconpaths[x].find(nameGuard) != string::npos && iconpaths[x].find(iconDef) != string::npos)
-		{	icon = iconpaths[x];
+	{	if (iconpaths[x].path.find(nameGuard) != string::npos && iconpaths[x].path.find(iconDef) != string::npos)
+		{	icon = iconpaths[x].path;
 			return;
 		}
 	}
