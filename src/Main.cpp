@@ -156,17 +156,18 @@ void addCategory(Category &c, vector<Category> &categories)
 }
 
 //A function to check whether a filename (not filepath) already exists in a collection
-//of filepaths. Useful for local overrides for XDG desktop entries and icons.
-bool idExists(string path, vector<string> paths)
+//of filenames. Useful for local overrides for XDG desktop entries and icons.
+bool idExists(string path, vector<string> ids)
 {	string id = path.substr(path.find_last_of("/") + 1, string::npos);
-	for (unsigned int x = 0; x < paths.size(); x++)
-	{	if (paths[x].find(id) == string::npos) continue;
-		string fID = paths[x].substr(paths[x].find_last_of("/") + 1, string::npos);
-		if (id == fID) return true;
+	for (unsigned int x = 0; x < ids.size(); x++)
+	{	if (id == ids[x]) 
+		{	ids.push_back(id);
+			return true;
+		}
 	}
+	ids.push_back(id);
 	return false;
 }
-
 
 int main(int argc, char *argv[])
 {	//Handle args
@@ -284,7 +285,9 @@ int main(int argc, char *argv[])
 
 	//Get string vector of paths to .desktop files
 	vector<string> paths;
+	vector<string> pathIDS;
 	paths.reserve(300);
+	pathIDS.reserve(300);
 	vector<string> appdirs;
 	if (extraDesktopPaths != "\0")
 	{	vector<string> newDPaths = splitCommaArgs(extraDesktopPaths);
@@ -297,7 +300,7 @@ int main(int argc, char *argv[])
 	for (unsigned int x = 0; x < appdirs.size(); x++)
 	{	try
 		{	for (boost::filesystem::recursive_directory_iterator i(appdirs[x]), end; i != end; ++i)
-				if (!is_directory(i->path()) && !idExists(i->path().string(), paths)) 
+				if (!is_directory(i->path()) && !idExists(i->path().string(), pathIDS)) 
 					paths.push_back(i->path().string());
 		}
 		catch (boost::filesystem::filesystem_error) { continue; }
@@ -305,8 +308,10 @@ int main(int argc, char *argv[])
 
 	//Get string vector of paths to icons
 	vector<string> iconpaths;
+	vector<string> iconpathIDS;
 	if (useIcons)
 	{	iconpaths.reserve(500);
+		iconpathIDS.reserve(500);
 		vector<string> icondirs;
 		if (extraIconPaths != "\0" && !iconsXdgOnly)
 		{	vector<string> newIPaths = splitCommaArgs(extraIconPaths);
@@ -334,7 +339,7 @@ int main(int argc, char *argv[])
 						if (ipath.find("/usr/share/icons") != string::npos || ipath.find(".local/share/icons") != string::npos)
 						{	if (ipath.find(xdgIconsSize) == string::npos) continue;
 						}
-						if (idExists(ipath, iconpaths)) continue;
+						if (idExists(ipath, iconpathIDS)) continue;
 						iconpaths.push_back(ipath);
 					}
 				}
