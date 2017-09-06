@@ -157,7 +157,7 @@ void addCategory(Category &c, vector<Category> &categories)
 
 //A function to check whether a filename (not filepath) already exists in a collection
 //of filenames. Useful for local overrides for XDG desktop entries and icons.
-bool idExists(string path, vector<string> ids)
+bool idExists(string path, vector<string> &ids)
 {	string id = path.substr(path.find_last_of("/") + 1, string::npos);
 	for (unsigned int x = 0; x < ids.size(); x++)
 		if (id == ids[x]) return true;
