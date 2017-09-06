@@ -41,9 +41,8 @@ void usage()
 "  -icons_xdg_only:       exclude any non-xdg icons. Note that this will\n" 
 "                         disable the -add_icon_paths option.\n"
 "  -xdg_icons_size:       can be 16x16, 32x32 etc. Can also be scalable or\n" 
-"                         all. Note that using all might significantly slow\n" 
-"                         down the program. Also note that this cannot\n" 
-"                         control sizes for non-xdg icons. Defaults to 16x16.\n"
+"                         all. Note that this cannot control sizes for\n" 
+"                         non-xdg icons. Defaults to all.\n"
 "  -no_custom_categories: do not add entries to or print non-standard\n" 
 "                         categories, 'Other' will be used instead if\n"
 "                         required.\n\n"
@@ -172,7 +171,7 @@ int main(int argc, char *argv[])
 	int windowmanager = mwm;
 	bool useIcons = false;
 	bool iconsXdgOnly = false;
-	string xdgIconsSize = "16x16";
+	string xdgIconsSize = "all";
 	string exclude;
 	string excludeMatching;
 	string excludeCategories;
