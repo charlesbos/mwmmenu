@@ -26,7 +26,7 @@
 
 DesktopFile::DesktopFile() {}
 
-DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<IconSpec> iconpaths, vector<Category>& cats) 
+DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<IconSpec>& iconpaths, vector<Category>& cats) 
 {	this->filename = filename;
 	this->nodisplay = false;
 	dfile.open(filename);
@@ -66,7 +66,7 @@ bool DesktopFile::operator<(const DesktopFile& df)
 /* This function fetches the required values (Name, Exec, Categories, NoDisplay etc)
  * and then assigns the results to the appropriate instance variables or passes the results
  * to the appropriate function */
-void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vector<IconSpec> iconpaths, vector<Category>& cats)
+void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vector<IconSpec>& iconpaths, vector<Category>& cats)
 {	string line;
 	string iconDef;
 	vector<string> onlyShowInDesktops;
@@ -240,7 +240,7 @@ void DesktopFile::processCategories(vector<Category>& cats, vector<string> found
 /* Function which attempts to find the full path for a desktop entry by going
  * through a list of icons, attempting to match the icon entry in the entry
  * against each icon path */
-void DesktopFile::matchIcon(string iconDef, vector<IconSpec> iconpaths)
+void DesktopFile::matchIcon(string iconDef, vector<IconSpec>& iconpaths)
 {	//This is a kludge. If the iconDef is a path then just use that and return
 	if (iconDef.find("/") != string::npos)
 	{	icon = iconDef;
