@@ -24,7 +24,7 @@
 Category::Category() {}
 
 //Constructor for custom categories
-Category::Category(const char *dirFile, vector<string> menuFiles, bool useIcons, vector<IconSpec> iconpaths)
+Category::Category(const char *dirFile, const vector<string>& menuFiles, bool useIcons, const vector<IconSpec>& iconpaths)
 {	this->dirFile = dirFile;
 	this->menuFiles = menuFiles;
 	dir_f.open(dirFile);
@@ -38,7 +38,7 @@ Category::Category(const char *dirFile, vector<string> menuFiles, bool useIcons,
 }
 
 //Constructor for base categories
-Category::Category(string name, bool useIcons, vector<IconSpec> iconpaths)
+Category::Category(const string& name, bool useIcons, const vector<IconSpec>& iconpaths)
 {	this->name = name;
 	if (useIcons) getCategoryIcon(iconpaths);
 }
@@ -113,7 +113,7 @@ void Category::getIncludedFiles()
 /* An xdg .menu file specific function for getting the line
  * id. In this case, the id will be tags like <Directory>
  * or <Include> */
-string Category::getID(string line)
+string Category::getID(const string& line)
 {	vector<char> readChars;
 	readChars.reserve(10);
 	char c;
@@ -138,7 +138,7 @@ string Category::getID(string line)
  * value. This should be a value between two enclosing tags.
  * For instance, for the line <tag>value</tag> then this
  * should return the string "value" */
-string Category::getSingleValue(string line)
+string Category::getSingleValue(const string& line)
 {	vector<char> readChars;
 	readChars.reserve(10);
 	char c;
@@ -163,7 +163,7 @@ string Category::getSingleValue(string line)
 /* Try to set a path to an icon. If the category is custom, we might already
  * have an icon definition. Otherwise, we try and determine it from the category
  * name */
-void Category::getCategoryIcon(vector<IconSpec> iconpaths)
+void Category::getCategoryIcon(const vector<IconSpec>& iconpaths)
 {	string nameGuard = "categories"; //If it's a base category, we want to get the icon from the freedesktop categories directory
 	string iconDef; //The icon definition, from which we try to determine a path to an icon
 

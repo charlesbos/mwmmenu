@@ -26,7 +26,7 @@
 
 DesktopFile::DesktopFile() {}
 
-DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<IconSpec>& iconpaths, vector<Category>& cats) 
+DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, const vector<IconSpec>& iconpaths, vector<Category>& cats) 
 {	this->filename = filename;
 	this->nodisplay = false;
 	dfile.open(filename);
@@ -66,7 +66,7 @@ bool DesktopFile::operator<(const DesktopFile& df)
 /* This function fetches the required values (Name, Exec, Categories, NoDisplay etc)
  * and then assigns the results to the appropriate instance variables or passes the results
  * to the appropriate function */
-void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vector<IconSpec>& iconpaths, vector<Category>& cats)
+void DesktopFile::populate(const vector<string>& showFromDesktops, bool useIcons, const vector<IconSpec>& iconpaths, vector<Category>& cats)
 {	string line;
 	string iconDef;
 	vector<string> onlyShowInDesktops;
@@ -122,7 +122,7 @@ void DesktopFile::populate(vector<string> showFromDesktops, bool useIcons, vecto
 
 /* This function is used to get the single value before the = sign.
  * Should be Name, Exec, Categories etc */
-string DesktopFile::getID(string line)
+string DesktopFile::getID(const string& line)
 {	vector<char> readChars;
 	readChars.reserve(10);
 	char c;
@@ -140,7 +140,7 @@ string DesktopFile::getID(string line)
 
 /* This function is used to get single values, for example: for the line 
  * Name=Firefox this function will return Firefox */
-string DesktopFile::getSingleValue(string line)
+string DesktopFile::getSingleValue(const string& line)
 {	vector<char> readChars;
 	readChars.reserve(10);
 	string value;
@@ -168,7 +168,7 @@ string DesktopFile::getSingleValue(string line)
 /* This function is used to get multiple semi-colon seperated values.
  * For instance, the line Categories=System;Settings; will return a string
  * vector with the items System and Settings */
-vector<string> DesktopFile::getMultiValue(string line)
+vector<string> DesktopFile::getMultiValue(const string& line)
 {	vector<string> values;
 	vector<char> readChars;
 	values.reserve(5);
@@ -198,7 +198,7 @@ vector<string> DesktopFile::getMultiValue(string line)
 
 /* Add the desktop entry to the appropriate categories, based on what was read from the
  * file. If we can't find a category, add the entry to the Other category which is the catchall */
-void DesktopFile::processCategories(vector<Category>& cats, vector<string> foundCategories)
+void DesktopFile::processCategories(vector<Category>& cats, vector<string>& foundCategories)
 {	bool hasCategory = false;
 	vector<string>::iterator it = foundCategories.begin();
 
@@ -240,7 +240,7 @@ void DesktopFile::processCategories(vector<Category>& cats, vector<string> found
 /* Function which attempts to find the full path for a desktop entry by going
  * through a list of icons, attempting to match the icon entry in the entry
  * against each icon path */
-void DesktopFile::matchIcon(string iconDef, vector<IconSpec>& iconpaths)
+void DesktopFile::matchIcon(const string& iconDef, const vector<IconSpec>& iconpaths)
 {	//This is a kludge. If the iconDef is a path then just use that and return
 	if (iconDef.find("/") != string::npos)
 	{	icon = iconDef;
@@ -260,7 +260,7 @@ void DesktopFile::matchIcon(string iconDef, vector<IconSpec>& iconpaths)
  * desktops. If the user specifies that OnlyShowIn entries from a matching desktop should be displayed
  * then the function will return and the nodisplay value will be left untouched. If not, it will be set
  * to true */
-void DesktopFile::processDesktops(vector<string> showInDesktops, vector<string> onlyShowInDesktops)
+void DesktopFile::processDesktops(const vector<string>& showInDesktops, const vector<string>& onlyShowInDesktops)
 {	//First check for all or none
 	for (unsigned int x = 0; x < showInDesktops.size(); x++)
 	{	if (showInDesktops[x] == "all") return;

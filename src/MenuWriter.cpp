@@ -25,8 +25,8 @@
 #include "MenuWriter.h"
 #include "Category.h"
 
-MenuWriter::MenuWriter(vector<DesktopFile> files, 
-				string menuName, 
+MenuWriter::MenuWriter(const vector<DesktopFile>& files, 
+				const string& menuName, 
 				int windowmanager, 
 				bool useIcons, 
 				vector<string> exclude, 
@@ -34,7 +34,7 @@ MenuWriter::MenuWriter(vector<DesktopFile> files,
 				vector<string> excludeCategories, 
 				vector<string> include, 
 				vector<string> excludedFilenames, 
-				vector<Category> cats)
+				const vector<Category>& cats)
 {	this->files = files;
 	this->cats = cats;
 	this->menuName = menuName;
@@ -81,7 +81,7 @@ void MenuWriter::printHandler()
 
 /* This function return the indeces in the files vector for the DesktopFile objects
  * belonging to a given category */
-vector<int> MenuWriter::getPositionsPerCat(Category category)
+vector<int> MenuWriter::getPositionsPerCat(const Category& category)
 {	vector<int> positions;
 	positions.reserve(20);
 
@@ -124,7 +124,7 @@ void MenuWriter::entryDisplayHandler()
 
 /* A function to check whether a category is present in the list of excluded categories.
  * If it is, return true, otherwise return false */
-bool MenuWriter::checkExcludedCategories(string category)
+bool MenuWriter::checkExcludedCategories(const string& category)
 {	if (find(excludeCategories.begin(), excludeCategories.end(), category) != excludeCategories.end())
 		return true;
 	else
@@ -154,7 +154,7 @@ int MenuWriter::getLongestNameLength()
  * for a given category. Some WMs (MWM and FVWM) require a menu which sources
  * the individual category menus. Such a menu will be printed for those window managers
  * if an empty vector of indeces is provided */
-void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, vector<Category> usedCats)
+void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, const vector<Category>& usedCats)
 {	string category = usedCats[catNumber].name; //Variable for the category name
 	string catIcon = usedCats[catNumber].icon; //Variable for the category icon
 	int maxCatNumber = usedCats.size() - 1;	//Variable for knowing when the last category has been reached

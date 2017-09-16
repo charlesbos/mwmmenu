@@ -83,7 +83,7 @@ void usage()
 }
 
 //Function that attempts to get the user icon theme from ~/.gtkrc-2.0
-string getIconTheme(string homedir)
+string getIconTheme(const string& homedir)
 {	ifstream themefile;
 	string path = homedir + "/.gtkrc-2.0";
 	string id = "gtk-icon-theme-name";
@@ -127,7 +127,7 @@ string getIconTheme(string homedir)
 
 /* Function to split string argument separated by commas into
  * a string vector */
-vector<string> splitCommaArgs(string arg)
+vector<string> splitCommaArgs(const string& arg)
 {	vector<string> splitArgs;
 	vector<char> buffer;
 	splitArgs.reserve(5);
@@ -147,7 +147,7 @@ vector<string> splitCommaArgs(string arg)
 }
 
 //A function to make sure we only add unique categories to the categories list
-void addCategory(Category &c, vector<Category> &categories)
+void addCategory(const Category &c, vector<Category> &categories)
 {	for (unsigned int x = 0; x < categories.size(); x++) {
 		if (categories[x].name == c.name) return;
 	}
@@ -156,7 +156,7 @@ void addCategory(Category &c, vector<Category> &categories)
 
 //A function to check whether a filename (not filepath) already exists in a collection
 //of filenames. Useful for local overrides for XDG desktop entries and icons.
-bool idExists(string path, vector<string> &ids)
+bool idExists(const string& path, vector<string> &ids)
 {	string id = path.substr(path.find_last_of("/") + 1, string::npos);
 	for (unsigned int x = 0; x < ids.size(); x++)
 		if (id == ids[x]) return true;

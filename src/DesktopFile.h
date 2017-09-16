@@ -39,7 +39,7 @@ class DesktopFile
 {
 	public:
 		DesktopFile();
-		DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, vector<IconSpec>& iconpaths, vector<Category>& cats);
+		DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, const vector<IconSpec>& iconpaths, vector<Category>& cats);
 		DesktopFile(const DesktopFile& df);
 
 		DesktopFile& operator=(const DesktopFile& df);
@@ -51,17 +51,17 @@ class DesktopFile
 		bool nodisplay;
 		string icon;
 
-		static string getID(string line);
-		static string getSingleValue(string line);
-		static vector<string> getMultiValue(string line);
+		static string getID(const string& line);
+		static string getSingleValue(const string& line);
+		static vector<string> getMultiValue(const string& line);
  
 	private:
 		ifstream dfile;
 
-		void populate(vector<string> showFromDesktops, bool useIcons, vector<IconSpec>& iconpaths, vector<Category>& cats);
-		void matchIcon(string iconDef, vector<IconSpec>& iconpaths);
-		void processCategories(vector<Category>& cats, vector<string> foundCategories);
-		void processDesktops(vector<string> showFromDesktops, vector<string> onlyShowInDesktops);
+		void populate(const vector<string>& showFromDesktops, bool useIcons, const vector<IconSpec>& iconpaths, vector<Category>& cats);
+		void matchIcon(const string& iconDef, const vector<IconSpec>& iconpaths);
+		void processCategories(vector<Category>& cats, vector<string>& foundCategories);
+		void processDesktops(const vector<string>& showFromDesktops, const vector<string>& onlyShowInDesktops);
 };
 
 #endif
