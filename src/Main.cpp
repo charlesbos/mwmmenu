@@ -149,7 +149,12 @@ vector<string> splitCommaArgs(const string& arg)
 //A function to make sure we only add unique categories to the categories list
 void addCategory(const Category &c, vector<Category> &categories)
 {	for (unsigned int x = 0; x < categories.size(); x++) {
-		if (categories[x].name == c.name) return;
+		if (categories[x].name == c.name)
+		{	//Replace default category object with custom object of the same
+			//name if the definitions differ
+			if (!c.incEntryFiles.empty()) categories[x] = c;
+			return;
+		}
 	}
 	categories.push_back(c);
 }
