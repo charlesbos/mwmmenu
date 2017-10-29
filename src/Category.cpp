@@ -94,12 +94,9 @@ void Category::getIncludedFiles()
 			string id = getID(line);
 			if (id == "<Directory>")
 			{	string dir = getSingleValue(line);
-				if (dir != dirFile.substr(dirFile.find_last_of("/") + 1, dirFile.size() - dirFile.find_last_of("/") - 1))
-				{	menu_f.close();
-					continue;
-				}
+				if (dir == dirFile.substr(dirFile.find_last_of("/") + 1, dirFile.size() - dirFile.find_last_of("/") - 1))
+					started = true;
 			}
-			if (id == "<Include>") started = true;
 			if (started && id == "<Filename>") files.push_back(getSingleValue(line));
 			if (id == "</Include>") started = false;
 		}
