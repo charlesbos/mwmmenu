@@ -211,16 +211,19 @@ void DesktopFile::processCategories(vector<Category>& cats, vector<string>& foun
 	}
 
 	//Loop through our category objects, adding the desktop entry name to the category if appropriate
+	string baseFilename = filename.substr(filename.find_last_of("/") + 1, filename.size() - filename.find_last_of("/") - 1);
 	for (unsigned int x = 0; x < cats.size(); x++)
 	{	//Add to category if foundCategories contains the category name
-		if (find(foundCategories.begin(), foundCategories.end(), cats[x].name) != foundCategories.end()) 
+		if (find(foundCategories.begin(), foundCategories.end(), cats[x].name) != foundCategories.end() &&
+				find(cats[x].excEntryFiles.begin(), cats[x].excEntryFiles.end(), baseFilename) == cats[x].excEntryFiles.end())
 		{	cats[x].incEntries.push_back(name);
 			hasCategory = true;
 			continue;
 		}
 		//Add to category if the category specifies a particular desktop file by filename
-		string baseFilename = filename.substr(filename.find_last_of("/") + 1, filename.size() - filename.find_last_of("/") - 1);
-		if (find(cats[x].incEntryFiles.begin(), cats[x].incEntryFiles.end(), baseFilename) != cats[x].incEntryFiles.end())
+		if (find(cats[x].incEntryFiles.begin(), cats[x].incEntryFiles.end(), baseFilename) != cats[x].incEntryFiles.end() &&
+				find(cats[x].excEntryFiles.begin(), cats[x].excEntryFiles.end(), baseFilename) == cats[x].excEntryFiles.end())
+
 		{	cats[x].incEntries.push_back(name);
 			hasCategory = true;
 		}

@@ -31,7 +31,7 @@ Category::Category(const char *dirFile, const vector<string>& menuFiles, bool us
 	if (!dir_f);
 	else
 	{	getCategoryParams();
-		getIncludedFiles();
+		getSpecifiedFiles();
 		dir_f.close();
 		if (useIcons) getCategoryIcon(iconpaths);
 	}
@@ -48,6 +48,7 @@ Category::Category(const Category& c)
 	this->icon = c.icon;
 	this->incEntries = c.incEntries;
 	this->incEntryFiles = c.incEntryFiles;
+	this->excEntryFiles = c.excEntryFiles;
 }
 
 Category& Category::operator=(const Category& c)
@@ -55,6 +56,7 @@ Category& Category::operator=(const Category& c)
 	this->icon = c.icon;
 	this->incEntries = c.incEntries;
 	this->incEntryFiles = c.incEntryFiles;
+	this->excEntryFiles = c.excEntryFiles;
 	return *this;
 }
 
@@ -81,14 +83,14 @@ void Category::getCategoryParams()
 
 /* A function to loop through xdg .menu files, looking for any
  * desktop entry filenames that have been specified as belonging
- * to this category */
-void Category::getIncludedFiles()
+ * to or excluded from this category */
+void Category::getSpecifiedFiles()
 {	for (unsigned int x = 0; x < menuFiles.size(); x++)
 	{	menu_f.open(menuFiles[x]);
 		if (!menu_f) continue;
 		string line;
-		vector<string> files;
 		bool started = false;
+		bool including = false;
 		while (!menu_f.eof())
 		{	getline(menu_f, line);
 			string id = getID(line);
@@ -96,13 +98,16 @@ void Category::getIncludedFiles()
 			{	string dir = getSingleValue(line);
 				if (dir == dirFile.substr(dirFile.find_last_of("/") + 1, dirFile.size() - dirFile.find_last_of("/") - 1))
 					started = true;
+				else
+					started = false;
 			}
-			if (started && id == "<Filename>") files.push_back(getSingleValue(line));
-			if (id == "</Include>") started = false;
+			if (id == "<Include>" && started) including = true;
+			if (id == "<Exclude>" && started) including = false;
+			if (started && id == "<Filename>") 
+			{	if (including) incEntryFiles.push_back(getSingleValue(line));
+				else excEntryFiles.push_back(getSingleValue(line));
+			}
 		}
-		if (!files.empty()) 
-			for (unsigned int x = 0; x < files.size(); x++)
-				incEntryFiles.push_back(files[x]);
 		menu_f.close();
 	}
 }

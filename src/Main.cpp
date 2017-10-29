@@ -152,7 +152,9 @@ void addCategory(const Category &c, vector<Category> &categories)
 		if (categories[x].name == c.name)
 		{	//Replace default category object with custom object of the same
 			//name if the definitions differ
-			if (!c.incEntryFiles.empty()) categories[x] = c;
+			if (!c.incEntryFiles.empty() || !c.excEntryFiles.empty() || 
+					(c.icon != categories[x].icon && c.icon != "\0")) 
+				categories[x] = c;
 			return;
 		}
 	}

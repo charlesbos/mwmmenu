@@ -38,6 +38,7 @@ class Category
 		string icon;
 		vector<string> incEntries;
 		vector<string> incEntryFiles;
+		vector<string> excEntryFiles;
 
 		static string getID(const string& line);
 		static string getSingleValue(const string& line);
@@ -49,7 +50,7 @@ class Category
 		ifstream menu_f;
 
 		void getCategoryParams();
-		void getIncludedFiles();
+		void getSpecifiedFiles();
 		void getCategoryIcon(const vector<IconSpec>& iconpaths);
 };
 
