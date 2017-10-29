@@ -362,7 +362,7 @@ int main(int argc, char *argv[])
 	vector<string> menuPaths;
 	if (!noCustomCats)
 	{	vector<string> catDirs = {"/usr/share/desktop-directories"};
-		vector<string> menuDirs = {"/etc/xdg/menus"}; 
+		vector<string> menuDirs = {"/etc/xdg/menus/applications-merged"}; 
 		if (homedir.c_str() != NULL) 
 		{	catDirs.push_back(homedir + "/.local/share/desktop-directories");
 			menuDirs.push_back(homedir + "/.config/menus/applications-merged");
