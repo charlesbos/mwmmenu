@@ -11,7 +11,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -28,40 +28,40 @@
 using namespace std;
 
 struct IconSpec
-{	string path;
-	string def;
-	string id;
+{   string path;
+    string def;
+    string id;
 };
 
 class Category;
 
 class DesktopFile
 {
-	public:
-		DesktopFile();
-		DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, const vector<IconSpec>& iconpaths, vector<Category>& cats);
-		DesktopFile(const DesktopFile& df);
+    public:
+        DesktopFile();
+        DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, const vector<IconSpec>& iconpaths, vector<Category>& cats);
+        DesktopFile(const DesktopFile& df);
 
-		DesktopFile& operator=(const DesktopFile& df);
-		bool operator<(const DesktopFile& df);
+        DesktopFile& operator=(const DesktopFile& df);
+        bool operator<(const DesktopFile& df);
 
-		string filename;
-		string name;
-		string exec;
-		bool nodisplay;
-		string icon;
+        string filename;
+        string name;
+        string exec;
+        bool nodisplay;
+        string icon;
 
-		static string getID(const string& line);
-		static string getSingleValue(const string& line);
-		static vector<string> getMultiValue(const string& line);
+        static string getID(const string& line);
+        static string getSingleValue(const string& line);
+        static vector<string> getMultiValue(const string& line);
  
-	private:
-		ifstream dfile;
+    private:
+        ifstream dfile;
 
-		void populate(const vector<string>& showFromDesktops, bool useIcons, const vector<IconSpec>& iconpaths, vector<Category>& cats);
-		void matchIcon(const string& iconDef, const vector<IconSpec>& iconpaths);
-		void processCategories(vector<Category>& cats, vector<string>& foundCategories);
-		void processDesktops(const vector<string>& showFromDesktops, const vector<string>& onlyShowInDesktops);
+        void populate(const vector<string>& showFromDesktops, bool useIcons, const vector<IconSpec>& iconpaths, vector<Category>& cats);
+        void matchIcon(const string& iconDef, const vector<IconSpec>& iconpaths);
+        void processCategories(vector<Category>& cats, vector<string>& foundCategories);
+        void processDesktops(const vector<string>& showFromDesktops, const vector<string>& onlyShowInDesktops);
 };
 
 #endif

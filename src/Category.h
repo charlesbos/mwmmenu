@@ -11,7 +11,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -25,33 +25,33 @@
 
 class Category
 {
-	public:
-		Category();
-		Category(const char *dirFile, const vector<string>& menuFiles, bool useIcons, const vector<IconSpec>& iconpaths);
-		Category(const string& name, bool useIcons, const vector<IconSpec>& iconpaths);
-		Category(const Category& c);
+    public:
+        Category();
+        Category(const char *dirFile, const vector<string>& menuFiles, bool useIcons, const vector<IconSpec>& iconpaths);
+        Category(const string& name, bool useIcons, const vector<IconSpec>& iconpaths);
+        Category(const Category& c);
 
-		Category& operator=(const Category& c);
-		bool operator<(const Category& c);
+        Category& operator=(const Category& c);
+        bool operator<(const Category& c);
 
-		string name;
-		string icon;
-		vector<string> incEntries;
-		vector<string> incEntryFiles;
-		vector<string> excEntryFiles;
+        string name;
+        string icon;
+        vector<string> incEntries;
+        vector<string> incEntryFiles;
+        vector<string> excEntryFiles;
 
-		static string getID(const string& line);
-		static string getSingleValue(const string& line);
+        static string getID(const string& line);
+        static string getSingleValue(const string& line);
 
-	private:
-		string dirFile;
-		vector<string> menuFiles;
-		ifstream dir_f;
-		ifstream menu_f;
+    private:
+        string dirFile;
+        vector<string> menuFiles;
+        ifstream dir_f;
+        ifstream menu_f;
 
-		void getCategoryParams();
-		void getSpecifiedFiles();
-		void getCategoryIcon(const vector<IconSpec>& iconpaths);
+        void getCategoryParams();
+        void getSpecifiedFiles();
+        void getCategoryIcon(const vector<IconSpec>& iconpaths);
 };
 
 #endif

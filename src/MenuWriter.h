@@ -11,7 +11,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -35,38 +35,39 @@
 #define icewm 8
 
 class MenuWriter
-{	public:
-		MenuWriter(const vector<DesktopFile>& files, 
-			const string& menuName, 
-			int windowmanager, 
-			bool useIcons, 
-			vector<string> exclude, 
-			vector<string> excludeMatching, 
-			vector<string> excludeCategories, 
-			vector<string> include, 
-			vector<string> excludedFilenames, 
-			const vector<Category>& cats);
+{   
+    public:
+        MenuWriter(const vector<DesktopFile>& files, 
+            const string& menuName, 
+            int windowmanager, 
+            bool useIcons, 
+            vector<string> exclude, 
+            vector<string> excludeMatching, 
+            vector<string> excludeCategories, 
+            vector<string> include, 
+            vector<string> excludedFilenames, 
+            const vector<Category>& cats);
 
-	private:
-		vector<DesktopFile> files;
-		vector<Category> cats;
-		string menuName;
-		int windowmanager;
-		bool useIcons;
-		vector<string> exclude;
-		vector<string> excludeMatching;
-		vector<string> excludeCategories;
-		vector<string> include;
-		vector<string> excludedFilenames;
+    private:
+        vector<DesktopFile> files;
+        vector<Category> cats;
+        string menuName;
+        int windowmanager;
+        bool useIcons;
+        vector<string> exclude;
+        vector<string> excludeMatching;
+        vector<string> excludeCategories;
+        vector<string> include;
+        vector<string> excludedFilenames;
 
-		void printHandler();
-		void entryDisplayHandler();
-		bool checkExcludedCategories(const string& category);
+        void printHandler();
+        void entryDisplayHandler();
+        bool checkExcludedCategories(const string& category);
 
-		vector<int> getPositionsPerCat(const Category& category);
-		int getLongestNameLength();
+        vector<int> getPositionsPerCat(const Category& category);
+        int getLongestNameLength();
 
-		void writeMenu(vector<int> positions, int catNumber, int longest, const vector<Category>& usedCats);
+        void writeMenu(vector<int> positions, int catNumber, int longest, const vector<Category>& usedCats);
 };
 
 #endif
