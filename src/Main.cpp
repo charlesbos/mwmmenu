@@ -40,7 +40,7 @@ void usage()
         "                         some window managers\n"
         "  --icons-xdg-only:      exclude any non-xdg icons. Note that this will\n" 
         "                         disable the --add-icon-paths option.\n"
-        "  --xdg-icons-size:      can be 16x16, 32x32 etc. Can also be scalable or\n" 
+        "  --icons-xdg-size:      can be 16x16, 32x32 etc. Can also be scalable or\n" 
         "                         all. Note that this cannot control sizes for\n" 
         "                         non-xdg icons. Defaults to all.\n"
         "  --no-custom-categories: do not add entries to or print non-standard\n" 
@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
     int windowmanager = mwm;
     bool useIcons = false;
     bool iconsXdgOnly = false;
-    string xdgIconsSize = "all";
+    string iconsXdgSize = "all";
     string exclude;
     string excludeMatching;
     string excludeCategories;
@@ -206,8 +206,8 @@ int main(int argc, char *argv[])
         {   iconsXdgOnly = true;
             continue;
         }
-        if (strcmp(argv[x], "--xdg-icons-size") == 0) 
-        {   if (x + 1 < argc) xdgIconsSize = argv[x + 1] ;
+        if (strcmp(argv[x], "--icons-xdg-size") == 0) 
+        {   if (x + 1 < argc) iconsXdgSize = argv[x + 1] ;
             continue;
         }
         if (strcmp(argv[x], "--fvwm") == 0) 
@@ -283,7 +283,7 @@ int main(int argc, char *argv[])
             windowmanager == olvwm ||
             windowmanager == windowmaker) 
         useIcons = false;
-    if (xdgIconsSize == "all") xdgIconsSize = "/";
+    if (iconsXdgSize == "all") iconsXdgSize = "/";
 
     //Get string vector of paths to .desktop files
     vector<string> paths;
@@ -339,7 +339,7 @@ int main(int argc, char *argv[])
                     {   string ipath = i->path().string();
                         //If icon directory is a XDG one, only add iconpath if conforms to the chosen size
                         if (ipath.find("/usr/share/icons") != string::npos || ipath.find(".local/share/icons") != string::npos)
-                        {   if (ipath.find(xdgIconsSize) == string::npos) continue;
+                        {   if (ipath.find(iconsXdgSize) == string::npos) continue;
                         }
                         if (idExists(ipath, iconpathIDS)) continue;
                         IconSpec spec;
