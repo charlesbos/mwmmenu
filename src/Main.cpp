@@ -33,53 +33,53 @@ void usage()
         "  # Note: all options must be spaced.\n"
         "  mwmmenu [OPTIONS]\n\n"
         "Options:\n"
-        "  -h, -help:             show this dialogue\n"
-        "  -n, -name:             name used for the main menu - by default, use\n" 
+        "  -h, --help:            show this dialogue\n"
+        "  -n, --name:            name used for the main menu - by default, use\n" 
         "                         Applications\n"
-        "  -i, -icons:            use icons with menu entries, only compatible with\n" 
+        "  -i, --icons:           use icons with menu entries, only compatible with\n" 
         "                         some window managers\n"
-        "  -icons_xdg_only:       exclude any non-xdg icons. Note that this will\n" 
-        "                         disable the -add_icon_paths option.\n"
-        "  -xdg_icons_size:       can be 16x16, 32x32 etc. Can also be scalable or\n" 
+        "  --icons-xdg-only:      exclude any non-xdg icons. Note that this will\n" 
+        "                         disable the --add-icon-paths option.\n"
+        "  --xdg-icons-size:      can be 16x16, 32x32 etc. Can also be scalable or\n" 
         "                         all. Note that this cannot control sizes for\n" 
         "                         non-xdg icons. Defaults to all.\n"
-        "  -no_custom_categories: do not add entries to or print non-standard\n" 
+        "  --no-custom-categories: do not add entries to or print non-standard\n" 
         "                         categories, 'Other' will be used instead if\n"
         "                         required.\n\n"
         "  # Note:\n"
         "  * The following options accept a single string which can contain multiple\n"
         "    parameters.\n"
-        "  * Multiple parameters should be separated by commas: e.g. -option\n" 
+        "  * Multiple parameters should be separated by commas: e.g. --option\n" 
         "    Param1,Param2,Param3\n"
         "  * If the option asks for a name, assume it means a name as specified in\n" 
         "    an entry file, e.g. Name=Firefox.\n"
         "  * If a parameter contains spaces, that parameter must be enclosed in\n"
         "    quotes.\n\n"
-        "  -exclude:              do not add desktop entries that have the names\n" 
+        "  --exclude:             do not add desktop entries that have the names\n" 
         "                         specified.\n"
-        "  -exclude_matching:     do not add desktop entries where the entry's name\n" 
+        "  --exclude-matching:    do not add desktop entries where the entry's name\n" 
         "                         contains one of the strings specified.\n"
-        "  -exclude_categories:   do not print category menus for the following\n" 
+        "  --exclude-categories:  do not print category menus for the following\n" 
         "                         category names.\n"
-        "  -exclude_by_filename:  exclude desktop entries based on their full paths.\n"
-        "  -include:              force entries with the following names to be\n" 
+        "  --exclude-by-filename: exclude desktop entries based on their full paths.\n"
+        "  --include:             force entries with the following names to be\n" 
         "                         included in menus even if their no display value\n" 
         "                         is true.\n"
-        "  -show_from_desktops:   show entries from the specified desktops if\n" 
+        "  --show-from-desktops:  show entries from the specified desktops if\n" 
         "                         OnlyShowIn is set. Can be values like GNOME or\n" 
         "                         XFCE. Can also be none or all, The default is none.\n"
-        "  -add_desktop_paths:    add extra search paths for desktop entries.\n"
-        "  -add_icon_paths:       add extra search paths for icons.\n\n"
+        "  --add-desktop-paths:   add extra search paths for desktop entries.\n"
+        "  --add-icon-paths:      add extra search paths for icons.\n\n"
         "Menu format options:\n"
         "  # No format argument:  produce menus for MWM and TWM\n"
-        "  -fvwm:                 produce static menus for FVWM\n"
-        "  -fvwm_dynamic:         produce dynamic menus for FVWM\n"
-        "  -fluxbox:              produce menus for Fluxbox or Blackbox\n"
-        "  -openbox:              produce static menus for Openbox\n"
-        "  -openbox_pipe:         produce pipe menus for Openbox\n"
-        "  -olvwm:                produce menus for Olwm and Olvwm\n"
-        "  -windowmaker:          produce menus for Windowmaker\n"
-        "  -icewm:                produce menus for IceWM\n";
+        "  --fvwm:                produce static menus for FVWM\n"
+        "  --fvwm-dynamic:        produce dynamic menus for FVWM\n"
+        "  --fluxbox:             produce menus for Fluxbox or Blackbox\n"
+        "  --openbox:             produce static menus for Openbox\n"
+        "  --openbox-pipe:        produce pipe menus for Openbox\n"
+        "  --olvwm:               produce menus for Olwm and Olvwm\n"
+        "  --windowmaker:         produce menus for Windowmaker\n"
+        "  --icewm:               produce menus for IceWM\n";
 }
 
 //Function that attempts to get the user icon theme from ~/.gtkrc-2.0
@@ -190,91 +190,91 @@ int main(int argc, char *argv[])
     bool noCustomCats = false;
 
     for (int x = 0; x < argc; x++)
-    {   if (strcmp(argv[x], "-h") == 0 || strcmp(argv[x], "-help") == 0)
+    {   if (strcmp(argv[x], "-h") == 0 || strcmp(argv[x], "--help") == 0)
         {   usage();
             return 0; 
         }
-        if (strcmp(argv[x], "-n") == 0 || strcmp(argv[x], "-name") == 0) 
+        if (strcmp(argv[x], "-n") == 0 || strcmp(argv[x], "--name") == 0) 
         {   if (x + 1 < argc) menuName = argv[x + 1];
             continue;
         }
-        if (strcmp(argv[x], "-i") == 0 || strcmp(argv[x], "-icons") == 0)
+        if (strcmp(argv[x], "-i") == 0 || strcmp(argv[x], "--icons") == 0)
         {   useIcons = true;
             continue;
         }
-        if (strcmp(argv[x], "-icons_xdg_only") == 0) 
+        if (strcmp(argv[x], "--icons-xdg-only") == 0) 
         {   iconsXdgOnly = true;
             continue;
         }
-        if (strcmp(argv[x], "-xdg_icons_size") == 0) 
+        if (strcmp(argv[x], "--xdg-icons-size") == 0) 
         {   if (x + 1 < argc) xdgIconsSize = argv[x + 1] ;
             continue;
         }
-        if (strcmp(argv[x], "-fvwm") == 0) 
+        if (strcmp(argv[x], "--fvwm") == 0) 
         {   windowmanager = fvwm;
             continue;
         }
-        if (strcmp(argv[x], "-fvwm_dynamic") == 0) 
+        if (strcmp(argv[x], "--fvwm-dynamic") == 0) 
         {   windowmanager = fvwm_dynamic;
             continue;
         }
-        if (strcmp(argv[x], "-fluxbox") == 0) 
+        if (strcmp(argv[x], "--fluxbox") == 0) 
         {   windowmanager = fluxbox;
             continue;
         }
-        if (strcmp(argv[x], "-openbox") == 0) 
+        if (strcmp(argv[x], "--openbox") == 0) 
         {   windowmanager = openbox;
             continue;
         }
-        if (strcmp(argv[x], "-openbox_pipe") == 0) 
+        if (strcmp(argv[x], "--openbox-pipe") == 0) 
         {   windowmanager = openbox_pipe;
             continue;
         }
-        if (strcmp(argv[x], "-olvwm") == 0) 
+        if (strcmp(argv[x], "--olvwm") == 0) 
         {   windowmanager = olvwm;
             continue;
         }
-        if (strcmp(argv[x], "-windowmaker") == 0) 
+        if (strcmp(argv[x], "--windowmaker") == 0) 
         {   windowmanager = windowmaker;
             continue;
         }
-        if (strcmp(argv[x], "-icewm") == 0) 
+        if (strcmp(argv[x], "--icewm") == 0) 
         {   windowmanager = icewm;
             continue;
         }
-        if (strcmp(argv[x], "-exclude") == 0) 
+        if (strcmp(argv[x], "--exclude") == 0) 
         {   if (x + 1 < argc) exclude = argv[x + 1];
             continue;
         }
-        if (strcmp(argv[x], "-exclude_matching") == 0) 
+        if (strcmp(argv[x], "--exclude-matching") == 0) 
         {   if (x + 1 < argc) excludeMatching = argv[x + 1];
             continue;
         }
-        if (strcmp(argv[x], "-exclude_categories") == 0) 
+        if (strcmp(argv[x], "--exclude-categories") == 0) 
         {   if (x + 1 < argc) excludeCategories = argv[x + 1];
             continue;
         }
-        if (strcmp(argv[x], "-exclude_by_filename") == 0)
+        if (strcmp(argv[x], "--exclude-by-filename") == 0)
         {   if (x + 1 < argc) excludedFilenames = argv[x + 1];
             continue;
         }
-        if (strcmp(argv[x], "-include") == 0)
+        if (strcmp(argv[x], "--include") == 0)
         {   if (x + 1 < argc) include = argv[x + 1];
             continue;
         }
-        if (strcmp(argv[x], "-show_from_desktops") == 0)
+        if (strcmp(argv[x], "--show-from-desktops") == 0)
         {   if (x + 1 < argc) showFromDesktops = argv[x + 1];
             continue;
         }
-        if (strcmp(argv[x], "-add_desktop_paths") == 0) 
+        if (strcmp(argv[x], "--add-desktop-paths") == 0) 
         {   if (x + 1 < argc) extraDesktopPaths = argv[x + 1];
             continue;
         }
-        if (strcmp(argv[x], "-add_icon_paths") == 0) 
+        if (strcmp(argv[x], "--add-icon-paths") == 0) 
         {   if (x + 1 < argc) extraIconPaths = argv[x + 1];
             continue;
         }
-        if (strcmp(argv[x], "-no_custom_categories") == 0)
+        if (strcmp(argv[x], "--no-custom-categories") == 0)
         {   noCustomCats = true;
             continue;
         }
