@@ -26,13 +26,13 @@
 
 DesktopFile::DesktopFile() {}
 
-DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, const vector<IconSpec>& iconpaths, vector<Category>& cats) 
+DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, const vector<IconSpec>& iconpaths, vector<Category>& cats, const string& iconsXdgSize, bool iconsXdgOnly) 
 {   this->filename = filename;
     this->nodisplay = false;
     dfile.open(filename);
     if (!dfile);
     else
-    {   populate(showFromDesktops, useIcons, iconpaths, cats);
+    {   populate(showFromDesktops, useIcons, iconpaths, cats, iconsXdgSize, iconsXdgOnly);
         dfile.close();
     }
 }
@@ -66,7 +66,7 @@ bool DesktopFile::operator<(const DesktopFile& df)
 /* This function fetches the required values (Name, Exec, Categories, NoDisplay etc)
  * and then assigns the results to the appropriate instance variables or passes the results
  * to the appropriate function */
-void DesktopFile::populate(const vector<string>& showFromDesktops, bool useIcons, const vector<IconSpec>& iconpaths, vector<Category>& cats)
+void DesktopFile::populate(const vector<string>& showFromDesktops, bool useIcons, const vector<IconSpec>& iconpaths, vector<Category>& cats, const string& iconsXdgSize, bool iconsXdgOnly)
 {   string line;
     string iconDef;
     vector<string> onlyShowInDesktops;
@@ -116,7 +116,7 @@ void DesktopFile::populate(const vector<string>& showFromDesktops, bool useIcons
     }
 
     processCategories(cats, foundCategories);
-    if (useIcons && iconDef != "\0") matchIcon(iconDef, iconpaths);
+    if (useIcons && iconDef != "\0") matchIcon(iconDef, iconpaths, iconsXdgSize, iconsXdgOnly);
     if (!onlyShowInDesktops.empty()) processDesktops(showFromDesktops, onlyShowInDesktops);
 }
 
@@ -243,11 +243,13 @@ void DesktopFile::processCategories(vector<Category>& cats, vector<string>& foun
 /* Function which attempts to find the full path for a desktop entry by going
  * through a list of icons, attempting to match the icon entry in the entry
  * against each icon path */
-void DesktopFile::matchIcon(const string& iconDef, const vector<IconSpec>& iconpaths)
-{   //This is a kludge. If the iconDef is a path then just use that and return
-    if (iconDef.find("/") != string::npos)
-    {   icon = iconDef;
-        return;
+void DesktopFile::matchIcon(const string& iconDef, const vector<IconSpec>& iconpaths, const string& iconsXdgSize, bool iconsXdgOnly)
+{   //This is a kludge. If the iconDef is a path and it conforms to the required size then just use that and return
+    if (iconDef.find("/") != string::npos && iconDef.find(iconsXdgSize) != string::npos)
+    {   if (!iconsXdgOnly || (iconsXdgOnly && iconDef.find("/share/icons/") != string::npos))
+        {   icon = iconDef;
+            return;
+        }
     }
     /* Here we search through the icon locations provided, trying to match the definition to a
      * full path. Note that the first matching icon found will be the one that is chosen */

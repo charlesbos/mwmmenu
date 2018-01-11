@@ -387,12 +387,12 @@ int main(int argc, char *argv[])
     vector<Category> cats;
     //Create the base categories
     for (unsigned int x = 0; x < baseCategories.size(); x++)
-    {   Category c = Category(baseCategories[x], useIcons, iconpaths);
+    {   Category c = Category(baseCategories[x], useIcons, iconpaths, iconsXdgSize, iconsXdgOnly);
         cats.push_back(c);
     }
     //Create the custom categories (if there are any)
     for (unsigned int x = 0; x < catPaths.size(); x++)
-    {   Category c = Category(catPaths[x].c_str(), menuPaths, useIcons, iconpaths);
+    {   Category c = Category(catPaths[x].c_str(), menuPaths, useIcons, iconpaths, iconsXdgSize, iconsXdgOnly);
         if (c.name != "\0") addCategory(c, cats);
     }
     sort(cats.begin(), cats.end());
@@ -400,7 +400,7 @@ int main(int argc, char *argv[])
     //Create vector of DesktopFile, using each path in the paths vector
     vector<DesktopFile> files;
     for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
-    {   DesktopFile df = DesktopFile((*it).c_str(), splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats);
+    {   DesktopFile df = DesktopFile((*it).c_str(), splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats, iconsXdgSize, iconsXdgOnly);
         if (df.name != "\0" && df.exec != "\0") files.push_back(df);
     }
     sort(files.begin(), files.end());

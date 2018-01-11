@@ -24,7 +24,7 @@
 Category::Category() {}
 
 //Constructor for custom categories
-Category::Category(const char *dirFile, const vector<string>& menuFiles, bool useIcons, const vector<IconSpec>& iconpaths)
+Category::Category(const char *dirFile, const vector<string>& menuFiles, bool useIcons, const vector<IconSpec>& iconpaths, const string& iconsXdgSize, bool iconsXdgOnly)
 {   this->dirFile = dirFile;
     this->menuFiles = menuFiles;
     dir_f.open(dirFile);
@@ -33,14 +33,14 @@ Category::Category(const char *dirFile, const vector<string>& menuFiles, bool us
     {   getCategoryParams();
         getSpecifiedFiles();
         dir_f.close();
-        if (useIcons) getCategoryIcon(iconpaths);
+        if (useIcons) getCategoryIcon(iconpaths, iconsXdgSize, iconsXdgOnly);
     }
 }
 
 //Constructor for base categories
-Category::Category(const string& name, bool useIcons, const vector<IconSpec>& iconpaths)
+Category::Category(const string& name, bool useIcons, const vector<IconSpec>& iconpaths, const string& iconsXdgSize, bool iconsXdgOnly)
 {   this->name = name;
-    if (useIcons) getCategoryIcon(iconpaths);
+    if (useIcons) getCategoryIcon(iconpaths, iconsXdgSize, iconsXdgOnly);
 }
 
 Category::Category(const Category& c)
@@ -165,17 +165,23 @@ string Category::getSingleValue(const string& line)
 /* Try to set a path to an icon. If the category is custom, we might already
  * have an icon definition. Otherwise, we try and determine it from the category
  * name */
-void Category::getCategoryIcon(const vector<IconSpec>& iconpaths)
+void Category::getCategoryIcon(const vector<IconSpec>& iconpaths, const string& iconsXdgSize, bool iconsXdgOnly)
 {   string nameGuard = "categories"; //If it's a base category, we want to get the icon from the freedesktop categories directory
     string iconDef; //The icon definition, from which we try to determine a path to an icon
+
+    /* This is a kludge. If we already have an icon definition and it is a full path instead of
+     * a true definition, then check if it conforms to the required size and is an xdg directory
+     * if that has been requested. If so, exit here. Otherwise, clear the definition and carry on */
+    if (icon != "\0" && icon.find("/") != string::npos && icon.find(iconsXdgSize) != string::npos) 
+    {   if (!iconsXdgOnly || (iconsXdgOnly && icon.find("/share/icons/") != string::npos))
+            return;
+        else
+            icon = "\0";
+    }
 
     //Set the icon definition, either the one we already have or the category name
     if (icon != "\0") iconDef = icon;
     else iconDef = name;
-
-    /* This is a kludge. If we already have an icon definition and it is a full path instead of
-     * a true definition, then there is nothing more to do so we exit here */
-    if (icon != "\0" && icon.find("/") != string::npos) return;
 
     //If we already have a definition, we can get the icon from any directory
     if (icon != "\0") nameGuard = "/";
