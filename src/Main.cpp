@@ -332,15 +332,18 @@ int main(int argc, char *argv[])
         {   icondirs.push_back("/usr/local/share/pixmaps");
             icondirs.push_back("/usr/share/pixmaps");
         }
+        //If an xdg icon size has been specified, limit the icon search to the appropriate directory
+        if (iconsXdgSize != "/")
+        {   for (unsigned int x = 0; x < icondirs.size(); x++)
+            {   if (icondirs[x].find("/share/icons/") != string::npos)
+                    icondirs[x] = icondirs[x] + "/" + iconsXdgSize;
+            }
+        }
         for (unsigned int x = 0; x < icondirs.size(); x++)
         {   try
             {   for (boost::filesystem::recursive_directory_iterator i(icondirs[x]), end; i != end; ++i)
                 {   if (!is_directory(i->path()))
                     {   string ipath = i->path().string();
-                        //If icon directory is a XDG one, only add iconpath if conforms to the chosen size
-                        if (ipath.find("/usr/share/icons") != string::npos || ipath.find(".local/share/icons") != string::npos)
-                        {   if (ipath.find(iconsXdgSize) == string::npos) continue;
-                        }
                         if (idExists(ipath, iconpathIDS)) continue;
                         IconSpec spec;
                         spec.path = ipath;
