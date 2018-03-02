@@ -82,6 +82,9 @@ void usage()
         "  --icewm:               produce menus for IceWM\n";
 }
 
+//A function to extract a filename from a full path
+string getFilename(const string& path) { return path.substr(path.find_last_of("/") + 1, string::npos); }
+
 //Function that attempts to get the user icon theme from ~/.gtkrc-2.0
 string getIconTheme(const string& homedir)
 {   ifstream themefile;
@@ -123,6 +126,27 @@ string getIconTheme(const string& homedir)
         themefile.close();
         return "\0";
     }
+}
+
+/* A function to find a terminal emulator that can be used for executing
+   terminal based applications */
+string getTerminalEmulator()
+{   string term = "xterm";
+    vector<string> terms = {"gnome-terminal", "xfce4-terminal", "mate-terminal", "lxterminal", "konsole", "terminology",
+                            "urxvt", "rxvt", "xterm"};
+    vector<string> binaries;
+    binaries.reserve(3000);
+    for (boost::filesystem::directory_iterator i("/usr/bin"), end; i != end; ++i)
+    {   string file = getFilename(i->path().string());
+        binaries.push_back(file);
+    }
+    for (unsigned int x = 0; x < terms.size(); x++)
+    {   if (find(binaries.begin(), binaries.end(), terms[x]) != binaries.end())
+        {   term = terms[x];
+            break;
+        }
+    }
+    return term + " -e";
 }
 
 /* Function to split string argument separated by commas into
@@ -174,6 +198,7 @@ bool idExists(const string& path, vector<string> &ids)
 int main(int argc, char *argv[])
 {   //Handle args
     string homedir = getenv("HOME");
+    string term = getTerminalEmulator();
     string menuName = "Applications";
     int windowmanager = mwm;
     bool useIcons = false;
@@ -403,7 +428,7 @@ int main(int argc, char *argv[])
     //Create vector of DesktopFile, using each path in the paths vector
     vector<DesktopFile> files;
     for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
-    {   DesktopFile df = DesktopFile((*it).c_str(), splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats, iconsXdgSize, iconsXdgOnly);
+    {   DesktopFile df = DesktopFile((*it).c_str(), splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats, iconsXdgSize, iconsXdgOnly, term);
         if (df.name != "\0" && df.exec != "\0") files.push_back(df);
     }
     sort(files.begin(), files.end());

@@ -26,13 +26,14 @@
 
 DesktopFile::DesktopFile() {}
 
-DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, const vector<IconSpec>& iconpaths, vector<Category>& cats, const string& iconsXdgSize, bool iconsXdgOnly) 
+DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops, bool useIcons, const vector<IconSpec>& iconpaths, vector<Category>& cats, const string& iconsXdgSize, bool iconsXdgOnly, const string& term) 
 {   this->filename = filename;
     this->nodisplay = false;
+    this->terminal = false;
     dfile.open(filename);
     if (!dfile);
     else
-    {   populate(showFromDesktops, useIcons, iconpaths, cats, iconsXdgSize, iconsXdgOnly);
+    {   populate(showFromDesktops, useIcons, iconpaths, cats, iconsXdgSize, iconsXdgOnly, term);
         dfile.close();
     }
 }
@@ -43,6 +44,7 @@ DesktopFile::DesktopFile(const DesktopFile& df)
     this->exec = df.exec;
     this->nodisplay = df.nodisplay;
     this->icon = df.icon;
+    this->terminal = df.terminal;
 }
 
 DesktopFile& DesktopFile::operator=(const DesktopFile& df)
@@ -51,6 +53,7 @@ DesktopFile& DesktopFile::operator=(const DesktopFile& df)
     this->exec = df.exec;
     this->nodisplay = df.nodisplay;
     this->icon = df.icon;
+    this->terminal = df.terminal;
     return *this;
 }
 
@@ -66,7 +69,7 @@ bool DesktopFile::operator<(const DesktopFile& df)
 /* This function fetches the required values (Name, Exec, Categories, NoDisplay etc)
  * and then assigns the results to the appropriate instance variables or passes the results
  * to the appropriate function */
-void DesktopFile::populate(const vector<string>& showFromDesktops, bool useIcons, const vector<IconSpec>& iconpaths, vector<Category>& cats, const string& iconsXdgSize, bool iconsXdgOnly)
+void DesktopFile::populate(const vector<string>& showFromDesktops, bool useIcons, const vector<IconSpec>& iconpaths, vector<Category>& cats, const string& iconsXdgSize, bool iconsXdgOnly, const string& term)
 {   string line;
     string iconDef;
     vector<string> onlyShowInDesktops;
@@ -113,11 +116,18 @@ void DesktopFile::populate(const vector<string>& showFromDesktops, bool useIcons
         {   iconDef = getSingleValue(line);
             continue;
         }
+        if (id == "Terminal")
+        {   string value = getSingleValue(line);
+            if (value == "True" || value == "true")
+                terminal = true;
+            continue;
+        }
     }
 
     processCategories(cats, foundCategories);
     if (useIcons && iconDef != "\0") matchIcon(iconDef, iconpaths, iconsXdgSize, iconsXdgOnly);
     if (!onlyShowInDesktops.empty()) processDesktops(showFromDesktops, onlyShowInDesktops);
+    if (terminal) this->exec = term + " " + this->exec;
 }
 
 /* This function is used to get the single value before the = sign.
