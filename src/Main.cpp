@@ -38,6 +38,9 @@ void usage()
         "                         Applications\n"
         "  -i, --icons:           use icons with menu entries, only compatible with\n" 
         "                         some window managers\n"
+        "  -t, --terminal:        specify terminal to be used for terminal based\n"
+        "                         applications. If this option is not used, the\n"
+        "                         program searches for a terminal application\n"
         "  --icons-xdg-only:      exclude any non-xdg icons. Note that this will\n" 
         "                         disable the --add-icon-paths option.\n"
         "  --icons-xdg-size:      can be 16x16, 32x32 etc. Can also be scalable or\n" 
@@ -198,7 +201,7 @@ bool idExists(const string& path, vector<string> &ids)
 int main(int argc, char *argv[])
 {   //Handle args
     string homedir = getenv("HOME");
-    string term = getTerminalEmulator();
+    string term;
     string menuName = "Applications";
     int windowmanager = mwm;
     bool useIcons = false;
@@ -225,6 +228,13 @@ int main(int argc, char *argv[])
         }
         if (strcmp(argv[x], "-i") == 0 || strcmp(argv[x], "--icons") == 0)
         {   useIcons = true;
+            continue;
+        }
+        if (strcmp(argv[x], "-t") == 0 || strcmp(argv[x], "--terminal") == 0)
+        {   if (x + 1 < argc) 
+            {   term = argv[x + 1];
+                term += " -e";
+            }
             continue;
         }
         if (strcmp(argv[x], "--icons-xdg-only") == 0) 
@@ -309,6 +319,7 @@ int main(int argc, char *argv[])
             windowmanager == windowmaker) 
         useIcons = false;
     if (iconsXdgSize == "all") iconsXdgSize = "/";
+    if (term == "\0") term = getTerminalEmulator();
 
     //Get string vector of paths to .desktop files
     vector<string> paths;
