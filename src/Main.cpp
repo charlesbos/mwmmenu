@@ -188,14 +188,16 @@ void addCategory(const Category &c, vector<Category> &categories)
     categories.push_back(c);
 }
 
-//A function to check whether a filename (not filepath) already exists in a collection
-//of filenames. Useful for local overrides for XDG desktop entries and icons.
-bool idExists(const string& path, vector<string> &ids)
-{   string id = path.substr(path.find_last_of("/") + 1, string::npos);
+//A function to add an id (meaning a base filename - no full path) to a list
+//if it isn't already present in the list. Return true if we add the item
+//and false if we do not because it's already in the list. This is useful for 
+//local overrides for XDG desktop entries and icons.
+bool addID(const string& path, vector<string> &ids)
+{   string id = getFilename(path);
     for (unsigned int x = 0; x < ids.size(); x++)
-        if (id == ids[x]) return true;
+        if (id == ids[x]) return false;
     ids.push_back(id);
-    return false;
+    return true;
 }
 
 int main(int argc, char *argv[])
@@ -338,7 +340,7 @@ int main(int argc, char *argv[])
     for (unsigned int x = 0; x < appdirs.size(); x++)
     {   try
         {   for (boost::filesystem::recursive_directory_iterator i(appdirs[x]), end; i != end; ++i)
-                if (!is_directory(i->path()) && !idExists(i->path().string(), pathIDS)) 
+                if (!is_directory(i->path()) && addID(i->path().string(), pathIDS)) 
                     paths.push_back(i->path().string());
         }
         catch (boost::filesystem::filesystem_error) { continue; }
@@ -380,7 +382,7 @@ int main(int argc, char *argv[])
             {   for (boost::filesystem::recursive_directory_iterator i(icondirs[x]), end; i != end; ++i)
                 {   if (!is_directory(i->path()))
                     {   string ipath = i->path().string();
-                        if (idExists(ipath, iconpathIDS)) continue;
+                        if (!addID(ipath, iconpathIDS)) continue;
                         IconSpec spec;
                         spec.path = ipath;
                         spec.id = iconpathIDS[iconpathIDS.size() - 1];
