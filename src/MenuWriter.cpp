@@ -200,7 +200,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, co
                 {   if (useIcons && files[*it].icon != "\0") nameFormatted = '"' + files[*it].name + " %" + files[*it].icon + "%" + '"';
                     else nameFormatted = '"' + files[*it].name + '"';
                     execFormatted = files[*it].exec;
-                    cout << "+\t\t\t\t" << setw(longest) << left << nameFormatted << "\t" << "Exec " << execFormatted << endl;
+                    cout << "+\t\t\t\t" << setw(longest) << left << nameFormatted << "\t" << "Exec exec " << execFormatted << endl;
                 }
                 cout << endl;
             }
