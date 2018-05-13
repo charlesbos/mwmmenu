@@ -343,7 +343,7 @@ int main(int argc, char *argv[])
                 if (!is_directory(i->path()) && addID(i->path().string(), pathIDS)) 
                     paths.push_back(i->path().string());
         }
-        catch (boost::filesystem::filesystem_error) { continue; }
+        catch (boost::filesystem::filesystem_error&) { continue; }
     }
 
     //Get string vector of paths to icons
@@ -391,7 +391,7 @@ int main(int argc, char *argv[])
                     }
                 }
             }
-            catch (boost::filesystem::filesystem_error) { continue; }
+            catch (boost::filesystem::filesystem_error&) { continue; }
         }
     }
 
@@ -415,14 +415,14 @@ int main(int argc, char *argv[])
             {   for (boost::filesystem::recursive_directory_iterator i(catDirs[x]), end; i != end; ++i)
                     if (!is_directory(i->path())) catPaths.push_back(i->path().string());
             }
-            catch (boost::filesystem::filesystem_error) { continue; }
+            catch (boost::filesystem::filesystem_error&) { continue; }
         }
         for (unsigned int x = 0; x < menuDirs.size(); x++)
         {   try
             {   for (boost::filesystem::recursive_directory_iterator i(menuDirs[x]), end; i != end; ++i)
                     if (!is_directory(i->path())) menuPaths.push_back(i->path().string());
             }
-            catch (boost::filesystem::filesystem_error) { continue; }
+            catch (boost::filesystem::filesystem_error&) { continue; }
         }
     }
     vector<Category> cats;
