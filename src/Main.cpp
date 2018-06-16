@@ -86,42 +86,54 @@ void usage()
 }
 
 //A function to extract a filename from a full path
-string getFilename(const string& path) { return path.substr(path.find_last_of("/") + 1, string::npos); }
+string getFilename(const string& path) 
+{ 
+    return path.substr(path.find_last_of("/") + 1, string::npos); 
+}
 
 //Function that attempts to get the user icon theme from ~/.gtkrc-2.0
 string getIconTheme(const string& homedir)
-{   ifstream themefile;
+{
+    ifstream themefile;
     string path = homedir + "/.gtkrc-2.0";
     string id = "gtk-icon-theme-name";
     themefile.open(path.c_str());
     if (!themefile) return "\0";
     else
-    {   string line;
+    {
+        string line;
         char c;
         unsigned int counter = 0;
         while (!themefile.eof())
-        {   getline(themefile, line);
+        {
+            getline(themefile, line);
             vector<char> readChars;
             readChars.reserve(10);
             while (counter < line.size())
-            {   c = line[counter];
+            {
+                c = line[counter];
                 if (c == '=') break;
                 readChars.push_back(c);
                 counter++;
             }
             string read_id = string(readChars.begin(), readChars.end());
-            read_id.erase(remove(read_id.begin(), read_id.end(), ' '), read_id.end());
+            read_id.erase(remove(read_id.begin(), read_id.end(), ' '), 
+                    read_id.end());
             if (id == read_id)
-            {   vector<char> themeNameChars;
+            {
+                vector<char> themeNameChars;
                 themeNameChars.reserve(10);
                 while (counter < line.size())
-                {   c = line[counter];
+                { 
+                    c = line[counter];
                     if (c != '"' && c != '=') themeNameChars.push_back(c);
                     counter ++;
                 }
                 themefile.close();
-                string themename = string(themeNameChars.begin(), themeNameChars.end());
-                themename.erase(remove(themename.begin(), themename.end(), ' '), themename.end());
+                string themename = string(themeNameChars.begin(), 
+                        themeNameChars.end());
+                themename.erase(remove(themename.begin(), 
+                        themename.end(), ' '), themename.end());
                 return themename;
             }
             counter = 0;
@@ -132,20 +144,26 @@ string getIconTheme(const string& homedir)
 }
 
 /* A function to find a terminal emulator that can be used for executing
-   terminal based applications */
+ * terminal based applications */
 string getTerminalEmulator()
-{   string term = "xterm";
-    vector<string> terms = {"gnome-terminal", "xfce4-terminal", "mate-terminal", "lxterminal", "konsole", "terminology",
-                            "urxvt", "rxvt", "xterm"};
+{   
+    string term = "xterm";
+    vector<string> terms = {"gnome-terminal", "xfce4-terminal", 
+        "mate-terminal", "lxterminal", "konsole", "terminology", "urxvt", 
+        "rxvt", "xterm"};
     vector<string> binaries;
     binaries.reserve(3000);
-    for (boost::filesystem::directory_iterator i("/usr/bin"), end; i != end; ++i)
-    {   string file = getFilename(i->path().string());
+    for (boost::filesystem::directory_iterator i("/usr/bin"), end; 
+            i != end; ++i)
+    {   
+        string file = getFilename(i->path().string());
         binaries.push_back(file);
     }
     for (unsigned int x = 0; x < terms.size(); x++)
-    {   if (find(binaries.begin(), binaries.end(), terms[x]) != binaries.end())
-        {   term = terms[x];
+    {   
+        if (find(binaries.begin(), binaries.end(), terms[x]) != binaries.end())
+        {
+            term = terms[x];
             break;
         }
     }
@@ -155,29 +173,36 @@ string getTerminalEmulator()
 /* Function to split string argument separated by commas into
  * a string vector */
 vector<string> splitCommaArgs(const string& arg)
-{   vector<string> splitArgs;
+{   
+    vector<string> splitArgs;
     vector<char> buffer;
     splitArgs.reserve(5);
     buffer.reserve(10);
 
     for (unsigned int x = 0; x < arg.size(); x++)
-    {   if (arg[x] == ',') 
-        {   splitArgs.push_back(string(buffer.begin(), buffer.end()));
+    {
+        if (arg[x] == ',') 
+        {
+            splitArgs.push_back(string(buffer.begin(), buffer.end()));
             buffer.clear();
             continue;
         }
         buffer.push_back(arg[x]);
     }
-    if (!buffer.empty()) splitArgs.push_back(string(buffer.begin(), buffer.end()));
+    if (!buffer.empty()) 
+        splitArgs.push_back(string(buffer.begin(), buffer.end()));
 
     return splitArgs;
 }
 
 //A function to make sure we only add unique categories to the categories list
 void addCategory(const Category &c, vector<Category> &categories)
-{   for (unsigned int x = 0; x < categories.size(); x++) 
-    {   if (categories[x].name == c.name)
-        {   //Replace default category object with custom object of the same
+{  
+    for (unsigned int x = 0; x < categories.size(); x++) 
+    {
+        if (categories[x].name == c.name)
+        {
+            //Replace default category object with custom object of the same
             //name if the definitions differ
             if (!c.incEntryFiles.empty() || !c.excEntryFiles.empty() || 
                     (c.icon != categories[x].icon && c.icon != "\0")) 
@@ -193,7 +218,8 @@ void addCategory(const Category &c, vector<Category> &categories)
 //and false if we do not because it's already in the list. This is useful for 
 //local overrides for XDG desktop entries and icons.
 bool addID(const string& path, vector<string> &ids)
-{   string id = getFilename(path);
+{  
+    string id = getFilename(path);
     for (unsigned int x = 0; x < ids.size(); x++)
         if (id == ids[x]) return false;
     ids.push_back(id);
@@ -201,7 +227,8 @@ bool addID(const string& path, vector<string> &ids)
 }
 
 int main(int argc, char *argv[])
-{   //Handle args
+{  
+    //Handle args
     string homedir = getenv("HOME");
     string term;
     string menuName = "Applications";
@@ -220,99 +247,124 @@ int main(int argc, char *argv[])
     bool noCustomCats = false;
 
     for (int x = 0; x < argc; x++)
-    {   if (strcmp(argv[x], "-h") == 0 || strcmp(argv[x], "--help") == 0)
-        {   usage();
+    {
+        if (strcmp(argv[x], "-h") == 0 || strcmp(argv[x], "--help") == 0)
+        {
+            usage();
             return 0; 
         }
         if (strcmp(argv[x], "-n") == 0 || strcmp(argv[x], "--name") == 0) 
-        {   if (x + 1 < argc) menuName = argv[x + 1];
+        {
+            if (x + 1 < argc) menuName = argv[x + 1];
             continue;
         }
         if (strcmp(argv[x], "-i") == 0 || strcmp(argv[x], "--icons") == 0)
-        {   useIcons = true;
+        {
+            useIcons = true;
             continue;
         }
         if (strcmp(argv[x], "-t") == 0 || strcmp(argv[x], "--terminal") == 0)
-        {   if (x + 1 < argc) 
-            {   term = argv[x + 1];
+        {
+            if (x + 1 < argc) 
+            {
+                term = argv[x + 1];
                 term += " -e";
             }
             continue;
         }
         if (strcmp(argv[x], "--icons-xdg-only") == 0) 
-        {   iconsXdgOnly = true;
+        {  
+            iconsXdgOnly = true;
             continue;
         }
         if (strcmp(argv[x], "--icons-xdg-size") == 0) 
-        {   if (x + 1 < argc) iconsXdgSize = argv[x + 1] ;
+        {  
+            if (x + 1 < argc) iconsXdgSize = argv[x + 1] ;
             continue;
         }
         if (strcmp(argv[x], "--fvwm") == 0) 
-        {   windowmanager = fvwm;
+        {  
+            windowmanager = fvwm;
             continue;
         }
         if (strcmp(argv[x], "--fvwm-dynamic") == 0) 
-        {   windowmanager = fvwm_dynamic;
+        {  
+            windowmanager = fvwm_dynamic;
             continue;
         }
         if (strcmp(argv[x], "--fluxbox") == 0) 
-        {   windowmanager = fluxbox;
+        {  
+            windowmanager = fluxbox;
             continue;
         }
         if (strcmp(argv[x], "--openbox") == 0) 
-        {   windowmanager = openbox;
+        {  
+            windowmanager = openbox;
             continue;
         }
         if (strcmp(argv[x], "--openbox-pipe") == 0) 
-        {   windowmanager = openbox_pipe;
+        {  
+            windowmanager = openbox_pipe;
             continue;
         }
         if (strcmp(argv[x], "--olvwm") == 0) 
-        {   windowmanager = olvwm;
+        {  
+            windowmanager = olvwm;
             continue;
         }
         if (strcmp(argv[x], "--windowmaker") == 0) 
-        {   windowmanager = windowmaker;
+        {  
+            windowmanager = windowmaker;
             continue;
         }
         if (strcmp(argv[x], "--icewm") == 0) 
-        {   windowmanager = icewm;
+        {  
+            windowmanager = icewm;
             continue;
         }
         if (strcmp(argv[x], "--exclude") == 0) 
-        {   if (x + 1 < argc) exclude = argv[x + 1];
+        {  
+            if (x + 1 < argc) exclude = argv[x + 1];
             continue;
         }
         if (strcmp(argv[x], "--exclude-matching") == 0) 
-        {   if (x + 1 < argc) excludeMatching = argv[x + 1];
+        {  
+            if (x + 1 < argc) excludeMatching = argv[x + 1];
             continue;
         }
         if (strcmp(argv[x], "--exclude-categories") == 0) 
-        {   if (x + 1 < argc) excludeCategories = argv[x + 1];
+        {  
+            if (x + 1 < argc) excludeCategories = argv[x + 1];
             continue;
         }
         if (strcmp(argv[x], "--exclude-by-filename") == 0)
-        {   if (x + 1 < argc) excludedFilenames = argv[x + 1];
+        {  
+            if (x + 1 < argc) excludedFilenames = argv[x + 1];
             continue;
         }
         if (strcmp(argv[x], "--include") == 0)
-        {   if (x + 1 < argc) include = argv[x + 1];
+        {  
+            if (x + 1 < argc) include = argv[x + 1];
             continue;
         }
         if (strcmp(argv[x], "--show-from-desktops") == 0)
-        {   if (x + 1 < argc) showFromDesktops = argv[x + 1];
+        {  
+            if (x + 1 < argc) showFromDesktops = argv[x + 1];
             continue;
         }
         if (strcmp(argv[x], "--add-desktop-paths") == 0) 
-        {   if (x + 1 < argc) extraDesktopPaths = argv[x + 1];
+        {  
+            if (x + 1 < argc) extraDesktopPaths = argv[x + 1];
             continue;
         }
         if (strcmp(argv[x], "--add-icon-paths") == 0) 
-        {   if (x + 1 < argc) extraIconPaths = argv[x + 1];
+        {  
+            if (x + 1 < argc) extraIconPaths = argv[x + 1];
             continue;
         }
         if (strcmp(argv[x], "--no-custom-categories") == 0)
-        {   noCustomCats = true;
+        {  
+            noCustomCats = true;
             continue;
         }
     }
@@ -330,110 +382,161 @@ int main(int argc, char *argv[])
     pathIDS.reserve(300);
     vector<string> appdirs;
     if (extraDesktopPaths != "\0")
-    {   vector<string> newDPaths = splitCommaArgs(extraDesktopPaths);
+    {   
+        vector<string> newDPaths = splitCommaArgs(extraDesktopPaths);
         for (unsigned int x = 0; x < newDPaths.size(); x++)
             appdirs.push_back(newDPaths[x]);
     }
-    if (homedir.c_str() != NULL) appdirs.push_back(homedir + "/.local/share/applications/");
+    if (homedir.c_str() != NULL) 
+        appdirs.push_back(homedir + "/.local/share/applications/");
     appdirs.push_back("/usr/local/share/applications");
     appdirs.push_back("/usr/share/applications");
     for (unsigned int x = 0; x < appdirs.size(); x++)
-    {   try
-        {   for (boost::filesystem::recursive_directory_iterator i(appdirs[x]), end; i != end; ++i)
-                if (!is_directory(i->path()) && addID(i->path().string(), pathIDS)) 
+    {   
+        try
+        {
+            for (boost::filesystem::recursive_directory_iterator i(appdirs[x]),
+                    end; i != end; ++i)
+                if (!is_directory(i->path()) && addID(i->path().string(), 
+                        pathIDS)) 
                     paths.push_back(i->path().string());
         }
-        catch (boost::filesystem::filesystem_error&) { continue; }
+        catch (boost::filesystem::filesystem_error&) 
+        { 
+            continue; 
+        }
     }
 
     //Get string vector of paths to icons
     vector<IconSpec> iconpaths;
     vector<string> iconpathIDS;
     if (useIcons)
-    {   iconpaths.reserve(500);
+    {   
+        iconpaths.reserve(500);
         iconpathIDS.reserve(500);
         vector<string> icondirs;
         if (extraIconPaths != "\0" && !iconsXdgOnly)
-        {   vector<string> newIPaths = splitCommaArgs(extraIconPaths);
+        {
+            vector<string> newIPaths = splitCommaArgs(extraIconPaths);
             for (unsigned int x = 0; x < newIPaths.size(); x++)
                 icondirs.push_back(newIPaths[x]);
         }
         if (homedir.c_str() != NULL)
-        {   icondirs.push_back(homedir + "/.icons/hicolor");
+        {
+            icondirs.push_back(homedir + "/.icons/hicolor");
             icondirs.push_back(homedir + "/.local/share/icons/hicolor");
             string themename = getIconTheme(homedir); 
             icondirs.push_back("/usr/share/icons/" + themename);
-            if (find(icondirs.begin(), icondirs.end(), "/usr/share/icons/gnome") != icondirs.end()) icondirs.push_back("/usr/share/icons/gnome");
+            if (find(icondirs.begin(), icondirs.end(), 
+                    "/usr/share/icons/gnome") != icondirs.end()) 
+                icondirs.push_back("/usr/share/icons/gnome");
         }
         icondirs.push_back("/usr/share/icons/hicolor");
         if (!iconsXdgOnly) 
-        {   icondirs.push_back("/usr/local/share/pixmaps");
+        {   
+            icondirs.push_back("/usr/local/share/pixmaps");
             icondirs.push_back("/usr/share/pixmaps");
         }
-        //If an xdg icon size has been specified, limit the icon search to the appropriate directory
+        //If an xdg icon size has been specified, limit the icon search to the 
+        //appropriate directory
         if (iconsXdgSize != "/")
-        {   for (unsigned int x = 0; x < icondirs.size(); x++)
-            {   if (icondirs[x].find("/share/icons/") != string::npos)
+        { 
+            for (unsigned int x = 0; x < icondirs.size(); x++)
+            { 
+                if (icondirs[x].find("/share/icons/") != string::npos)
                     icondirs[x] = icondirs[x] + "/" + iconsXdgSize;
             }
         }
         for (unsigned int x = 0; x < icondirs.size(); x++)
-        {   try
-            {   for (boost::filesystem::recursive_directory_iterator i(icondirs[x]), end; i != end; ++i)
-                {   if (!is_directory(i->path()))
-                    {   string ipath = i->path().string();
+        {   
+            try
+            {
+                for (boost::filesystem::recursive_directory_iterator 
+                        i(icondirs[x]), end; i != end; ++i)
+                {   
+                    if (!is_directory(i->path()))
+                    {
+                        string ipath = i->path().string();
                         if (!addID(ipath, iconpathIDS)) continue;
                         IconSpec spec;
                         spec.path = ipath;
                         spec.id = iconpathIDS[iconpathIDS.size() - 1];
-                        spec.def = spec.id.substr(spec.id.find_last_of("/") + 1, spec.id.find_last_of(".") - spec.id.find_last_of("/") - 1);
+                        spec.def = 
+                            spec.id.substr(spec.id.find_last_of("/") + 1, 
+                            spec.id.find_last_of(".") - 
+                            spec.id.find_last_of("/") - 1);
                         iconpaths.push_back(spec);
                     }
                 }
             }
-            catch (boost::filesystem::filesystem_error&) { continue; }
+            catch (boost::filesystem::filesystem_error&) 
+            { 
+                continue; 
+            }
         }
     }
 
     /* Create categories
-     * Note that for baseCategories we combine Audio, Video and AudioVideo into Multimedia. We also rename Network to Internet and
-     * Utility to Accessories as this is what is commonly done elsewhere. Otherwise, our categories are the same as the freedesktop.org
-     * base categories */
-    vector<string> baseCategories = {"Accessories", "Development", "Education", "Game", "Graphics", "Multimedia", "Internet",
-                                    "Office", "Other", "Science", "Settings", "System"};
+     * Note that for baseCategories we combine Audio, Video and AudioVideo 
+     * into Multimedia. We also rename Network to Internet and Utility to 
+     * Accessories as this is what is commonly done elsewhere. Otherwise, our 
+     * categories are the same as the freedesktop.org base categories */
+    vector<string> baseCategories = {"Accessories", "Development", "Education",
+        "Game", "Graphics", "Multimedia", "Internet", "Office", "Other", 
+        "Science", "Settings", "System"};
     vector<string> catPaths;
     vector<string> menuPaths;
     if (!noCustomCats)
-    {   vector<string> catDirs = {"/usr/share/desktop-directories"};
+    {   
+        vector<string> catDirs = {"/usr/share/desktop-directories"};
         vector<string> menuDirs = {"/etc/xdg/menus/applications-merged"}; 
         if (homedir.c_str() != NULL) 
-        {   catDirs.push_back(homedir + "/.local/share/desktop-directories");
+        {
+            catDirs.push_back(homedir + "/.local/share/desktop-directories");
             menuDirs.push_back(homedir + "/.config/menus/applications-merged");
         }
         for (unsigned int x = 0; x < catDirs.size(); x++)
-        {   try
-            {   for (boost::filesystem::recursive_directory_iterator i(catDirs[x]), end; i != end; ++i)
-                    if (!is_directory(i->path())) catPaths.push_back(i->path().string());
+        {
+            try
+            {
+                for (boost::filesystem::recursive_directory_iterator 
+                        i(catDirs[x]), end; i != end; ++i)
+                    if (!is_directory(i->path())) 
+                        catPaths.push_back(i->path().string());
             }
-            catch (boost::filesystem::filesystem_error&) { continue; }
+            catch (boost::filesystem::filesystem_error&) 
+            { 
+                continue; 
+            }
         }
         for (unsigned int x = 0; x < menuDirs.size(); x++)
-        {   try
-            {   for (boost::filesystem::recursive_directory_iterator i(menuDirs[x]), end; i != end; ++i)
-                    if (!is_directory(i->path())) menuPaths.push_back(i->path().string());
+        {   
+            try
+            {
+                for (boost::filesystem::recursive_directory_iterator 
+                        i(menuDirs[x]), end; i != end; ++i)
+                    if (!is_directory(i->path())) 
+                        menuPaths.push_back(i->path().string());
             }
-            catch (boost::filesystem::filesystem_error&) { continue; }
+            catch (boost::filesystem::filesystem_error&) 
+            { 
+                continue; 
+            }
         }
     }
     vector<Category> cats;
     //Create the base categories
     for (unsigned int x = 0; x < baseCategories.size(); x++)
-    {   Category c = Category(baseCategories[x], useIcons, iconpaths, iconsXdgSize, iconsXdgOnly);
+    {   
+        Category c = Category(baseCategories[x], useIcons, iconpaths, 
+                iconsXdgSize, iconsXdgOnly);
         cats.push_back(c);
     }
     //Create the custom categories (if there are any)
     for (unsigned int x = 0; x < catPaths.size(); x++)
-    {   Category c = Category(catPaths[x].c_str(), menuPaths, useIcons, iconpaths, iconsXdgSize, iconsXdgOnly);
+    {   
+        Category c = Category(catPaths[x].c_str(), menuPaths, useIcons, 
+                iconpaths, iconsXdgSize, iconsXdgOnly);
         if (c.name != "\0") addCategory(c, cats);
     }
     sort(cats.begin(), cats.end());
@@ -441,23 +544,19 @@ int main(int argc, char *argv[])
     //Create vector of DesktopFile, using each path in the paths vector
     vector<DesktopFile> files;
     for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
-    {   DesktopFile df = DesktopFile((*it).c_str(), splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats, iconsXdgSize, iconsXdgOnly, term);
+    {   
+        DesktopFile df = DesktopFile((*it).c_str(), 
+                splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats, 
+                iconsXdgSize, iconsXdgOnly, term);
         if (df.name != "\0" && df.exec != "\0") files.push_back(df);
     }
     sort(files.begin(), files.end());
 
     //Create a MenuWriter which will write the menu out to the console
-    MenuWriter(files, 
-        menuName, 
-        windowmanager, 
-        useIcons, 
-        splitCommaArgs(exclude), 
-        splitCommaArgs(excludeMatching), 
-        splitCommaArgs(excludeCategories),
-        splitCommaArgs(include),
-        splitCommaArgs(excludedFilenames),
-        cats);
+    MenuWriter(files, menuName, windowmanager, useIcons, 
+            splitCommaArgs(exclude), splitCommaArgs(excludeMatching), 
+            splitCommaArgs(excludeCategories), splitCommaArgs(include),
+            splitCommaArgs(excludedFilenames), cats);
 
     return 0;
 }
-

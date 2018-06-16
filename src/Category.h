@@ -27,8 +27,12 @@ class Category
 {
     public:
         Category();
-        Category(const char *dirFile, const vector<string>& menuFiles, bool useIcons, const vector<IconSpec>& iconpaths, const string& iconsXdgSize, bool iconsXdgOnly);
-        Category(const string& name, bool useIcons, const vector<IconSpec>& iconpaths, const string& iconsXdgSize, bool iconsXdgOnly);
+        Category(const char *dirFile, const vector<string>& menuFiles, 
+                bool useIcons, const vector<IconSpec>& iconpaths, 
+                const string& iconsXdgSize, bool iconsXdgOnly);
+        Category(const string& name, bool useIcons, 
+                const vector<IconSpec>& iconpaths, const string& iconsXdgSize, 
+                bool iconsXdgOnly);
         Category(const Category& c);
 
         Category& operator=(const Category& c);
@@ -51,7 +55,8 @@ class Category
 
         void getCategoryParams();
         void getSpecifiedFiles();
-        void getCategoryIcon(const vector<IconSpec>& iconpaths, const string& iconsXdgSize, bool iconsXdgOnly);
+        void getCategoryIcon(const vector<IconSpec>& iconpaths, 
+                const string& iconsXdgSize, bool iconsXdgOnly);
 };
 
 #endif
