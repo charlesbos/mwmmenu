@@ -60,9 +60,8 @@ class MenuWriter
         bool checkExcludedCategories(const string& category);
 
         vector<int> getPositionsPerCat(const Category& category);
-        int getLongestNameLength();
 
-        void writeMenu(vector<int> positions, int catNumber, int longest, 
+        void writeMenu(vector<int> positions, int catNumber,
                 const vector<Category>& usedCats);
 };
 

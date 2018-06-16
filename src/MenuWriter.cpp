@@ -51,7 +51,6 @@ void MenuWriter::printHandler()
 {   
     vector<Category> usedCats;
     vector< vector<int> > usedPositions;
-    int longest = getLongestNameLength();
 
     entryDisplayHandler();
 
@@ -69,14 +68,14 @@ void MenuWriter::printHandler()
 
     //Now write the menus
     for (unsigned int x = 0; x < usedCats.size(); x++)
-        writeMenu(usedPositions[x], x, longest, usedCats);
+        writeMenu(usedPositions[x], x, usedCats);
     //For WMs which require a menu which sources the individual category menus
     if ((windowmanager == mwm ||
             windowmanager == fvwm ||
             windowmanager == fvwm_dynamic ||
             windowmanager == openbox) &&
             !usedCats.empty())
-        writeMenu(vector<int>(), 0, longest, usedCats);
+        writeMenu(vector<int>(), 0, usedCats);
 }
 
 /* This function return the indeces in the files vector for the DesktopFile 
@@ -148,39 +147,11 @@ bool MenuWriter::checkExcludedCategories(const string& category)
         return false;
 }
 
-/* This function will return either the longest name length (or the longest 
- * length name + icon path string) plus an offset of 10 to account for any 
- * tab chars */
-int MenuWriter::getLongestNameLength()
-{  
-    unsigned int longest = 0;
-
-    for (unsigned int x = 0; x < files.size(); x++)
-    {
-        /* Most wm menus seem to define an icon path after the entry name so 
-         * for the longest name we need to add the length of the icon path on. 
-         * However Fluxbox defines the icon path after the exec so we don't 
-         * want to add that extra length to the name in this case */
-        if (useIcons && windowmanager != fluxbox)
-        {   
-            if (files[x].name.size() + files[x].icon.size() > longest) 
-                longest = files[x].name.size() + files[x].icon.size(); 
-        }
-        else
-        {   
-            if (files[x].name.size() > longest) 
-                longest = files[x].name.size(); }
-
-    }
-
-    return longest + 10;
-}
-
 /* This function is called multiple times. Each time, it prints out the submenu
  * for a given category. Some WMs (MWM and FVWM) require a menu which sources
  * the individual category menus. Such a menu will be printed for those window 
  * managers if an empty vector of indeces is provided */
-void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest, 
+void MenuWriter::writeMenu(vector<int> positions, int catNumber,
         const vector<Category>& usedCats)
 {    
     //Variable for the category name
@@ -205,15 +176,14 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest,
             {  
                 catFormatted = '"' + category + '"';
                 cout << "menu " << catFormatted << endl << "{" << endl;
-                cout << "\t" << setw(longest) << left << catFormatted << "\t" 
-                    << "f.title" << endl;
+                cout << "    " << catFormatted << " " << "f.title" << endl;
                 for (vector<int>::iterator it = positions.begin(); 
                         it < positions.end(); it++)
                 {   
                     nameFormatted = '"' + files[*it].name + '"';
                     execFormatted = "\"exec " + files[*it].exec + " &" + '"';
-                    cout << "\t" << setw(longest) << left << nameFormatted << 
-                        "\t" << "f.exec " << execFormatted << endl;
+                    cout << "    " << nameFormatted << " " << "f.exec " << 
+                        execFormatted << endl;
                 }
                 cout << "}" << endl << endl;
             }
@@ -221,13 +191,12 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest,
             {   
                 menuFormatted = '"' + menuName + '"';
                 cout << "menu " << menuFormatted << endl << "{" << endl;
-                cout << "\t" << setw(longest) << left << menuFormatted << "\t" 
-                    << "f.title" << endl;
+                cout << "    " << menuFormatted << " " << "f.title" << endl;
                 for (unsigned int x = 0; x < usedCats.size(); x++)
                 {   
                     catFormatted = '"' + string(usedCats[x].name) + '"';
-                    cout << "\t" << setw(longest) << left << catFormatted << 
-                        "\t" << "f.menu    " << catFormatted << endl;
+                    cout << "    " << catFormatted << " " << "f.menu " <<
+                        catFormatted << endl;
                 }
                 cout << "}" << endl << endl;
             }
@@ -241,9 +210,8 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest,
                     cout << "DestroyMenu " << catFormatted << endl;
                 else
                     cout << "DestroyMenu recreate " << catFormatted << endl;
-                cout << "AddToMenu " << setw(15) << left << catFormatted << 
-                    "\t" << setw(longest) << left << catFormatted << "\tTitle" 
-                    << endl;
+                cout << "AddToMenu " << catFormatted << " " << 
+                    catFormatted << " Title" << endl;
                 for (vector<int>::iterator it = positions.begin(); 
                         it < positions.end(); it++)
                 {   
@@ -252,8 +220,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest,
                         files[*it].icon + "%" + '"';
                     else nameFormatted = '"' + files[*it].name + '"';
                     execFormatted = files[*it].exec;
-                    cout << "+\t\t\t\t" << setw(longest) << left << 
-                        nameFormatted << "\t" << "Exec exec " << 
+                    cout << "+ " << nameFormatted << " " << "Exec exec " << 
                         execFormatted << endl;
                 }
                 cout << endl;
@@ -265,9 +232,8 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest,
                     cout << "DestroyMenu " << menuFormatted << endl;
                 else
                     cout << "DestroyMenu recreate " << menuFormatted << endl;
-                cout << "AddToMenu " << setw(15) << left << menuFormatted << 
-                    "\t" << setw(longest) << left << menuFormatted << 
-                    "\tTitle" << endl;
+                cout << "AddToMenu " << menuFormatted << " " << 
+                    menuFormatted << " Title" << endl;
                 for (unsigned int x = 0; x < usedCats.size(); x++)
                 {   
                     if (useIcons)
@@ -281,8 +247,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest,
                     }
                     else 
                         catFormatted = '"' + string(usedCats[x].name) + '"';
-                    cout << "+\t\t\t\t" << setw(longest) << left << 
-                        catFormatted << "\t" << "Popup    " << 
+                    cout << "+ " << catFormatted << " " << "Popup " << 
                         '"' + usedCats[x].name + '"' << endl;
                 }
                 cout << endl;
@@ -299,7 +264,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest,
                     catFormatted = '(' + category + ')';
             }
             else catFormatted = '(' + category + ')';
-            cout << "\t[submenu] " + catFormatted + " {}" << endl;
+            cout << "    [submenu] " + catFormatted + " {}" << endl;
             for (vector<int>::iterator it = positions.begin(); 
                     it < positions.end(); it++)
             {   
@@ -314,10 +279,10 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest,
                     nameFormatted.insert(static_cast<int>(
                     nameFormatted.find_last_of(')')), string("\\").c_str());
                 nameFormatted = '(' + nameFormatted + ')';
-                cout << "\t\t[exec] " << setw(longest) << left << 
-                    nameFormatted << " " << execFormatted << endl;
+                cout << "        [exec] " << nameFormatted << " " << 
+                    execFormatted << endl;
             }
-            cout << "\t[end]" << endl;
+            cout << "    [end]" << endl;
             if (catNumber == maxCatNumber) cout << "[end]" << endl;
             break;
         case openbox :
@@ -350,13 +315,12 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest,
                             " icon=\"" + files[*it].icon + "\">";
                     else nameFormatted = '"' + files[*it].name + "\">";
                     execFormatted = files[*it].exec;
-                    cout << "\t<item label=" << setw(longest) << left << 
-                        nameFormatted << endl;
-                    cout << "\t\t<action name=\"Execute\">" << endl;
-                    cout << "\t\t\t<execute>" << execFormatted << 
+                    cout << "    <item label=" << nameFormatted << endl;
+                    cout << "        <action name=\"Execute\">" << endl;
+                    cout << "            <execute>" << execFormatted << 
                         "</execute>" << endl;
-                    cout << "\t\t</action>" << endl;
-                    cout << "\t</item>" << endl;
+                    cout << "        </action>" << endl;
+                    cout << "    </item>" << endl;
                 }
                 cout << "</menu>" << endl << endl;
                 if (windowmanager == openbox_pipe && catNumber == maxCatNumber)
@@ -381,31 +345,26 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest,
                     }
                     else 
                         catFormatted = '"' + string(usedCats[x].name) + "\"/>";
-                    cout << "\t<menu id=" << setw(longest) << left << 
-                        catFormatted << endl;
+                    cout << "    <menu id=" << catFormatted << endl;
                 }
                 cout << "</menu>" << endl << endl;
             }
             break;
         case olvwm :
             if (catNumber == 0) 
-                cout << setw(longest) << left << '"' + menuName + '"' << 
-                    "MENU" << endl << endl;
+                cout << '"' + menuName + '"' << "MENU" << endl << endl;
             catFormatted = '"' + category + '"';
-            cout << setw(longest) << left << catFormatted << "MENU" << endl;
+            cout << catFormatted << "MENU" << endl;
             for (vector<int>::iterator it = positions.begin(); 
                     it < positions.end(); it++)
             {   
                 nameFormatted = '"' + files[*it].name + '"';
                 execFormatted = files[*it].exec;
-                cout << setw(longest) << left << nameFormatted << 
-                    execFormatted << endl;
+                cout << nameFormatted << execFormatted << endl;
             }
-            cout << setw(longest) << left << catFormatted << "END PIN" << 
-                endl << endl;
+            cout << catFormatted << "END PIN" << endl << endl;
             if (catNumber == maxCatNumber) 
-                cout << setw(longest) << left << '"' + menuName + '"' << 
-                    "END PIN" << endl;
+                cout << '"' + menuName + '"' << "END PIN" << endl;
             break;     
         case windowmaker :
             if (catNumber == 0) 
@@ -445,7 +404,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber, int longest,
                         files[*it].icon;
                 else nameFormatted = '"' + files[*it].name + "\" -";
                 execFormatted = files[*it].exec;
-                cout << "\tprog " + nameFormatted + " " + execFormatted << endl;
+                cout << "    prog " + nameFormatted + " " + execFormatted << endl;
             }
             cout << "}\n" << endl;
             break;
