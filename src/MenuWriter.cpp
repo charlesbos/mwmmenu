@@ -100,8 +100,10 @@ vector<int> MenuWriter::getPositionsPerCat(const Category& category)
  * based on various criteria. The entries are excluded simply by setting the
  * nodisplay value to true */
 void MenuWriter::entryDisplayHandler()
-{   if (!exclude.empty())
-    {   for (unsigned int x = 0; x < files.size(); x++)
+{   
+    if (!exclude.empty())
+    {   
+        for (unsigned int x = 0; x < files.size(); x++)
             if (find(exclude.begin(), exclude.end(), files[x].name) != 
                     exclude.end()) 
                 files[x].nodisplay = true;
@@ -217,7 +219,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber,
                 {   
                     if (useIcons && files[*it].icon != "\0") 
                         nameFormatted = '"' + files[*it].name + " %" + 
-                        files[*it].icon + "%" + '"';
+                            files[*it].icon + "%" + '"';
                     else nameFormatted = '"' + files[*it].name + '"';
                     execFormatted = files[*it].exec;
                     cout << "+ " << nameFormatted << " " << "Exec exec " << 
@@ -241,7 +243,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber,
                         catIcon = usedCats[x].icon;
                         if (catIcon != "\0") 
                             catFormatted = '"' +  string(usedCats[x].name) + 
-                            " %" + catIcon + "%" + '"';
+                                " %" + catIcon + "%" + '"';
                         else 
                             catFormatted = '"' + string(usedCats[x].name) + '"';
                     }
@@ -277,7 +279,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber,
                 //bracket or it will be missed out
                 if (nameFormatted.find(string(")").c_str()) != string::npos) 
                     nameFormatted.insert(static_cast<int>(
-                    nameFormatted.find_last_of(')')), string("\\").c_str());
+                        nameFormatted.find_last_of(')')), string("\\").c_str());
                 nameFormatted = '(' + nameFormatted + ')';
                 cout << "        [exec] " << nameFormatted << " " << 
                     execFormatted << endl;
@@ -404,7 +406,8 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber,
                         files[*it].icon;
                 else nameFormatted = '"' + files[*it].name + "\" -";
                 execFormatted = files[*it].exec;
-                cout << "    prog " + nameFormatted + " " + execFormatted << endl;
+                cout << "    prog " + nameFormatted + " " + execFormatted << 
+                    endl;
             }
             cout << "}\n" << endl;
             break;
