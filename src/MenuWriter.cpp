@@ -354,19 +354,19 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber,
             break;
         case olvwm :
             if (catNumber == 0) 
-                cout << '"' + menuName + '"' << "MENU" << endl << endl;
+                cout << '"' + menuName + '"' << " MENU" << endl << endl;
             catFormatted = '"' + category + '"';
-            cout << catFormatted << "MENU" << endl;
+            cout << catFormatted << " MENU" << endl;
             for (vector<int>::iterator it = positions.begin(); 
                     it < positions.end(); it++)
             {   
                 nameFormatted = '"' + files[*it].name + '"';
                 execFormatted = files[*it].exec;
-                cout << nameFormatted << execFormatted << endl;
+                cout << nameFormatted << " " << execFormatted << endl;
             }
-            cout << catFormatted << "END PIN" << endl << endl;
+            cout << catFormatted << " END PIN" << endl << endl;
             if (catNumber == maxCatNumber) 
-                cout << '"' + menuName + '"' << "END PIN" << endl;
+                cout << '"' + menuName + '"' << " END PIN" << endl;
             break;     
         case windowmaker :
             if (catNumber == 0) 
