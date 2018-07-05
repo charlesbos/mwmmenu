@@ -39,8 +39,8 @@ void usage()
         "  -i, --icons:           use icons with menu entries, only compatible with\n" 
         "                         some window managers\n"
         "  -t, --terminal:        specify terminal to be used for terminal based\n"
-        "                         applications. If this option is not used, the\n"
-        "                         program searches for a terminal application\n"
+        "                         applications. If this option is not used, then\n"
+        "                         xterm -e is used as the default.\n"
         "  --icons-xdg-only:      exclude any non-xdg icons. Note that this will\n" 
         "                         disable the --add-icon-paths option.\n"
         "  --icons-xdg-size:      can be 16x16, 32x32 etc. Can also be scalable or\n" 
@@ -143,33 +143,6 @@ string getIconTheme(const string& homedir)
     }
 }
 
-/* A function to find a terminal emulator that can be used for executing
- * terminal based applications */
-string getTerminalEmulator()
-{   
-    string term = "xterm";
-    vector<string> terms = {"gnome-terminal", "xfce4-terminal", 
-        "mate-terminal", "lxterminal", "konsole", "terminology", "urxvt", 
-        "rxvt", "xterm"};
-    vector<string> binaries;
-    binaries.reserve(3000);
-    for (boost::filesystem::directory_iterator i("/usr/bin"), end; 
-            i != end; ++i)
-    {   
-        string file = getFilename(i->path().string());
-        binaries.push_back(file);
-    }
-    for (unsigned int x = 0; x < terms.size(); x++)
-    {   
-        if (find(binaries.begin(), binaries.end(), terms[x]) != binaries.end())
-        {
-            term = terms[x];
-            break;
-        }
-    }
-    return term + " -e";
-}
-
 /* Function to split string argument separated by commas into
  * a string vector */
 vector<string> splitCommaArgs(const string& arg)
@@ -230,7 +203,7 @@ int main(int argc, char *argv[])
 {  
     //Handle args
     string homedir = getenv("HOME");
-    string term;
+    string term = "xterm -e";
     string menuName = "Applications";
     int windowmanager = mwm;
     bool useIcons = false;
@@ -373,7 +346,6 @@ int main(int argc, char *argv[])
             windowmanager == windowmaker) 
         useIcons = false;
     if (iconsXdgSize == "all") iconsXdgSize = "/";
-    if (term == "\0") term = getTerminalEmulator();
 
     //Get string vector of paths to .desktop files
     vector<string> paths;
