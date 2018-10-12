@@ -69,7 +69,7 @@ Category& Category::operator=(const Category& c)
     return *this;
 }
 
-bool Category::operator<(const Category& c)
+bool Category::operator<(const Category& c) const
 {   
     string name_a = this->name;
     string name_b = c.name;

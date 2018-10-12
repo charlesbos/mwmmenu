@@ -65,7 +65,7 @@ DesktopFile& DesktopFile::operator=(const DesktopFile& df)
     return *this;
 }
 
-bool DesktopFile::operator<(const DesktopFile& df)
+bool DesktopFile::operator<(const DesktopFile& df) const
 {   
     string name_a = this->name;
     string name_b = df.name;

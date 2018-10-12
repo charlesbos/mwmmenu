@@ -36,7 +36,7 @@ class Category
         Category(const Category& c);
 
         Category& operator=(const Category& c);
-        bool operator<(const Category& c);
+        bool operator<(const Category& c) const;
 
         string name;
         string icon;

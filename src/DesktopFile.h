@@ -46,7 +46,7 @@ class DesktopFile
         DesktopFile(const DesktopFile& df);
 
         DesktopFile& operator=(const DesktopFile& df);
-        bool operator<(const DesktopFile& df);
+        bool operator<(const DesktopFile& df) const;
 
         string filename;
         string name;
