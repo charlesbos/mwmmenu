@@ -25,11 +25,11 @@
 #include "MenuWriter.h"
 #include "Category.h"
 
-MenuWriter::MenuWriter(const vector<DesktopFile>& files, 
+MenuWriter::MenuWriter(const vector<DesktopFile*>& files, 
         const string& menuName, int windowmanager, bool useIcons, 
         vector<string> exclude, vector<string> excludeMatching, 
         vector<string> excludeCategories, vector<string> include, 
-        vector<string> excludedFilenames, const vector<Category>& cats)
+        vector<string> excludedFilenames, const vector<Category*>& cats)
 {   
     this->files = files;
     this->cats = cats;
@@ -44,56 +44,34 @@ MenuWriter::MenuWriter(const vector<DesktopFile>& files,
     printHandler();
 }
 
-/* Handles the fetching of the vector indeces for the desktop entries assigned 
- * to each category, the exclusion of categories or entries based on command 
+/* Handles the fetching of the desktop entries assigned to each category, 
+ * the exclusion of categories or entries based on command 
  * line arguments and then the printing of the menus themselves */
 void MenuWriter::printHandler()
 {   
-    vector<Category> usedCats;
-    vector< vector<int> > usedPositions;
+    vector<Category*> usedCats;
 
     entryDisplayHandler();
 
-    //Firstly, get the used categories and files array indeces of the 
-    //corresponding entries
+    //Get the used categories
     for (unsigned int x = 0; x < cats.size(); x++)
     { 
-        vector<int> positions = getPositionsPerCat(cats[x]);
-        if (!positions.empty() && !checkExcludedCategories(cats[x].name)) 
+        if (categoryNotExcluded(cats[x])) 
         {
-            usedPositions.push_back(positions);
             usedCats.push_back(cats[x]);
         }
     }
 
     //Now write the menus
     for (unsigned int x = 0; x < usedCats.size(); x++)
-        writeMenu(usedPositions[x], x, usedCats);
+        writeMenu(x, usedCats);
     //For WMs which require a menu which sources the individual category menus
     if ((windowmanager == mwm ||
             windowmanager == fvwm ||
             windowmanager == fvwm_dynamic ||
             windowmanager == openbox) &&
             !usedCats.empty())
-        writeMenu(vector<int>(), 0, usedCats);
-}
-
-/* This function return the indeces in the files vector for the DesktopFile 
- * objects belonging to a given category */
-vector<int> MenuWriter::getPositionsPerCat(const Category& category)
-{   
-    vector<int> positions;
-    positions.reserve(20);
-
-    for (unsigned int x = 0; x < files.size(); x++)
-    {
-        if (find(category.incEntries.begin(), category.incEntries.end(), 
-                files[x].name) != category.incEntries.end() 
-                && files[x].nodisplay != true)
-            positions.push_back(x);
-    }
-
-    return positions;
+        writeMenu(-1, usedCats);
 }
 
 /* Function to filter out desktop entries specified from the command line
@@ -104,9 +82,9 @@ void MenuWriter::entryDisplayHandler()
     if (!exclude.empty())
     {   
         for (unsigned int x = 0; x < files.size(); x++)
-            if (find(exclude.begin(), exclude.end(), files[x].name) != 
+            if (find(exclude.begin(), exclude.end(), files[x]->name) != 
                     exclude.end()) 
-                files[x].nodisplay = true;
+                files[x]->nodisplay = true;
     }
     if (!excludeMatching.empty())
     {
@@ -114,9 +92,9 @@ void MenuWriter::entryDisplayHandler()
         {
             for (unsigned int y = 0; y < excludeMatching.size(); y++)
             {
-                if (files[x].name.find(excludeMatching[y]) != string::npos)
+                if (files[x]->name.find(excludeMatching[y]) != string::npos)
                 {
-                    files[x].nodisplay = true;
+                    files[x]->nodisplay = true;
                     break;
                 }
             }
@@ -126,40 +104,54 @@ void MenuWriter::entryDisplayHandler()
     {   
         for (unsigned int x = 0; x < files.size(); x++)
             if (find(excludedFilenames.begin(), excludedFilenames.end(), 
-                    files[x].filename) != excludedFilenames.end()) 
-                files[x].nodisplay = true;
+                    files[x]->filename) != excludedFilenames.end()) 
+                files[x]->nodisplay = true;
     }
     if (!include.empty())
     {   
         for (unsigned int x = 0; x < files.size(); x++)
-            if (find(include.begin(), include.end(), files[x].name) != 
+            if (find(include.begin(), include.end(), files[x]->name) != 
                     include.end()) 
-                files[x].nodisplay = false;
+                files[x]->nodisplay = false;
     }
 }
 
-/* A function to check whether a category is present in the list of excluded 
- * categories. If it is, return true, otherwise return false */
-bool MenuWriter::checkExcludedCategories(const string& category)
+/* A function to check whether a category is not present in the list of 
+ * excluded categories and also whether a category has any non-hidden desktop 
+ * files. If so, return true, otherwise return false */
+bool MenuWriter::categoryNotExcluded(Category* c)
 {   
-    if (find(excludeCategories.begin(), excludeCategories.end(), category) != 
+    if (find(excludeCategories.begin(), excludeCategories.end(), c->name) != 
             excludeCategories.end())
-        return true;
-    else
         return false;
+    bool visibleFound = false;
+    for (unsigned int x = 0; x < c->incEntries.size(); x++)
+    {
+        if (c->incEntries[x]->nodisplay == false)
+        {
+            visibleFound = true;
+            break;
+        }
+    }
+    if (!visibleFound) return false;
+    return true;
 }
 
 /* This function is called multiple times. Each time, it prints out the submenu
  * for a given category. Some WMs (MWM and FVWM) require a menu which sources
  * the individual category menus. Such a menu will be printed for those window 
- * managers if an empty vector of indeces is provided */
-void MenuWriter::writeMenu(vector<int> positions, int catNumber,
-        const vector<Category>& usedCats)
-{    
+ * managers if a negative category number is provided */
+void MenuWriter::writeMenu(int catNumber, const vector<Category*>& usedCats)
+{   
+    //Variable for the vector of desktop entries
+    vector<DesktopFile*> dfiles; 
+    if (catNumber >= 0) dfiles = usedCats[catNumber]->incEntries; 
     //Variable for the category name
-    string category = usedCats[catNumber].name;
+    string category; 
+    if (catNumber >= 0) category = usedCats[catNumber]->name;
     //Variable for the category icon
-    string catIcon = usedCats[catNumber].icon;
+    string catIcon;
+    if (catNumber >= 0) catIcon = usedCats[catNumber]->icon;
     //Variable for knowing when the last category has been reached
     int maxCatNumber = usedCats.size() - 1;
     //Variable for a formatted version of the name, e.g. quotes added
@@ -174,16 +166,17 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber,
     switch(windowmanager)
     {
         case mwm :
-            if (!positions.empty())
+            if (catNumber >= 0)
             {  
                 catFormatted = '"' + category + '"';
                 cout << "menu " << catFormatted << endl << "{" << endl;
                 cout << "    " << catFormatted << " " << "f.title" << endl;
-                for (vector<int>::iterator it = positions.begin(); 
-                        it < positions.end(); it++)
-                {   
-                    nameFormatted = '"' + files[*it].name + '"';
-                    execFormatted = "\"exec " + files[*it].exec + " &" + '"';
+                for (vector<DesktopFile*>::iterator it = dfiles.begin(); 
+                        it < dfiles.end(); it++)
+                {
+                    if ((*it)->nodisplay) continue;
+                    nameFormatted = '"' + (*it)->name + '"';
+                    execFormatted = "\"exec " + (*it)->exec + " &" + '"';
                     cout << "    " << nameFormatted << " " << "f.exec " << 
                         execFormatted << endl;
                 }
@@ -196,7 +189,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber,
                 cout << "    " << menuFormatted << " " << "f.title" << endl;
                 for (unsigned int x = 0; x < usedCats.size(); x++)
                 {   
-                    catFormatted = '"' + string(usedCats[x].name) + '"';
+                    catFormatted = '"' + string(usedCats[x]->name) + '"';
                     cout << "    " << catFormatted << " " << "f.menu " <<
                         catFormatted << endl;
                 }
@@ -205,7 +198,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber,
             break;
         case fvwm :
         case fvwm_dynamic :
-            if (!positions.empty())
+            if (catNumber >= 0)
             {   
                 catFormatted = '"' + category + '"';
                 if (windowmanager == fvwm)
@@ -214,14 +207,15 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber,
                     cout << "DestroyMenu recreate " << catFormatted << endl;
                 cout << "AddToMenu " << catFormatted << " " << 
                     catFormatted << " Title" << endl;
-                for (vector<int>::iterator it = positions.begin(); 
-                        it < positions.end(); it++)
+                for (vector<DesktopFile*>::iterator it = dfiles.begin(); 
+                        it < dfiles.end(); it++)
                 {   
-                    if (useIcons && files[*it].icon != "\0") 
-                        nameFormatted = '"' + files[*it].name + " %" + 
-                            files[*it].icon + "%" + '"';
-                    else nameFormatted = '"' + files[*it].name + '"';
-                    execFormatted = files[*it].exec;
+                    if ((*it)->nodisplay) continue;
+                    if (useIcons && (*it)->icon != "\0") 
+                        nameFormatted = '"' + (*it)->name + " %" + 
+                            (*it)->icon + "%" + '"';
+                    else nameFormatted = '"' + (*it)->name + '"';
+                    execFormatted = (*it)->exec;
                     cout << "+ " << nameFormatted << " " << "Exec exec " << 
                         execFormatted << endl;
                 }
@@ -240,17 +234,17 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber,
                 {   
                     if (useIcons)
                     {
-                        catIcon = usedCats[x].icon;
+                        catIcon = usedCats[x]->icon;
                         if (catIcon != "\0") 
-                            catFormatted = '"' +  string(usedCats[x].name) + 
+                            catFormatted = '"' +  string(usedCats[x]->name) + 
                                 " %" + catIcon + "%" + '"';
                         else 
-                            catFormatted = '"' + string(usedCats[x].name) + '"';
+                            catFormatted = '"' + string(usedCats[x]->name) + '"';
                     }
                     else 
-                        catFormatted = '"' + string(usedCats[x].name) + '"';
+                        catFormatted = '"' + string(usedCats[x]->name) + '"';
                     cout << "+ " << catFormatted << " " << "Popup " << 
-                        '"' + usedCats[x].name + '"' << endl;
+                        '"' + usedCats[x]->name + '"' << endl;
                 }
                 cout << endl;
             }
@@ -267,14 +261,15 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber,
             }
             else catFormatted = '(' + category + ')';
             cout << "    [submenu] " + catFormatted + " {}" << endl;
-            for (vector<int>::iterator it = positions.begin(); 
-                    it < positions.end(); it++)
+            for (vector<DesktopFile*>::iterator it = dfiles.begin(); 
+                    it < dfiles.end(); it++)
             {   
-                if (useIcons && files[*it].icon != "\0") 
+                if ((*it)->nodisplay) continue;
+                if (useIcons && (*it)->icon != "\0") 
                     execFormatted = 
-                        '{' + files[*it].exec + "} <" + files[*it].icon + ">";
-                else execFormatted = '{' + files[*it].exec + '}';
-                nameFormatted = files[*it].name;
+                        '{' + (*it)->exec + "} <" + (*it)->icon + ">";
+                else execFormatted = '{' + (*it)->exec + '}';
+                nameFormatted = (*it)->name;
                 //If a name has brackets, we need to escape the closing 
                 //bracket or it will be missed out
                 if (nameFormatted.find(string(")").c_str()) != string::npos) 
@@ -293,7 +288,7 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber,
                 cout << 
                     "<openbox_pipe_menu xmlns=\"http://openbox.org/3.4/menu\">"
                     << endl << endl;
-            if (!positions.empty())
+            if (catNumber >= 0)
             {   
                 catFormatted = '"' + category + '"';
                 if (useIcons)
@@ -309,14 +304,15 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber,
                 else 
                     cout << "<menu id=" << catFormatted << " label=" << 
                         catFormatted << ">" << endl;
-                for (vector<int>::iterator it = positions.begin(); 
-                        it < positions.end(); it++)
+                for (vector<DesktopFile*>::iterator it = dfiles.begin(); 
+                        it < dfiles.end(); it++)
                 {   
-                    if (useIcons && files[*it].icon != "\0") 
-                        nameFormatted = '"' + files[*it].name + '"' + 
-                            " icon=\"" + files[*it].icon + "\">";
-                    else nameFormatted = '"' + files[*it].name + "\">";
-                    execFormatted = files[*it].exec;
+                    if ((*it)->nodisplay) continue;
+                    if (useIcons && (*it)->icon != "\0") 
+                        nameFormatted = '"' + (*it)->name + '"' + 
+                            " icon=\"" + (*it)->icon + "\">";
+                    else nameFormatted = '"' + (*it)->name + "\">";
+                    execFormatted = (*it)->exec;
                     cout << "    <item label=" << nameFormatted << endl;
                     cout << "        <action name=\"Execute\">" << endl;
                     cout << "            <execute>" << execFormatted << 
@@ -337,16 +333,16 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber,
                 {   
                     if (useIcons)
                     {
-                        catIcon = usedCats[x].icon;
+                        catIcon = usedCats[x]->icon;
                         if (catIcon != "\0") 
-                            catFormatted = '"' + string(usedCats[x].name) + 
+                            catFormatted = '"' + string(usedCats[x]->name) + 
                                 '"' + " icon=\"" + catIcon + "\"/>";
                         else 
-                            catFormatted = '"' + string(usedCats[x].name) + 
+                            catFormatted = '"' + string(usedCats[x]->name) + 
                                 "\"/>";
                     }
                     else 
-                        catFormatted = '"' + string(usedCats[x].name) + "\"/>";
+                        catFormatted = '"' + string(usedCats[x]->name) + "\"/>";
                     cout << "    <menu id=" << catFormatted << endl;
                 }
                 cout << "</menu>" << endl << endl;
@@ -357,11 +353,12 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber,
                 cout << '"' + menuName + '"' << " MENU" << endl << endl;
             catFormatted = '"' + category + '"';
             cout << catFormatted << " MENU" << endl;
-            for (vector<int>::iterator it = positions.begin(); 
-                    it < positions.end(); it++)
+            for (vector<DesktopFile*>::iterator it = dfiles.begin(); 
+                    it < dfiles.end(); it++)
             {   
-                nameFormatted = '"' + files[*it].name + '"';
-                execFormatted = files[*it].exec;
+                if ((*it)->nodisplay) continue;
+                nameFormatted = '"' + (*it)->name + '"';
+                execFormatted = (*it)->exec;
                 cout << nameFormatted << " " << execFormatted << endl;
             }
             cout << catFormatted << " END PIN" << endl << endl;
@@ -373,15 +370,16 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber,
                 cout << "(\n    " << '"' << menuName << '"' << ',' << endl;
             catFormatted = '"' + category + '"';
             cout << "    (\n        " << catFormatted << ',' << endl;
-            for (vector<int>::iterator it = positions.begin(); 
-                    it < positions.end(); it++)
+            for (vector<DesktopFile*>::iterator it = dfiles.begin(); 
+                    it < dfiles.end(); it++)
             {   
-                nameFormatted = '"' + files[*it].name + '"';
-                execFormatted = '"' + files[*it].exec + '"';
+                if ((*it)->nodisplay) continue;
+                nameFormatted = '"' + (*it)->name + '"';
+                execFormatted = '"' + (*it)->exec + '"';
                 cout << "        (" << nameFormatted << ", " << "EXEC, " << 
                     execFormatted << ")";
-                if ((it - positions.begin()) != 
-                        (positions.end() - positions.begin() - 1)) 
+                if ((it - dfiles.begin()) != 
+                        (dfiles.end() - dfiles.begin() - 1)) 
                     cout << ',' << endl;
                 else cout << endl;
             }
@@ -398,14 +396,15 @@ void MenuWriter::writeMenu(vector<int> positions, int catNumber,
             }
             else catFormatted = '"' + category + "\" folder";
             cout << "menu " << catFormatted << " {" << endl;
-            for (vector<int>::iterator it = positions.begin(); 
-                    it < positions.end(); it++)
+            for (vector<DesktopFile*>::iterator it = dfiles.begin(); 
+                    it < dfiles.end(); it++)
             {   
-                if (useIcons && files[*it].icon != "\0") 
-                    nameFormatted = '"' + files[*it].name + '"' + " " + 
-                        files[*it].icon;
-                else nameFormatted = '"' + files[*it].name + "\" -";
-                execFormatted = files[*it].exec;
+                if ((*it)->nodisplay) continue;
+                if (useIcons && (*it)->icon != "\0") 
+                    nameFormatted = '"' + (*it)->name + '"' + " " + 
+                        (*it)->icon;
+                else nameFormatted = '"' + (*it)->name + "\" -";
+                execFormatted = (*it)->exec;
                 cout << "    prog " + nameFormatted + " " + execFormatted << 
                     endl;
             }

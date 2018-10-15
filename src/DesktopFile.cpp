@@ -24,11 +24,9 @@
 #include "DesktopFile.h"
 #include "Category.h"
 
-DesktopFile::DesktopFile() {}
-
 DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops,
         bool useIcons, const vector<IconSpec>& iconpaths, 
-        vector<Category>& cats, const string& iconsXdgSize, bool iconsXdgOnly, 
+        vector<Category*>& cats, const string& iconsXdgSize, bool iconsXdgOnly, 
         const string& term) 
 {   
     this->filename = filename;
@@ -44,27 +42,7 @@ DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops,
     }
 }
 
-DesktopFile::DesktopFile(const DesktopFile& df)
-{   
-    this->filename = df.filename;
-    this->name = df.name;
-    this->exec = df.exec;
-    this->nodisplay = df.nodisplay;
-    this->icon = df.icon;
-    this->terminal = df.terminal;
-}
-
-DesktopFile& DesktopFile::operator=(const DesktopFile& df)
-{   
-    this->filename = df.filename;
-    this->name = df.name;
-    this->exec = df.exec;
-    this->nodisplay = df.nodisplay;
-    this->icon = df.icon;
-    this->terminal = df.terminal;
-    return *this;
-}
-
+//operator< for comparisons
 bool DesktopFile::operator<(const DesktopFile& df) const
 {   
     string name_a = this->name;
@@ -82,7 +60,7 @@ bool DesktopFile::operator<(const DesktopFile& df) const
  * variables or passes the results to the appropriate function */
 void DesktopFile::populate(const vector<string>& showFromDesktops, 
         bool useIcons, const vector<IconSpec>& iconpaths, 
-        vector<Category>& cats, const string& iconsXdgSize, bool iconsXdgOnly, 
+        vector<Category*>& cats, const string& iconsXdgSize, bool iconsXdgOnly, 
         const string& term)
 {  
     string line;
@@ -149,12 +127,16 @@ void DesktopFile::populate(const vector<string>& showFromDesktops,
         }
     }
 
-    processCategories(cats, foundCategories);
-    if (useIcons && iconDef != "\0") 
-        matchIcon(iconDef, iconpaths, iconsXdgSize, iconsXdgOnly);
-    if (!onlyShowInDesktops.empty()) 
-        processDesktops(showFromDesktops, onlyShowInDesktops);
-    if (terminal) this->exec = term + " " + this->exec;
+    if (this->name == "\0" || this->exec == "\0") return;
+    else
+    {
+        processCategories(cats, foundCategories);
+        if (useIcons && iconDef != "\0") 
+            matchIcon(iconDef, iconpaths, iconsXdgSize, iconsXdgOnly);
+        if (!onlyShowInDesktops.empty()) 
+            processDesktops(showFromDesktops, onlyShowInDesktops);
+        if (terminal) this->exec = term + " " + this->exec;
+    }
 }
 
 /* This function is used to get the single value before the = sign.
@@ -245,7 +227,7 @@ vector<string> DesktopFile::getMultiValue(const string& line)
 /* Add the desktop entry to the appropriate categories, based on what was read 
  * from the file. If we can't find a category, add the entry to the Other 
  * category which is the catchall */
-void DesktopFile::processCategories(vector<Category>& cats, 
+void DesktopFile::processCategories(vector<Category*>& cats, 
         vector<string>& foundCategories)
 {   
     bool hasCategory = false;
@@ -268,26 +250,26 @@ void DesktopFile::processCategories(vector<Category>& cats,
     for (unsigned int x = 0; x < cats.size(); x++)
     {   
         //Add to category if foundCategories contains the category name
-        if (find(foundCategories.begin(), foundCategories.end(), cats[x].name) 
+        if (find(foundCategories.begin(), foundCategories.end(), cats[x]->name) 
                 != foundCategories.end() &&
-                find(cats[x].excEntryFiles.begin(), 
-                cats[x].excEntryFiles.end(), baseFilename) == 
-                cats[x].excEntryFiles.end())
+                find(cats[x]->excEntryFiles.begin(), 
+                cats[x]->excEntryFiles.end(), baseFilename) == 
+                cats[x]->excEntryFiles.end())
         {   
-            cats[x].incEntries.push_back(name);
+            cats[x]->incEntries.push_back(this);
             hasCategory = true;
             continue;
         }
         //Add to category if the category specifies a particular desktop file 
         //by filename
-        if (find(cats[x].incEntryFiles.begin(), cats[x].incEntryFiles.end(), 
-                baseFilename) != cats[x].incEntryFiles.end() &&
-                find(cats[x].excEntryFiles.begin(), 
-                cats[x].excEntryFiles.end(), baseFilename) == 
-                cats[x].excEntryFiles.end())
+        if (find(cats[x]->incEntryFiles.begin(), cats[x]->incEntryFiles.end(), 
+                baseFilename) != cats[x]->incEntryFiles.end() &&
+                find(cats[x]->excEntryFiles.begin(), 
+                cats[x]->excEntryFiles.end(), baseFilename) == 
+                cats[x]->excEntryFiles.end())
 
         {   
-            cats[x].incEntries.push_back(name);
+            cats[x]->incEntries.push_back(this);
             hasCategory = true;
         }
     }
@@ -298,9 +280,9 @@ void DesktopFile::processCategories(vector<Category>& cats,
     { 
         for (unsigned int x = 0; x < cats.size(); x++)
         {
-            if (cats[x].name == "Other")
+            if (cats[x]->name == "Other")
             {
-                cats[x].incEntries.push_back(name);
+                cats[x]->incEntries.push_back(this);
                 break;
             }
         }

@@ -21,8 +21,6 @@
 #include <algorithm>
 #include "Category.h"
 
-Category::Category() {}
-
 //Constructor for custom categories
 Category::Category(const char *dirFile, const vector<string>& menuFiles, 
         bool useIcons, const vector<IconSpec>& iconpaths, 
@@ -50,25 +48,7 @@ Category::Category(const string& name, bool useIcons,
     if (useIcons) getCategoryIcon(iconpaths, iconsXdgSize, iconsXdgOnly);
 }
 
-Category::Category(const Category& c)
-{   
-    this->name = c.name;
-    this->icon = c.icon;
-    this->incEntries = c.incEntries;
-    this->incEntryFiles = c.incEntryFiles;
-    this->excEntryFiles = c.excEntryFiles;
-}
-
-Category& Category::operator=(const Category& c)
-{   
-    this->name = c.name;
-    this->icon = c.icon;
-    this->incEntries = c.incEntries;
-    this->incEntryFiles = c.incEntryFiles;
-    this->excEntryFiles = c.excEntryFiles;
-    return *this;
-}
-
+//operator< for comparisons
 bool Category::operator<(const Category& c) const
 {   
     string name_a = this->name;

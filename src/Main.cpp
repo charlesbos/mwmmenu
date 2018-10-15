@@ -169,16 +169,16 @@ vector<string> splitCommaArgs(const string& arg)
 }
 
 //A function to make sure we only add unique categories to the categories list
-void addCategory(const Category &c, vector<Category> &categories)
+void addCategory(Category *c, vector<Category*> &categories)
 {  
     for (unsigned int x = 0; x < categories.size(); x++) 
     {
-        if (categories[x].name == c.name)
+        if (categories[x]->name == c->name)
         {
             //Replace default category object with custom object of the same
             //name if the definitions differ
-            if (!c.incEntryFiles.empty() || !c.excEntryFiles.empty() || 
-                    (c.icon != categories[x].icon && c.icon != "\0")) 
+            if (!c->incEntryFiles.empty() || !c->excEntryFiles.empty() || 
+                    (c->icon != categories[x]->icon && c->icon != "\0")) 
                 categories[x] = c;
             return;
         }
@@ -496,31 +496,32 @@ int main(int argc, char *argv[])
             }
         }
     }
-    vector<Category> cats;
+    vector<Category*> cats;
     //Create the base categories
     for (unsigned int x = 0; x < baseCategories.size(); x++)
     {   
-        Category c = Category(baseCategories[x], useIcons, iconpaths, 
+        Category *c = new Category(baseCategories[x], useIcons, iconpaths, 
                 iconsXdgSize, iconsXdgOnly);
         cats.push_back(c);
     }
     //Create the custom categories (if there are any)
     for (unsigned int x = 0; x < catPaths.size(); x++)
     {   
-        Category c = Category(catPaths[x].c_str(), menuPaths, useIcons, 
+        Category *c = new Category(catPaths[x].c_str(), menuPaths, useIcons, 
                 iconpaths, iconsXdgSize, iconsXdgOnly);
-        if (c.name != "\0") addCategory(c, cats);
+        if (c->name != "\0") addCategory(c, cats);
     }
     sort(cats.begin(), cats.end());
 
     //Create vector of DesktopFile, using each path in the paths vector
-    vector<DesktopFile> files;
+    vector<DesktopFile*> files;
     for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
     {   
-        DesktopFile df = DesktopFile((*it).c_str(), 
+        DesktopFile *df = new DesktopFile((*it).c_str(), 
                 splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats, 
                 iconsXdgSize, iconsXdgOnly, term);
-        if (df.name != "\0" && df.exec != "\0") files.push_back(df);
+        if (df->name != "\0" && df->exec != "\0") files.push_back(df);
+        else delete df;
     }
     sort(files.begin(), files.end());
 
@@ -529,6 +530,9 @@ int main(int argc, char *argv[])
             splitCommaArgs(exclude), splitCommaArgs(excludeMatching), 
             splitCommaArgs(excludeCategories), splitCommaArgs(include),
             splitCommaArgs(excludedFilenames), cats);
+
+    for (unsigned int x = 0; x < cats.size(); x++) delete cats[x];
+    for (unsigned int x = 0; x < files.size(); x++) delete files[x];
 
     return 0;
 }

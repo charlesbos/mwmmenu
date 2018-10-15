@@ -26,21 +26,18 @@
 class Category
 {
     public:
-        Category();
         Category(const char *dirFile, const vector<string>& menuFiles, 
                 bool useIcons, const vector<IconSpec>& iconpaths, 
                 const string& iconsXdgSize, bool iconsXdgOnly);
         Category(const string& name, bool useIcons, 
                 const vector<IconSpec>& iconpaths, const string& iconsXdgSize, 
                 bool iconsXdgOnly);
-        Category(const Category& c);
 
-        Category& operator=(const Category& c);
         bool operator<(const Category& c) const;
 
         string name;
         string icon;
-        vector<string> incEntries;
+        vector<DesktopFile*> incEntries;
         vector<string> incEntryFiles;
         vector<string> excEntryFiles;
 
