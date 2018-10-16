@@ -32,7 +32,7 @@ class Category
         Category(const string& name, bool useIcons, 
                 const vector<IconSpec>& iconpaths, const string& iconsXdgSize, 
                 bool iconsXdgOnly);
-
+        
         bool operator<(const Category& c) const;
 
         string name;

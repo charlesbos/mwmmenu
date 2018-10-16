@@ -37,14 +37,12 @@
 class MenuWriter
 {   
     public:
-        MenuWriter(const vector<DesktopFile*>& files, const string& menuName, 
-                int windowmanager, bool useIcons, vector<string> exclude, 
-                vector<string> excludeMatching, 
+        MenuWriter(const string& menuName, int windowmanager, bool useIcons, 
+                vector<string> exclude, vector<string> excludeMatching, 
                 vector<string> excludeCategories, vector<string> include, 
                 vector<string> excludedFilenames, const vector<Category*>& cats);
 
     private:
-        vector<DesktopFile*> files;
         vector<Category*> cats;
         string menuName;
         int windowmanager;

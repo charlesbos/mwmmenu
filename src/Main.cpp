@@ -497,6 +497,7 @@ int main(int argc, char *argv[])
         }
     }
     vector<Category*> cats;
+    cats.reserve(20);
     //Create the base categories
     for (unsigned int x = 0; x < baseCategories.size(); x++)
     {   
@@ -513,8 +514,10 @@ int main(int argc, char *argv[])
     }
     sort(cats.begin(), cats.end(), myCompare<Category>);
 
-    //Create vector of DesktopFile, using each path in the paths vector
+    //Create DesktopFile objects, they will associate themselves with the
+    //appropriate categories
     vector<DesktopFile*> files;
+    files.reserve(300);
     for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
     {   
         DesktopFile *df = new DesktopFile((*it).c_str(), 
@@ -523,10 +526,9 @@ int main(int argc, char *argv[])
         if (df->name != "\0" && df->exec != "\0") files.push_back(df);
         else delete df;
     }
-    sort(files.begin(), files.end(), myCompare<DesktopFile>);
 
     //Create a MenuWriter which will write the menu out to the console
-    MenuWriter(files, menuName, windowmanager, useIcons, 
+    MenuWriter(menuName, windowmanager, useIcons, 
             splitCommaArgs(exclude), splitCommaArgs(excludeMatching), 
             splitCommaArgs(excludeCategories), splitCommaArgs(include),
             splitCommaArgs(excludedFilenames), cats);

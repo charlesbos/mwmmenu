@@ -25,13 +25,11 @@
 #include "MenuWriter.h"
 #include "Category.h"
 
-MenuWriter::MenuWriter(const vector<DesktopFile*>& files, 
-        const string& menuName, int windowmanager, bool useIcons, 
-        vector<string> exclude, vector<string> excludeMatching, 
+MenuWriter::MenuWriter(const string& menuName, int windowmanager, 
+        bool useIcons, vector<string> exclude, vector<string> excludeMatching,
         vector<string> excludeCategories, vector<string> include, 
         vector<string> excludedFilenames, const vector<Category*>& cats)
 {   
-    this->files = files;
     this->cats = cats;
     this->menuName = menuName;
     this->windowmanager = windowmanager;
@@ -78,41 +76,45 @@ void MenuWriter::printHandler()
  * based on various criteria. The entries are excluded simply by setting the
  * nodisplay value to true */
 void MenuWriter::entryDisplayHandler()
-{   
-    if (!exclude.empty())
-    {   
-        for (unsigned int x = 0; x < files.size(); x++)
-            if (find(exclude.begin(), exclude.end(), files[x]->name) != 
-                    exclude.end()) 
-                files[x]->nodisplay = true;
-    }
-    if (!excludeMatching.empty())
+{  
+    for (unsigned int w = 0; w < cats.size(); w++)
     {
-        for (unsigned int x = 0; x < files.size(); x++)
-        {
-            for (unsigned int y = 0; y < excludeMatching.size(); y++)
-            {
-                if (files[x]->name.find(excludeMatching[y]) != string::npos)
-                {
+        vector<DesktopFile*> files = cats[w]->incEntries;
+        if (!exclude.empty())
+        {   
+            for (unsigned int x = 0; x < files.size(); x++)
+                if (find(exclude.begin(), exclude.end(), files[x]->name) != 
+                        exclude.end()) 
                     files[x]->nodisplay = true;
-                    break;
+        }
+        if (!excludeMatching.empty())
+        {
+            for (unsigned int x = 0; x < files.size(); x++)
+            {
+                for (unsigned int y = 0; y < excludeMatching.size(); y++)
+                {
+                    if (files[x]->name.find(excludeMatching[y]) != string::npos)
+                    {
+                        files[x]->nodisplay = true;
+                        break;
+                    }
                 }
             }
         }
-    }
-    if (!excludedFilenames.empty())
-    {   
-        for (unsigned int x = 0; x < files.size(); x++)
-            if (find(excludedFilenames.begin(), excludedFilenames.end(), 
-                    files[x]->filename) != excludedFilenames.end()) 
-                files[x]->nodisplay = true;
-    }
-    if (!include.empty())
-    {   
-        for (unsigned int x = 0; x < files.size(); x++)
-            if (find(include.begin(), include.end(), files[x]->name) != 
-                    include.end()) 
-                files[x]->nodisplay = false;
+        if (!excludedFilenames.empty())
+        {   
+            for (unsigned int x = 0; x < files.size(); x++)
+                if (find(excludedFilenames.begin(), excludedFilenames.end(), 
+                        files[x]->filename) != excludedFilenames.end()) 
+                    files[x]->nodisplay = true;
+        }
+        if (!include.empty())
+        {   
+            for (unsigned int x = 0; x < files.size(); x++)
+                if (find(include.begin(), include.end(), files[x]->name) != 
+                        include.end()) 
+                    files[x]->nodisplay = false;
+        }
     }
 }
 
