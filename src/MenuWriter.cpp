@@ -145,7 +145,11 @@ void MenuWriter::writeMenu(int catNumber, const vector<Category*>& usedCats)
 {   
     //Variable for the vector of desktop entries
     vector<DesktopFile*> dfiles; 
-    if (catNumber >= 0) dfiles = usedCats[catNumber]->incEntries; 
+    if (catNumber >= 0) 
+    {
+        dfiles = usedCats[catNumber]->incEntries; 
+        sort(dfiles.begin(), dfiles.end(), myCompare<DesktopFile>);
+    }
     //Variable for the category name
     string category; 
     if (catNumber >= 0) category = usedCats[catNumber]->name;

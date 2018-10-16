@@ -48,19 +48,6 @@ Category::Category(const string& name, bool useIcons,
     if (useIcons) getCategoryIcon(iconpaths, iconsXdgSize, iconsXdgOnly);
 }
 
-//operator< for comparisons
-bool Category::operator<(const Category& c) const
-{   
-    string name_a = this->name;
-    string name_b = c.name;
-    for (unsigned int x = 0; x < name_a.size(); x++) 
-        name_a.at(x) = tolower(name_a.at(x));
-    for (unsigned int x = 0; x < name_b.size(); x++) 
-        name_b.at(x) = tolower(name_b.at(x));
-    if (name_a < name_b) return true;
-    else return false;
-}
-
 /* A function to get the category name and icon definition */
 void Category::getCategoryParams()
 {   

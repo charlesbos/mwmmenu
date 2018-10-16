@@ -43,8 +43,6 @@ class DesktopFile
                 vector<Category*>& cats, const string& iconsXdgSize, 
                 bool iconsXdgOnly, const string& term);
 
-        bool operator<(const DesktopFile& df) const;
-
         string filename;
         string name;
         string exec;

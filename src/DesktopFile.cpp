@@ -42,19 +42,6 @@ DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops,
     }
 }
 
-//operator< for comparisons
-bool DesktopFile::operator<(const DesktopFile& df) const
-{   
-    string name_a = this->name;
-    string name_b = df.name;
-    for (unsigned int x = 0; x < name_a.size(); x++) 
-        name_a.at(x) = tolower(name_a.at(x));
-    for (unsigned int x = 0; x < name_b.size(); x++) 
-        name_b.at(x) = tolower(name_b.at(x));
-    if (name_a < name_b) return true;
-    else return false;
-}
-
 /* This function fetches the required values (Name, Exec, Categories, 
  * NoDisplay etc) and then assigns the results to the appropriate instance 
  * variables or passes the results to the appropriate function */

@@ -511,7 +511,7 @@ int main(int argc, char *argv[])
                 iconpaths, iconsXdgSize, iconsXdgOnly);
         if (c->name != "\0") addCategory(c, cats);
     }
-    sort(cats.begin(), cats.end());
+    sort(cats.begin(), cats.end(), myCompare<Category>);
 
     //Create vector of DesktopFile, using each path in the paths vector
     vector<DesktopFile*> files;
@@ -523,7 +523,7 @@ int main(int argc, char *argv[])
         if (df->name != "\0" && df->exec != "\0") files.push_back(df);
         else delete df;
     }
-    sort(files.begin(), files.end());
+    sort(files.begin(), files.end(), myCompare<DesktopFile>);
 
     //Create a MenuWriter which will write the menu out to the console
     MenuWriter(files, menuName, windowmanager, useIcons, 

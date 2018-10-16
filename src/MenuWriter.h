@@ -62,4 +62,16 @@ class MenuWriter
         void writeMenu(int catNumber, const vector<Category*>& usedCats);
 };
 
+template <typename T> bool myCompare(T *a, T *b)
+{
+    string name_a = a->name;
+    string name_b = b->name;
+    for (unsigned int x = 0; x < name_a.size(); x++) 
+        name_a.at(x) = tolower(name_a.at(x));
+    for (unsigned int x = 0; x < name_b.size(); x++) 
+        name_b.at(x) = tolower(name_b.at(x));
+    if (name_a < name_b) return true;
+    else return false;
+}
+
 #endif
