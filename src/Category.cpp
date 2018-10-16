@@ -69,7 +69,7 @@ void Category::getSpecifiedFiles()
 {   
     for (unsigned int x = 0; x < menuFiles.size(); x++)
     {
-        menu_f.open(menuFiles[x]);
+        menu_f.open(menuFiles[x].c_str());
         if (!menu_f) continue;
         string line;
         bool started = false;

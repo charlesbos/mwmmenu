@@ -453,15 +453,23 @@ int main(int argc, char *argv[])
      * into Multimedia. We also rename Network to Internet and Utility to 
      * Accessories as this is what is commonly done elsewhere. Otherwise, our 
      * categories are the same as the freedesktop.org base categories */
-    vector<string> baseCategories = {"Accessories", "Development", "Education",
-        "Game", "Graphics", "Multimedia", "Internet", "Office", "Other", 
+    const char *baseCatsArr[] = {"Accessories", "Development", "Education",
+        "Game", "Graphics", "Multimedia", "Internet", "Office", "Other",
         "Science", "Settings", "System"};
+    vector<string> baseCategories(baseCatsArr, 
+            baseCatsArr + sizeof(baseCatsArr) / sizeof(*baseCatsArr));
     vector<string> catPaths;
+    catPaths.reserve(10);
     vector<string> menuPaths;
+    menuPaths.reserve(10);
     if (!noCustomCats)
     {   
-        vector<string> catDirs = {"/usr/share/desktop-directories"};
-        vector<string> menuDirs = {"/etc/xdg/menus/applications-merged"}; 
+        vector<string> catDirs;
+        catDirs.reserve(10);
+        catDirs.push_back("/usr/share/desktop-directories");
+        vector<string> menuDirs;
+        menuDirs.reserve(10);
+        menuDirs.push_back("/etc/xdg/menus/applications-merged");
         if (homedir.c_str() != NULL) 
         {
             catDirs.push_back(homedir + "/.local/share/desktop-directories");
