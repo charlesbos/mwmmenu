@@ -33,8 +33,6 @@ class Category
                 const vector<IconSpec>& iconpaths, const string& iconsXdgSize, 
                 bool iconsXdgOnly);
         
-        bool operator<(const Category& c) const;
-
         string name;
         string icon;
         vector<DesktopFile*> incEntries;
