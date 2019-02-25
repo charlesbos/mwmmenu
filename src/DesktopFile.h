@@ -44,11 +44,13 @@ class DesktopFile
                 bool iconsXdgOnly, const string& term);
 
         string filename;
+        string basename;
         string name;
         string exec;
         bool nodisplay;
         string icon;
         bool terminal;
+        vector<string> foundCategories;
 
         static string getID(const string& line);
         static string getSingleValue(const string& line);

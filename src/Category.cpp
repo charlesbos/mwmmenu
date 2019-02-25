@@ -33,6 +33,7 @@ Category::Category(const char *dirFile, const vector<string>& menuFiles,
     else
     { 
         getCategoryParams();
+        if (this->name != "Other") this->validNames.push_back(this->name);
         getSpecifiedFiles();
         dir_f.close();
         if (useIcons) getCategoryIcon(iconpaths, iconsXdgSize, iconsXdgOnly);
@@ -45,6 +46,7 @@ Category::Category(const string& name, bool useIcons,
         bool iconsXdgOnly)
 {   
     this->name = name;
+    if (this->name != "Other") this->validNames.push_back(this->name);
     if (useIcons) getCategoryIcon(iconpaths, iconsXdgSize, iconsXdgOnly);
 }
 
@@ -93,6 +95,10 @@ void Category::getSpecifiedFiles()
             {   
                 if (including) incEntryFiles.push_back(getSingleValue(line));
                 else excEntryFiles.push_back(getSingleValue(line));
+            }
+            if (started && id == "<Category>") 
+            {   
+                if (including) validNames.push_back(getSingleValue(line));
             }
         }
         menu_f.close();
@@ -153,6 +159,41 @@ string Category::getSingleValue(const string& line)
     }
 
     return string(readChars.begin(), readChars.end());
+}
+
+/* Add a DesktopFile to the list of included entries if its specified category
+ * matches the category name or an included category name. Return true to
+ * indicate the entry was included and false to indicate that it was not */
+bool Category::registerDF(DesktopFile *df, bool force)
+{
+    if (force)
+    {
+        incEntries.push_back(df);
+        return true;
+    }
+    for (unsigned int x = 0; x < validNames.size(); x++)
+    {
+        //Add to category if foundCategories contains the category name
+        if (find(df->foundCategories.begin(), df->foundCategories.end(), 
+                validNames[x]) != df->foundCategories.end() &&
+                find(excEntryFiles.begin(), excEntryFiles.end(), 
+                df->basename) == excEntryFiles.end())
+        {   
+            incEntries.push_back(df);
+            return true;
+        }
+    }
+    //Add to category if the category specifies a particular desktop file 
+    //by filename
+    if (find(incEntryFiles.begin(), incEntryFiles.end(), df->basename) != 
+            incEntryFiles.end() && find(excEntryFiles.begin(), 
+            excEntryFiles.end(), df->basename) == excEntryFiles.end())
+
+    {   
+        incEntries.push_back(df);
+        return true;
+    }
+    return false;
 }
 
 /* Try to set a path to an icon. If the category is custom, we might already

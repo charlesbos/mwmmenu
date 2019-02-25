@@ -42,11 +42,14 @@ class Category
         static string getID(const string& line);
         static string getSingleValue(const string& line);
 
+        bool registerDF(DesktopFile *df, bool force = false);
+
     private:
         string dirFile;
         vector<string> menuFiles;
         ifstream dir_f;
         ifstream menu_f;
+        vector<string> validNames;
 
         void getCategoryParams();
         void getSpecifiedFiles();
