@@ -115,6 +115,23 @@ void MenuWriter::entryDisplayHandler()
                         include.end()) 
                     files[x]->nodisplay = false;
         }
+        if (!excludeCategories.empty())
+        {
+            vector<Category*> subCats = cats[w]->getSubcats();
+            for (unsigned int x = 0; x < subCats.size(); x++)
+            {
+                Category *subCat = subCats[x];
+                if (find(excludeCategories.begin(), excludeCategories.end(),
+                        subCat->name) != excludeCategories.end())
+                {
+                    files = subCat->getEntriesR();
+                    for (unsigned int y = 0; y < files.size(); y++)
+                    {
+                        files[y]->nodisplay = true;
+                    }
+                }
+            }
+        }
     }
 }
 
