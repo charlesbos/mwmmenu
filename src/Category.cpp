@@ -348,7 +348,6 @@ void Category::registerDF(Category *cat, DesktopFile *df, bool force)
         {   
             cat->incEntries.push_back(df);
             registerCount++;
-            return;
         }
     }
     //Add to category if the category specifies a particular desktop file 
@@ -361,7 +360,6 @@ void Category::registerDF(Category *cat, DesktopFile *df, bool force)
     {   
         cat->incEntries.push_back(df);
         registerCount++;
-        return;
     }
     //Call this function recursively on subcategories
     for (unsigned int x = 0; x < cat->incCategories.size(); x++)
