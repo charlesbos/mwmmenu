@@ -159,7 +159,19 @@ void Category::parseMenu(const vector<string>& menu)
                 subMenu.push_back(line);
                 Category *c = new Category(subMenu, dirFile.c_str(), useIcons, iconpaths, 
                         iconsXdgSize, iconsXdgOnly, depth + 1);
-                incCategories.push_back(c);
+                bool replaced = false;
+                vector<Category*> currentCats = this->getSubcats();
+                for (unsigned int y = 0; y < currentCats.size(); y++)
+                {
+                    Category *curCat = currentCats[y];
+                    if (c->name == curCat->name)
+                    {
+                        currentCats[y] = c;
+                        replaced = true;
+                        break;
+                    }
+                }
+                if (!replaced) incCategories.push_back(c);
                 subMenu.clear();
                 menuStarted = false;
                 menuOpenCnt = 0;
