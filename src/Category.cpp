@@ -19,7 +19,6 @@
  */
 
 #include <algorithm>
-#include <iostream>
 #include "Category.h"
 
 int Category::registerCount = 0;

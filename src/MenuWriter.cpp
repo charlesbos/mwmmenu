@@ -211,7 +211,9 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
                     cout << "    " << menuFormatted << " " << "f.title" << endl;
                 }
                 for (unsigned int x = 0; x < usedCats.size(); x++)
-                {   
+                {  
+                    if (catNumber == SUB_MENU)
+                        if (!categoryNotExcluded(usedCats[x])) continue;
                     catFormatted = '"' + string(usedCats[x]->name) + '"';
                     cout << "    " << catFormatted << " " << "f.menu " <<
                         catFormatted << endl;
@@ -264,6 +266,8 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
                 }
                 for (unsigned int x = 0; x < usedCats.size(); x++)
                 {   
+                    if (catNumber == SUB_MENU)
+                        if (!categoryNotExcluded(usedCats[x])) continue;
                     if (useIcons)
                     {
                         catIcon = usedCats[x]->icon;
@@ -417,6 +421,8 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
                 }
                 for (unsigned int x = 0; x < usedCats.size(); x++)
                 {   
+                    if (catNumber == SUB_MENU)
+                        if (!categoryNotExcluded(usedCats[x])) continue;
                     if (useIcons)
                     {
                         catIcon = usedCats[x]->icon;
