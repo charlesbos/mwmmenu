@@ -182,7 +182,11 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
     if (cat != NULL) depth = cat->depth;
     //Variable for vector of subcategories
     vector<Category*> subCats;
-    if (cat != NULL) subCats = cat->getSubcats();
+    if (cat != NULL) 
+    {
+        subCats = cat->getSubcats();
+        sort(subCats.begin(), subCats.end(), myCompare<Category>);
+    }
     //Variable for knowing when the last category has been reached
     int maxCatNumber = usedCats.size() - 1;
     //Variable for a formatted version of the name, e.g. quotes added
