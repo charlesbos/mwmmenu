@@ -61,8 +61,9 @@ void MenuWriter::printHandler()
     }
 
     //Now write the menus
+    int maxCatNumber = usedCats.size() - 1;
     for (unsigned int x = 0; x < usedCats.size(); x++)
-        writeMenu(usedCats[x], x, usedCats);
+        writeMenu(usedCats[x], x, usedCats, maxCatNumber);
     //For WMs which require a menu which sources the individual category menus
     if ((windowmanager == mwm ||
             windowmanager == fvwm ||
@@ -162,7 +163,7 @@ bool MenuWriter::categoryNotExcluded(Category* c)
  * the individual category menus. Such a menu will be printed for those window 
  * managers if a negative category number is provided */
 void MenuWriter::writeMenu(Category *cat, int catNumber, 
-        const vector<Category*>& usedCats)
+        const vector<Category*>& usedCats, int maxCatNumber)
 {   
     //Variable for the vector of desktop entries
     vector<DesktopFile*> dfiles; 
@@ -187,8 +188,9 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
         subCats = cat->getSubcats();
         sort(subCats.begin(), subCats.end(), myCompare<Category>);
     }
-    //Variable for knowing when the last category has been reached
-    int maxCatNumber = usedCats.size() - 1;
+    //Variable for knowing how many items (entries and submenus) there are in
+    //a menu
+    int numOfItems = 0;
     //Variable for a formatted version of the name, e.g. quotes added
     string nameFormatted;
     //Variable for a formatted version of the exec, e.g. quotes added
@@ -490,17 +492,27 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
                 cout << '"' + menuName + '"' << " END PIN" << endl;
             break;     
         case windowmaker :
-            if (catNumber == 0) 
+            if (catNumber == 0 && depth == 0) 
                 cout << "(\n    " << '"' << menuName << '"' << ',' << endl;
             catFormatted = '"' + category + '"';
             for (int x = 0; x < depth; x++) cout << "    ";
             cout << "    (" << endl;
             for (int x = 0; x < depth; x++) cout << "    ";
             cout << "        " << catFormatted << ',' << endl;
+            if (subCats.size() > 0)
+            {
+                //For Windowmaker we have to exactly how many items there are
+                //in menu (submenus + desktop entries) because we have to
+                //terminate each entry other than the final one with a comma
+                for (unsigned int x = 0; x < subCats.size(); x++)
+                    if (categoryNotExcluded(subCats[x])) numOfItems++;
+                for (unsigned int x = 0; x < dfiles.size(); x++)
+                    if (!dfiles[x]->nodisplay) numOfItems++;
+            }
             for (unsigned int x = 0; x < subCats.size(); x++)
             {
                 if (categoryNotExcluded(subCats[x]))
-                    writeMenu(subCats[x], SUB_MENU, usedCats);
+                    writeMenu(subCats[x], x + 1, usedCats, numOfItems);
             }
             for (vector<DesktopFile*>::iterator it = dfiles.begin(); 
                     it < dfiles.end(); it++)
@@ -522,7 +534,15 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
                 for (int x = 0; x < depth; x++) cout << "    ";
                 cout << "    )," << endl;
             }
-            else cout << "    )\n)" << endl;
+            else 
+            {
+                if (depth == 0) cout << "    )\n)" << endl;
+                else
+                {
+                    for (int x = 0; x < depth; x++) cout << "    ";
+                    cout << "    )" << endl;
+                }
+            }
             break;
         case icewm :
             if (useIcons)

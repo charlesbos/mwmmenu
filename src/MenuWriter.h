@@ -36,10 +36,17 @@
 
 //Category numbers
 //Any positive category numbers indicate an index in the vector of used
-//categories. These are not defined here. Negative numbers indicate a
-//category of categories
+//categories. These are not defined here. Negative numbers indicate either a
+//main menu (i.e. a category of categories) or a subcategory
 #define MAIN_MENU -1
 #define SUB_MENU -2
+
+//The real maximum category number will be positive. The default here is just
+//used for cases where the real maximum is irrelavent, i.e. if we're printing
+// a subcategory we don't need to know how many base categories there are. The
+//default max must be negative and must not conflict with any category numbers
+//defined above
+#define DEFAULT_MAX_CAT -1000
 
 class MenuWriter
 {   
@@ -65,7 +72,8 @@ class MenuWriter
         bool categoryNotExcluded(Category* c);
 
         void writeMenu(Category *cat, int catNumber, 
-                const vector<Category*>& usedCats);
+                const vector<Category*>& usedCats, 
+                int maxCatNumber = DEFAULT_MAX_CAT);
 };
 
 template <typename T> bool myCompare(T *a, T *b)
