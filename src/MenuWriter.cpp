@@ -62,14 +62,14 @@ void MenuWriter::printHandler()
 
     //Now write the menus
     for (unsigned int x = 0; x < usedCats.size(); x++)
-        writeMenu(x, usedCats);
+        writeMenu(usedCats[x], x, usedCats);
     //For WMs which require a menu which sources the individual category menus
     if ((windowmanager == mwm ||
             windowmanager == fvwm ||
             windowmanager == fvwm_dynamic ||
             windowmanager == openbox) &&
             !usedCats.empty())
-        writeMenu(-1, usedCats);
+        writeMenu(NULL, MAIN_MENU, usedCats);
 }
 
 /* Function to filter out desktop entries specified from the command line
@@ -79,7 +79,7 @@ void MenuWriter::entryDisplayHandler()
 {  
     for (unsigned int w = 0; w < cats.size(); w++)
     {
-        vector<DesktopFile*> files = cats[w]->incEntries;
+        vector<DesktopFile*> files = cats[w]->getEntriesR();
         if (!exclude.empty())
         {   
             for (unsigned int x = 0; x < files.size(); x++)
@@ -127,9 +127,10 @@ bool MenuWriter::categoryNotExcluded(Category* c)
             excludeCategories.end())
         return false;
     bool visibleFound = false;
-    for (unsigned int x = 0; x < c->incEntries.size(); x++)
+    vector<DesktopFile*> entries = c->getEntriesR();
+    for (unsigned int x = 0; x < entries.size(); x++)
     {
-        if (c->incEntries[x]->nodisplay == false)
+        if (entries[x]->nodisplay == false)
         {
             visibleFound = true;
             break;
@@ -143,21 +144,28 @@ bool MenuWriter::categoryNotExcluded(Category* c)
  * for a given category. Some WMs (MWM and FVWM) require a menu which sources
  * the individual category menus. Such a menu will be printed for those window 
  * managers if a negative category number is provided */
-void MenuWriter::writeMenu(int catNumber, const vector<Category*>& usedCats)
+void MenuWriter::writeMenu(Category *cat, int catNumber, 
+        const vector<Category*>& usedCats)
 {   
     //Variable for the vector of desktop entries
     vector<DesktopFile*> dfiles; 
-    if (catNumber >= 0) 
+    if (cat != NULL) 
     {
-        dfiles = usedCats[catNumber]->incEntries; 
+        dfiles = cat->getEntries();
         sort(dfiles.begin(), dfiles.end(), myCompare<DesktopFile>);
     }
     //Variable for the category name
     string category; 
-    if (catNumber >= 0) category = usedCats[catNumber]->name;
+    if (cat != NULL) category = cat->name;
     //Variable for the category icon
     string catIcon;
-    if (catNumber >= 0) catIcon = usedCats[catNumber]->icon;
+    if (cat != NULL) catIcon = cat->icon;
+    //Variable for category depth
+    int depth = 0;
+    if (cat != NULL) depth = cat->depth;
+    //Variable for vector of subcategories
+    vector<Category*> subCats;
+    if (cat != NULL) subCats = cat->getSubcats();
     //Variable for knowing when the last category has been reached
     int maxCatNumber = usedCats.size() - 1;
     //Variable for a formatted version of the name, e.g. quotes added
@@ -172,11 +180,17 @@ void MenuWriter::writeMenu(int catNumber, const vector<Category*>& usedCats)
     switch(windowmanager)
     {
         case mwm :
-            if (catNumber >= 0)
+            if (cat != NULL)
             {  
+                for (unsigned int x = 0; x < subCats.size(); x++)
+                {
+                    if (categoryNotExcluded(subCats[x]))
+                        writeMenu(subCats[x], SUB_MENU, usedCats);
+                }  
                 catFormatted = '"' + category + '"';
                 cout << "menu " << catFormatted << endl << "{" << endl;
                 cout << "    " << catFormatted << " " << "f.title" << endl;
+                writeMenu(NULL, SUB_MENU, subCats);
                 for (vector<DesktopFile*>::iterator it = dfiles.begin(); 
                         it < dfiles.end(); it++)
                 {
@@ -189,23 +203,31 @@ void MenuWriter::writeMenu(int catNumber, const vector<Category*>& usedCats)
                 cout << "}" << endl << endl;
             }
             else
-            {   
-                menuFormatted = '"' + menuName + '"';
-                cout << "menu " << menuFormatted << endl << "{" << endl;
-                cout << "    " << menuFormatted << " " << "f.title" << endl;
+            {  
+                if (catNumber == MAIN_MENU)
+                { 
+                    menuFormatted = '"' + menuName + '"';
+                    cout << "menu " << menuFormatted << endl << "{" << endl;
+                    cout << "    " << menuFormatted << " " << "f.title" << endl;
+                }
                 for (unsigned int x = 0; x < usedCats.size(); x++)
                 {   
                     catFormatted = '"' + string(usedCats[x]->name) + '"';
                     cout << "    " << catFormatted << " " << "f.menu " <<
                         catFormatted << endl;
                 }
-                cout << "}" << endl << endl;
+                if (catNumber == MAIN_MENU) cout << "}" << endl << endl;
             }
             break;
         case fvwm :
         case fvwm_dynamic :
-            if (catNumber >= 0)
-            {   
+            if (cat != NULL)
+            {
+                for (unsigned int x = 0; x < subCats.size(); x++)
+                {
+                    if (categoryNotExcluded(subCats[x]))
+                        writeMenu(subCats[x], SUB_MENU, usedCats);
+                }  
                 catFormatted = '"' + category + '"';
                 if (windowmanager == fvwm)
                     cout << "DestroyMenu " << catFormatted << endl;
@@ -213,6 +235,7 @@ void MenuWriter::writeMenu(int catNumber, const vector<Category*>& usedCats)
                     cout << "DestroyMenu recreate " << catFormatted << endl;
                 cout << "AddToMenu " << catFormatted << " " << 
                     catFormatted << " Title" << endl;
+                writeMenu(NULL, SUB_MENU, subCats);
                 for (vector<DesktopFile*>::iterator it = dfiles.begin(); 
                         it < dfiles.end(); it++)
                 {   
@@ -229,13 +252,16 @@ void MenuWriter::writeMenu(int catNumber, const vector<Category*>& usedCats)
             }
             else
             {   
-                menuFormatted = '"' + menuName + '"';
-                if (windowmanager == fvwm)
-                    cout << "DestroyMenu " << menuFormatted << endl;
-                else
-                    cout << "DestroyMenu recreate " << menuFormatted << endl;
-                cout << "AddToMenu " << menuFormatted << " " << 
-                    menuFormatted << " Title" << endl;
+                if (catNumber == MAIN_MENU)
+                {
+                    menuFormatted = '"' + menuName + '"';
+                    if (windowmanager == fvwm)
+                        cout << "DestroyMenu " << menuFormatted << endl;
+                    else
+                        cout << "DestroyMenu recreate " << menuFormatted << endl;
+                    cout << "AddToMenu " << menuFormatted << " " << 
+                        menuFormatted << " Title" << endl;
+                }
                 for (unsigned int x = 0; x < usedCats.size(); x++)
                 {   
                     if (useIcons)
@@ -252,7 +278,7 @@ void MenuWriter::writeMenu(int catNumber, const vector<Category*>& usedCats)
                     cout << "+ " << catFormatted << " " << "Popup " << 
                         '"' + usedCats[x]->name + '"' << endl;
                 }
-                cout << endl;
+                if (catNumber == MAIN_MENU) cout << endl;
             }
             break;
         case fluxbox :
@@ -266,7 +292,13 @@ void MenuWriter::writeMenu(int catNumber, const vector<Category*>& usedCats)
                     catFormatted = '(' + category + ')';
             }
             else catFormatted = '(' + category + ')';
+            for (int x = 0; x < depth; x++) cout << "    ";
             cout << "    [submenu] " + catFormatted + " {}" << endl;
+            for (unsigned int x = 0; x < subCats.size(); x++)
+            {
+                if (categoryNotExcluded(subCats[x]))
+                    writeMenu(subCats[x], SUB_MENU, usedCats);
+            }
             for (vector<DesktopFile*>::iterator it = dfiles.begin(); 
                     it < dfiles.end(); it++)
             {   
@@ -282,9 +314,11 @@ void MenuWriter::writeMenu(int catNumber, const vector<Category*>& usedCats)
                     nameFormatted.insert(static_cast<int>(
                         nameFormatted.find_last_of(')')), string("\\").c_str());
                 nameFormatted = '(' + nameFormatted + ')';
+                for (int x = 0; x < depth; x++) cout << "    ";
                 cout << "        [exec] " << nameFormatted << " " << 
                     execFormatted << endl;
             }
+            for (int x = 0; x < depth; x++) cout << "    ";
             cout << "    [end]" << endl;
             if (catNumber == maxCatNumber) cout << "[end]" << endl;
             break;
@@ -294,22 +328,51 @@ void MenuWriter::writeMenu(int catNumber, const vector<Category*>& usedCats)
                 cout << 
                     "<openbox_pipe_menu xmlns=\"http://openbox.org/3.4/menu\">"
                     << endl << endl;
-            if (catNumber >= 0)
-            {   
+            if (cat != NULL)
+            {  
+                if (windowmanager == openbox)
+                {
+                    for (unsigned int x = 0; x < subCats.size(); x++)
+                    {
+                        if (categoryNotExcluded(subCats[x]))
+                            writeMenu(subCats[x], SUB_MENU, usedCats);
+                    }
+                }  
                 catFormatted = '"' + category + '"';
                 if (useIcons)
                 {
-                    if (catIcon != "\0") 
+                    if (catIcon != "\0")
+                    {
+                        if (windowmanager == openbox_pipe)
+                           for (int x = 0; x < depth; x++) cout << "    ";
                         cout << "<menu id=" << catFormatted << " label=" << 
                             catFormatted << " icon=" << '"' + catIcon + '"' << 
                             ">" << endl;
-                    else 
+                    }
+                    else
+                    {
+                        if (windowmanager == openbox_pipe)
+                            for (int x = 0; x < depth; x++) cout << "    ";
                         cout << "<menu id=" << catFormatted << " label=" << 
                             catFormatted << ">" << endl;
+                    }
                 }
                 else 
+                {
+                    if (windowmanager == openbox_pipe)
+                        for (int x = 0; x < depth; x++) cout << "    ";
                     cout << "<menu id=" << catFormatted << " label=" << 
                         catFormatted << ">" << endl;
+                }
+                if (windowmanager == openbox) writeMenu(NULL, SUB_MENU, subCats);
+                if (windowmanager == openbox_pipe)
+                {
+                    for (unsigned int x = 0; x < subCats.size(); x++)
+                    {
+                        if (categoryNotExcluded(subCats[x]))
+                            writeMenu(subCats[x], SUB_MENU, usedCats);
+                    }
+                }  
                 for (vector<DesktopFile*>::iterator it = dfiles.begin(); 
                         it < dfiles.end(); it++)
                 {   
@@ -319,22 +382,39 @@ void MenuWriter::writeMenu(int catNumber, const vector<Category*>& usedCats)
                             " icon=\"" + (*it)->icon + "\">";
                     else nameFormatted = '"' + (*it)->name + "\">";
                     execFormatted = (*it)->exec;
+                    if (windowmanager == openbox_pipe)
+                        for (int x = 0; x < depth; x++) cout << "    ";
                     cout << "    <item label=" << nameFormatted << endl;
+                    if (windowmanager == openbox_pipe)
+                        for (int x = 0; x < depth; x++) cout << "    ";
                     cout << "        <action name=\"Execute\">" << endl;
+                    if (windowmanager == openbox_pipe)
+                        for (int x = 0; x < depth; x++) cout << "    ";
                     cout << "            <execute>" << execFormatted << 
                         "</execute>" << endl;
+                    if (windowmanager == openbox_pipe)
+                        for (int x = 0; x < depth; x++) cout << "    ";
                     cout << "        </action>" << endl;
+                    if (windowmanager == openbox_pipe)
+                        for (int x = 0; x < depth; x++) cout << "    ";
                     cout << "    </item>" << endl;
                 }
-                cout << "</menu>" << endl << endl;
+                if (windowmanager == openbox_pipe) 
+                    for (int x = 0; x < depth; x++) cout << "    ";
+                if (windowmanager == openbox_pipe && depth != 0)
+                    cout << "</menu>" << endl;
+                else cout << "</menu>" << endl << endl;
                 if (windowmanager == openbox_pipe && catNumber == maxCatNumber)
                     cout << "</openbox_pipe_menu>" << endl << endl;
             }
             else
-            {   
-                menuFormatted = '"' + menuName + '"';
-                cout << "<menu id=" << menuFormatted << " label=" << 
-                    menuFormatted << ">" << endl;
+            {  
+                if (catNumber == MAIN_MENU)
+                { 
+                    menuFormatted = '"' + menuName + '"';
+                    cout << "<menu id=" << menuFormatted << " label=" << 
+                        menuFormatted << ">" << endl;
+                }
                 for (unsigned int x = 0; x < usedCats.size(); x++)
                 {   
                     if (useIcons)
@@ -351,23 +431,34 @@ void MenuWriter::writeMenu(int catNumber, const vector<Category*>& usedCats)
                         catFormatted = '"' + string(usedCats[x]->name) + "\"/>";
                     cout << "    <menu id=" << catFormatted << endl;
                 }
-                cout << "</menu>" << endl << endl;
+                if (catNumber == MAIN_MENU) cout << "</menu>" << endl << endl;
             }
             break;
         case olvwm :
             if (catNumber == 0) 
                 cout << '"' + menuName + '"' << " MENU" << endl << endl;
             catFormatted = '"' + category + '"';
+            for (int x = 0; x < depth; x++) cout << "    ";
             cout << catFormatted << " MENU" << endl;
+            for (unsigned int x = 0; x < subCats.size(); x++)
+            {
+                if (categoryNotExcluded(subCats[x]))
+                    writeMenu(subCats[x], SUB_MENU, usedCats);
+            }
             for (vector<DesktopFile*>::iterator it = dfiles.begin(); 
                     it < dfiles.end(); it++)
             {   
                 if ((*it)->nodisplay) continue;
                 nameFormatted = '"' + (*it)->name + '"';
                 execFormatted = (*it)->exec;
+                for (int x = 0; x < depth; x++) cout << "    ";
                 cout << nameFormatted << " " << execFormatted << endl;
             }
-            cout << catFormatted << " END PIN" << endl << endl;
+            for (int x = 0; x < depth; x++) cout << "    ";
+            if (depth == 0)
+                cout << catFormatted << " END PIN" << endl << endl;
+            else
+                cout << catFormatted << " END PIN" << endl;
             if (catNumber == maxCatNumber) 
                 cout << '"' + menuName + '"' << " END PIN" << endl;
             break;     
@@ -375,21 +466,35 @@ void MenuWriter::writeMenu(int catNumber, const vector<Category*>& usedCats)
             if (catNumber == 0) 
                 cout << "(\n    " << '"' << menuName << '"' << ',' << endl;
             catFormatted = '"' + category + '"';
-            cout << "    (\n        " << catFormatted << ',' << endl;
+            for (int x = 0; x < depth; x++) cout << "    ";
+            cout << "    (" << endl;
+            for (int x = 0; x < depth; x++) cout << "    ";
+            cout << "        " << catFormatted << ',' << endl;
+            for (unsigned int x = 0; x < subCats.size(); x++)
+            {
+                if (categoryNotExcluded(subCats[x]))
+                    writeMenu(subCats[x], SUB_MENU, usedCats);
+            }
             for (vector<DesktopFile*>::iterator it = dfiles.begin(); 
                     it < dfiles.end(); it++)
             {   
                 if ((*it)->nodisplay) continue;
                 nameFormatted = '"' + (*it)->name + '"';
                 execFormatted = '"' + (*it)->exec + '"';
+                for (int x = 0; x < depth; x++) cout << "    ";
                 cout << "        (" << nameFormatted << ", " << "EXEC, " << 
                     execFormatted << ")";
                 if ((it - dfiles.begin()) != 
-                        (dfiles.end() - dfiles.begin() - 1)) 
+                        (dfiles.end() - dfiles.begin() - 1))
                     cout << ',' << endl;
-                else cout << endl;
+                else 
+                    cout << endl;
             }
-            if (catNumber != maxCatNumber) cout << "    )," << endl;
+            if (catNumber != maxCatNumber) 
+            {
+                for (int x = 0; x < depth; x++) cout << "    ";
+                cout << "    )," << endl;
+            }
             else cout << "    )\n)" << endl;
             break;
         case icewm :
@@ -401,7 +506,13 @@ void MenuWriter::writeMenu(int catNumber, const vector<Category*>& usedCats)
                     catFormatted = '"' + category + "\" -";
             }
             else catFormatted = '"' + category + "\" folder";
+            for (int x = 0; x < depth; x++) cout << "    ";
             cout << "menu " << catFormatted << " {" << endl;
+            for (unsigned int x = 0; x < subCats.size(); x++)
+            {
+                if (categoryNotExcluded(subCats[x]))
+                    writeMenu(subCats[x], SUB_MENU, usedCats);
+            }
             for (vector<DesktopFile*>::iterator it = dfiles.begin(); 
                     it < dfiles.end(); it++)
             {   
@@ -411,10 +522,13 @@ void MenuWriter::writeMenu(int catNumber, const vector<Category*>& usedCats)
                         (*it)->icon;
                 else nameFormatted = '"' + (*it)->name + "\" -";
                 execFormatted = (*it)->exec;
+                for (int x = 0; x < depth; x++) cout << "    ";
                 cout << "    prog " + nameFormatted + " " + execFormatted << 
                     endl;
             }
-            cout << "}\n" << endl;
+            for (int x = 0; x < depth; x++) cout << "    ";
+            if (depth == 0) cout << "}\n" << endl;
+            else cout << "}\n";
             break;
     }
 }

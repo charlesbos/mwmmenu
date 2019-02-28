@@ -34,6 +34,13 @@
 #define windowmaker 7
 #define icewm 8
 
+//Category numbers
+//Any positive category numbers indicate an index in the vector of used
+//categories. These are not defined here. Negative numbers indicate a
+//category of categories
+#define MAIN_MENU -1
+#define SUB_MENU -2
+
 class MenuWriter
 {   
     public:
@@ -57,7 +64,8 @@ class MenuWriter
         void entryDisplayHandler();
         bool categoryNotExcluded(Category* c);
 
-        void writeMenu(int catNumber, const vector<Category*>& usedCats);
+        void writeMenu(Category *cat, int catNumber, 
+                const vector<Category*>& usedCats);
 };
 
 template <typename T> bool myCompare(T *a, T *b)

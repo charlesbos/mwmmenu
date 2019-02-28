@@ -29,15 +29,22 @@ class Category
         Category(const char *dirFile, const vector<string>& menuFiles, 
                 bool useIcons, const vector<IconSpec>& iconpaths, 
                 const string& iconsXdgSize, bool iconsXdgOnly);
+        Category(vector<string> menuDef, const char *dirFile,
+                bool useIcons, const vector<IconSpec>& iconpaths, 
+                const string& iconsXdgSize, bool iconsXdgOnly, int depth);
         Category(const string& name, bool useIcons, 
                 const vector<IconSpec>& iconpaths, const string& iconsXdgSize, 
                 bool iconsXdgOnly);
         
         string name;
         string icon;
-        vector<DesktopFile*> incEntries;
-        vector<string> incEntryFiles;
-        vector<string> excEntryFiles;
+        int depth;
+
+        vector<DesktopFile*> getEntries();
+        vector<DesktopFile*> getEntriesR();
+        vector<Category*> getSubcats();
+        vector<string> getIncludes();
+        vector<string> getExcludes();
 
         static string getID(const string& line);
         static string getSingleValue(const string& line);
@@ -50,11 +57,25 @@ class Category
         ifstream dir_f;
         ifstream menu_f;
         vector<string> validNames;
+        vector<IconSpec> iconpaths;
+        string iconsXdgSize;
+        bool iconsXdgOnly;
+        bool useIcons;
+        vector<DesktopFile*> incEntries;
+        vector<Category*> incCategories;
+        vector<string> incEntryFiles;
+        vector<string> excEntryFiles;
 
-        void getCategoryParams();
-        void getSpecifiedFiles();
-        void getCategoryIcon(const vector<IconSpec>& iconpaths, 
-                const string& iconsXdgSize, bool iconsXdgOnly);
+        static int registerCount;
+        static vector<DesktopFile*> incEntriesR;
+
+        void registerDF(Category *cat, DesktopFile *df, bool force = false);
+        void getEntriesR(Category *cat);
+
+        void readMenufiles();
+        void parseDir();
+        void parseMenu(const vector<string>& menu);
+        void getCategoryIcon();
 };
 
 #endif

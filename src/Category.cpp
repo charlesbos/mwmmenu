@@ -19,7 +19,11 @@
  */
 
 #include <algorithm>
+#include <iostream>
 #include "Category.h"
+
+int Category::registerCount = 0;
+vector<DesktopFile*> Category::incEntriesR = vector<DesktopFile*>();
 
 //Constructor for custom categories
 Category::Category(const char *dirFile, const vector<string>& menuFiles, 
@@ -28,16 +32,38 @@ Category::Category(const char *dirFile, const vector<string>& menuFiles,
 {   
     this->dirFile = dirFile;
     this->menuFiles = menuFiles;
+    this->iconpaths = iconpaths;
+    this->iconsXdgSize = iconsXdgSize;
+    this->iconsXdgOnly = iconsXdgOnly;
+    this->useIcons = useIcons;
+    this->depth = 0;
     dir_f.open(dirFile);
     if (!dir_f);
     else
     { 
-        getCategoryParams();
+        parseDir();
         if (this->name != "Other") this->validNames.push_back(this->name);
-        getSpecifiedFiles();
+        readMenufiles();
         dir_f.close();
-        if (useIcons) getCategoryIcon(iconpaths, iconsXdgSize, iconsXdgOnly);
+        if (useIcons) getCategoryIcon();
     }
+}
+
+//Constructor for subcategories
+Category::Category(vector<string> menuDef, const char *dirFile, 
+        bool useIcons, const vector<IconSpec>& iconpaths, 
+        const string& iconsXdgSize, bool iconsXdgOnly, int depth)
+{
+    this->dirFile = dirFile;
+    this->menuFiles = menuFiles;
+    this->iconpaths = iconpaths;
+    this->iconsXdgSize = iconsXdgSize;
+    this->iconsXdgOnly = iconsXdgOnly;
+    this->useIcons = useIcons;
+    this->depth = depth;
+    parseMenu(menuDef);
+    if (this->name != "Other") this->validNames.push_back(this->name);
+    if (useIcons) getCategoryIcon();
 }
 
 //Constructor for base categories
@@ -46,12 +72,18 @@ Category::Category(const string& name, bool useIcons,
         bool iconsXdgOnly)
 {   
     this->name = name;
+    this->iconpaths = iconpaths;
+    this->iconsXdgSize = iconsXdgSize;
+    this->iconsXdgOnly = iconsXdgOnly;
+    this->useIcons = useIcons;
+    this->depth = 0;
     if (this->name != "Other") this->validNames.push_back(this->name);
-    if (useIcons) getCategoryIcon(iconpaths, iconsXdgSize, iconsXdgOnly);
+    if (useIcons) getCategoryIcon();
 }
 
-/* A function to get the category name and icon definition */
-void Category::getCategoryParams()
+/* A function to parse a directory file to get get the category name and 
+ * icon definition */
+void Category::parseDir()
 {   
     string line;
 
@@ -64,45 +96,136 @@ void Category::getCategoryParams()
     }
 }
 
-/* A function to loop through xdg .menu files, looking for any
- * desktop entry filenames that have been specified as belonging
- * to or excluded from this category */
-void Category::getSpecifiedFiles()
-{   
+/* A function to read each menu file, creating a vector of strings for each
+ * menufile where each string is a line. For each vector, we then call
+ * parseMenu */
+void Category::readMenufiles()
+{
+    vector<string> menuVec;
     for (unsigned int x = 0; x < menuFiles.size(); x++)
     {
         menu_f.open(menuFiles[x].c_str());
         if (!menu_f) continue;
         string line;
-        bool started = false;
-        bool including = false;
         while (!menu_f.eof())
         { 
             getline(menu_f, line);
-            string id = getID(line);
-            if (id == "<Directory>")
-            { 
-                string dir = getSingleValue(line);
-                if (dir == dirFile.substr(dirFile.find_last_of("/") + 1, 
-                        dirFile.size() - dirFile.find_last_of("/") - 1))
-                    started = true;
-                else
-                    started = false;
-            }
-            if (id == "<Include>" && started) including = true;
-            if (id == "<Exclude>" && started) including = false;
-            if (started && id == "<Filename>") 
-            {   
-                if (including) incEntryFiles.push_back(getSingleValue(line));
-                else excEntryFiles.push_back(getSingleValue(line));
-            }
-            if (started && id == "<Category>") 
-            {   
-                if (including) validNames.push_back(getSingleValue(line));
-            }
+            menuVec.push_back(line);
         }
         menu_f.close();
+        parseMenu(menuVec);
+        menuVec.clear();
     }
+}
+
+/* A function to parse an xdg menu files to get includes/excludes 
+ * and submenus */
+void Category::parseMenu(const vector<string>& menu)
+{   
+    string line;
+    string dirLine;
+    vector<string> subMenu;
+    bool started = false;
+    bool including = false;
+    bool menuStarted = false;
+    int menuOpenCnt = 0;
+    int menuCloseCnt = 0;
+    for (unsigned int x = 0; x < menu.size(); x++)
+    {
+        line = menu[x];
+        string id = getID(line);
+        if (id == "<Directory>")
+        { 
+            string dir = getSingleValue(line);
+            dirLine = line;
+            if (dir == dirFile.substr(dirFile.find_last_of("/") + 1, 
+                    dirFile.size() - dirFile.find_last_of("/") - 1))
+                started = true;
+            else
+                started = false;
+        }
+        if (id == "<Menu>" && started && !menuStarted)
+        {
+            menuStarted = true;
+            subMenu.push_back(dirLine);
+            menuOpenCnt++;
+            continue;
+        }
+        if (id == "</Menu>" && menuStarted)
+        {
+            menuCloseCnt++;
+            if (menuOpenCnt == menuCloseCnt)
+            {
+                subMenu.push_back(line);
+                Category *c = new Category(subMenu, dirFile.c_str(), useIcons, iconpaths, 
+                        iconsXdgSize, iconsXdgOnly, depth + 1);
+                incCategories.push_back(c);
+                subMenu.clear();
+                menuStarted = false;
+                menuOpenCnt = 0;
+                menuCloseCnt = 0;
+                continue;
+            }
+        }
+        if (menuStarted)
+        {
+            subMenu.push_back(line);
+            continue;
+        }
+        if (id == "<Name>" && started) this->name = getSingleValue(line);
+        if (id == "<Include>" && started) including = true;
+        if (id == "<Exclude>" && started) including = false;
+        if (started && id == "<Filename>") 
+        {   
+            if (including) incEntryFiles.push_back(getSingleValue(line));
+            else excEntryFiles.push_back(getSingleValue(line));
+        }
+        if (started && id == "<Category>") 
+        {   
+            if (including) validNames.push_back(getSingleValue(line));
+        }
+    }
+}
+
+/* Return all DesktopFiles associated with this category */
+vector<DesktopFile*> Category::getEntries()
+{
+    return incEntries;
+}
+
+/* Return all DesktopFiles associated with this category plus all
+ * associate subcategories */
+vector<DesktopFile*> Category::getEntriesR()
+{
+    getEntriesR(this);
+    vector<DesktopFile*> result(Category::incEntriesR);
+    Category::incEntriesR.clear();
+    return result;
+}
+
+void Category::getEntriesR(Category *cat)
+{
+    for (unsigned int x = 0; x < cat->incEntries.size(); x++)
+        Category::incEntriesR.push_back(cat->incEntries[x]);
+    for (unsigned int x = 0; x < cat->incCategories.size(); x++)
+        getEntriesR(cat->incCategories[x]);
+}
+
+/* Return all subcategories associated with this category */
+vector<Category*> Category::getSubcats()
+{
+    return incCategories;
+}
+
+/* Return a list of filenames included/excluded from this category */
+vector<string> Category::getIncludes()
+{
+    return incEntryFiles;
+}
+
+vector<string> Category::getExcludes()
+{
+    return excEntryFiles;
 }
 
 /* An xdg .menu file specific function for getting the line
@@ -162,45 +285,63 @@ string Category::getSingleValue(const string& line)
 }
 
 /* Add a DesktopFile to the list of included entries if its specified category
- * matches the category name or an included category name. Return true to
- * indicate the entry was included and false to indicate that it was not */
+ * matches the category name or an included category name for the category or 
+ * for any child subcategories. Return true to indicate the entry was included 
+ * and false to indicate that it was not */
 bool Category::registerDF(DesktopFile *df, bool force)
+{
+    bool result = false;
+    registerDF(this, df, force);
+    if (registerCount > 0)
+    {
+        result = true;
+        registerCount = 0;
+    }
+    return result;
+}
+
+void Category::registerDF(Category *cat, DesktopFile *df, bool force)
 {
     if (force)
     {
-        incEntries.push_back(df);
-        return true;
+        cat->incEntries.push_back(df);
+        registerCount++;
+        return;
     }
-    for (unsigned int x = 0; x < validNames.size(); x++)
+    for (unsigned int x = 0; x < cat->validNames.size(); x++)
     {
         //Add to category if foundCategories contains the category name
         if (find(df->foundCategories.begin(), df->foundCategories.end(), 
-                validNames[x]) != df->foundCategories.end() &&
-                find(excEntryFiles.begin(), excEntryFiles.end(), 
-                df->basename) == excEntryFiles.end())
+                cat->validNames[x]) != df->foundCategories.end() &&
+                find(cat->excEntryFiles.begin(), cat->excEntryFiles.end(), 
+                df->basename) == cat->excEntryFiles.end())
         {   
-            incEntries.push_back(df);
-            return true;
+            cat->incEntries.push_back(df);
+            registerCount++;
+            return;
         }
     }
     //Add to category if the category specifies a particular desktop file 
     //by filename
-    if (find(incEntryFiles.begin(), incEntryFiles.end(), df->basename) != 
-            incEntryFiles.end() && find(excEntryFiles.begin(), 
-            excEntryFiles.end(), df->basename) == excEntryFiles.end())
+    if (find(cat->incEntryFiles.begin(), cat->incEntryFiles.end(), 
+            df->basename) != cat->incEntryFiles.end() && 
+            find(cat->excEntryFiles.begin(), cat->excEntryFiles.end(), 
+            df->basename) == cat->excEntryFiles.end())
 
     {   
-        incEntries.push_back(df);
-        return true;
+        cat->incEntries.push_back(df);
+        registerCount++;
+        return;
     }
-    return false;
+    //Call this function recursively on subcategories
+    for (unsigned int x = 0; x < cat->incCategories.size(); x++)
+        registerDF(cat->incCategories[x], df);
 }
 
 /* Try to set a path to an icon. If the category is custom, we might already
  * have an icon definition. Otherwise, we try and determine it from the category
  * name */
-void Category::getCategoryIcon(const vector<IconSpec>& iconpaths, 
-        const string& iconsXdgSize, bool iconsXdgOnly)
+void Category::getCategoryIcon() 
 {   
     //If it's a base category, we want to get the icon from the freedesktop 
     //categories directory

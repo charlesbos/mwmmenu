@@ -177,7 +177,7 @@ void addCategory(Category *c, vector<Category*> &categories)
         {
             //Replace default category object with custom object of the same
             //name if the definitions differ
-            if (!c->incEntryFiles.empty() || !c->excEntryFiles.empty() || 
+            if (!c->getIncludes().empty() || !c->getExcludes().empty() || 
                     (c->icon != categories[x]->icon && c->icon != "\0")) 
                 categories[x] = c;
             return;
