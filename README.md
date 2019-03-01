@@ -42,6 +42,6 @@ Installation:
 Just run make! This will create a single executable file which you can run
 anywhere. In the Makefile we use static compilation, which means you won't
 need to recompile on boost libs updates. If your distribution packages static
-libs separately, make sure you install the static version. As for GCC version,
-I know this compiles on CentOS 7 GCC (version 4.8) and higher. Hopefully it
-should compile on older versions as well but I have not tested this.
+libs separately, make sure you install the static versions of boost libs and
+glibc. As for the required GCC version, 4.4 and higher should be fine. Tested
+on CentOS 6, CentOS 7 and Arch Linux.
