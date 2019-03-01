@@ -144,19 +144,23 @@ void Category::parseMenu(const vector<string>& menu)
             else
                 started = false;
         }
-        if (id == "<Menu>" && started && !menuStarted)
+        if (id == "<Menu>" && started)
         {
             menuStarted = true;
-            subMenu.push_back(dirLine);
             menuOpenCnt++;
-            continue;
+        }
+        if (menuStarted)
+        {
+            subMenu.push_back(line);
         }
         if (id == "</Menu>" && menuStarted)
         {
             menuCloseCnt++;
             if (menuOpenCnt == menuCloseCnt)
             {
-                subMenu.push_back(line);
+                subMenu.erase(subMenu.begin());
+                subMenu.erase(subMenu.end());
+                subMenu.insert(subMenu.begin(), dirLine);
                 Category *c = new Category(subMenu, dirFile.c_str(), useIcons, iconpaths, 
                         iconsXdgSize, iconsXdgOnly, depth + 1);
                 bool replaced = false;
@@ -176,23 +180,17 @@ void Category::parseMenu(const vector<string>& menu)
                 menuStarted = false;
                 menuOpenCnt = 0;
                 menuCloseCnt = 0;
-                continue;
             }
         }
-        if (menuStarted)
-        {
-            subMenu.push_back(line);
-            continue;
-        }
-        if (id == "<Name>" && started) this->name = getSingleValue(line);
-        if (id == "<Include>" && started) including = true;
-        if (id == "<Exclude>" && started) including = false;
-        if (started && id == "<Filename>") 
+        if (id == "<Name>" && started && !menuStarted) this->name = getSingleValue(line);
+        if (id == "<Include>" && started && !menuStarted) including = true;
+        if (id == "<Exclude>" && started && !menuStarted) including = false;
+        if (started && id == "<Filename>" && !menuStarted) 
         {   
             if (including) incEntryFiles.push_back(getSingleValue(line));
             else excEntryFiles.push_back(getSingleValue(line));
         }
-        if (started && id == "<Category>") 
+        if (started && id == "<Category>" && !menuStarted) 
         {   
             if (including) validNames.push_back(getSingleValue(line));
         }
