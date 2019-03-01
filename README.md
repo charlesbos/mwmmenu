@@ -15,13 +15,33 @@ The following window managers are supported (more may be added in the future):
 Dependencies:
 * boost-libs
 * boost (makedep)
-* g++ (makedep)
+* gcc (makedep) 
 
 Extra features:
-* Exclude or include entries/categories from the command line
-* Add entries/icons from non-standard locations
-* Support for menu icons
-* Support for non-standard categories such as Chromium Apps
-* Support for terminal based applications
+* Supports user/vendor created categories/subcategories as defined in
+  directory and menu files
+* No dependencies on packages like gnome-menus. The base menu structure is
+  defined internally
+* Most operations defined in menu files, such an entry inclusion/exclusion
+  or category mergers are also available as command line options. No need to
+  mess with XML
+* Define non-standard entry and icon locations from the command line
+* Support for menu icons in all window managers that support them
+* Support for terminal based applications, the default terminal used to launch
+  an application is xterm -e, but this can be set using a command line option
+* Support for selectively showing entries defined to be shown only in a certain
+  desktop like GNOME or XFCE.
+* Supports disabling all vendor/user defined categories and rules and adhering
+  purely to the internal menu structure (which is essentially just the XDG base
+  categories, with one or two categories renamed)
 
-(See mwmmenu -h for a full list of options)
+See 'mwmmenu --help' for a full list of options
+
+Installation:
+
+Just run make! This will create a single executable file which you can run
+anywhere. In the Makefile we use static compilation, which means you won't
+need to recompile on boost libs updates. If your distribution packages static
+libs separately, make sure you install the static version. As for GCC version,
+I know this compiles on CentOS 7 GCC (version 4.8) and higher. Hopefully it
+should compile on older versions as well but I have not tested this.
