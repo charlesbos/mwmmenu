@@ -39,14 +39,6 @@ MenuWriter::MenuWriter(const string& menuName, int windowmanager,
     include(include),
     excludedFilenames(excludedFilenames)
 {   
-    printHandler();
-}
-
-/* Handles the fetching of the desktop entries assigned to each category, 
- * the exclusion of categories or entries based on command 
- * line arguments and then the printing of the menus themselves */
-void MenuWriter::printHandler()
-{   
     vector<Category*> usedCats;
 
     entryDisplayHandler();

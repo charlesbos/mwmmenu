@@ -67,7 +67,6 @@ class MenuWriter
         vector<string> include;
         vector<string> excludedFilenames;
 
-        void printHandler();
         void entryDisplayHandler();
         bool categoryNotExcluded(Category* c);
 
