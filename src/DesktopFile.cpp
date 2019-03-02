@@ -27,13 +27,13 @@
 DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops,
         bool useIcons, const vector<IconSpec>& iconpaths, 
         vector<Category*>& cats, const string& iconsXdgSize, bool iconsXdgOnly, 
-        const string& term) 
+        const string& term) :
+    filename(filename),
+    basename(this->filename.substr(this->filename.find_last_of("/") + 1, 
+            this->filename.size() - this->filename.find_last_of("/") - 1)),
+    nodisplay(false),
+    terminal(false)
 {   
-    this->filename = filename;
-    this->basename = this->filename.substr(this->filename.find_last_of("/") + 1, 
-            this->filename.size() - this->filename.find_last_of("/") - 1);
-    this->nodisplay = false;
-    this->terminal = false;
     dfile.open(filename);
     if (!dfile);
     else

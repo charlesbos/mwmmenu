@@ -28,17 +28,17 @@
 MenuWriter::MenuWriter(const string& menuName, int windowmanager, 
         bool useIcons, vector<string> exclude, vector<string> excludeMatching,
         vector<string> excludeCategories, vector<string> include, 
-        vector<string> excludedFilenames, const vector<Category*>& cats)
+        vector<string> excludedFilenames, const vector<Category*>& cats) :
+    cats(cats),
+    menuName(menuName),
+    windowmanager(windowmanager),
+    useIcons(useIcons),
+    exclude(exclude),
+    excludeMatching(excludeMatching),
+    excludeCategories(excludeCategories),
+    include(include),
+    excludedFilenames(excludedFilenames)
 {   
-    this->cats = cats;
-    this->menuName = menuName;
-    this->windowmanager = windowmanager;
-    this->useIcons = useIcons;
-    this->exclude = exclude;
-    this->excludeMatching = excludeMatching;
-    this->excludeCategories = excludeCategories;
-    this->include = include;
-    this->excludedFilenames = excludedFilenames;
     printHandler();
 }
 

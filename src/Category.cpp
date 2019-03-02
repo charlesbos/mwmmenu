@@ -28,15 +28,15 @@ vector<Category*> Category::subCatsR = vector<Category*>();
 //Constructor for custom categories
 Category::Category(const char *dirFile, const vector<string>& menuFiles, 
         bool useIcons, const vector<IconSpec>& iconpaths, 
-        const string& iconsXdgSize, bool iconsXdgOnly)
+        const string& iconsXdgSize, bool iconsXdgOnly) :
+    depth(0),
+    dirFile(dirFile),
+    menuFiles(menuFiles),
+    iconpaths(iconpaths),
+    iconsXdgSize(iconsXdgSize),
+    iconsXdgOnly(iconsXdgOnly),
+    useIcons(useIcons)
 {   
-    this->dirFile = dirFile;
-    this->menuFiles = menuFiles;
-    this->iconpaths = iconpaths;
-    this->iconsXdgSize = iconsXdgSize;
-    this->iconsXdgOnly = iconsXdgOnly;
-    this->useIcons = useIcons;
-    this->depth = 0;
     dir_f.open(dirFile);
     if (!dir_f);
     else
@@ -52,15 +52,14 @@ Category::Category(const char *dirFile, const vector<string>& menuFiles,
 //Constructor for subcategories
 Category::Category(vector<string> menuDef, const char *dirFile, 
         bool useIcons, const vector<IconSpec>& iconpaths, 
-        const string& iconsXdgSize, bool iconsXdgOnly, int depth)
+        const string& iconsXdgSize, bool iconsXdgOnly, int depth) :
+    depth(depth),
+    dirFile(dirFile),
+    iconpaths(iconpaths),
+    iconsXdgSize(iconsXdgSize),
+    iconsXdgOnly(iconsXdgOnly),
+    useIcons(useIcons)
 {
-    this->dirFile = dirFile;
-    this->menuFiles = menuFiles;
-    this->iconpaths = iconpaths;
-    this->iconsXdgSize = iconsXdgSize;
-    this->iconsXdgOnly = iconsXdgOnly;
-    this->useIcons = useIcons;
-    this->depth = depth;
     parseMenu(menuDef);
     if (this->name != "Other") this->validNames.push_back(this->name);
     if (useIcons) getCategoryIcon();
@@ -69,14 +68,14 @@ Category::Category(vector<string> menuDef, const char *dirFile,
 //Constructor for base categories
 Category::Category(const string& name, bool useIcons, 
         const vector<IconSpec>& iconpaths, const string& iconsXdgSize, 
-        bool iconsXdgOnly)
+        bool iconsXdgOnly) :
+    name(name),
+    depth(0),
+    iconpaths(iconpaths),
+    iconsXdgSize(iconsXdgSize),
+    iconsXdgOnly(iconsXdgOnly),
+    useIcons(useIcons)
 {   
-    this->name = name;
-    this->iconpaths = iconpaths;
-    this->iconsXdgSize = iconsXdgSize;
-    this->iconsXdgOnly = iconsXdgOnly;
-    this->useIcons = useIcons;
-    this->depth = 0;
     if (this->name != "Other") this->validNames.push_back(this->name);
     if (useIcons) getCategoryIcon();
 }
