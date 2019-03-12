@@ -39,6 +39,7 @@ class Category
         string name;
         string icon;
         int depth;
+        bool nodisplay;
 
         vector<DesktopFile*> getEntries();
         vector<DesktopFile*> getEntriesR();

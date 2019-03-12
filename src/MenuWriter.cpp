@@ -110,6 +110,12 @@ void MenuWriter::entryDisplayHandler()
         }
         if (!excludeCategories.empty())
         {
+            if (find(excludeCategories.begin(), excludeCategories.end(),
+                    cats[w]->name) != excludeCategories.end())
+            {
+                cats[w]->nodisplay = true;
+                continue;
+            }
             vector<Category*> subCats = cats[w]->getSubcats();
             for (unsigned int x = 0; x < subCats.size(); x++)
             {
@@ -117,11 +123,7 @@ void MenuWriter::entryDisplayHandler()
                 if (find(excludeCategories.begin(), excludeCategories.end(),
                         subCat->name) != excludeCategories.end())
                 {
-                    files = subCat->getEntriesR();
-                    for (unsigned int y = 0; y < files.size(); y++)
-                    {
-                        files[y]->nodisplay = true;
-                    }
+                    subCat->nodisplay = true;
                 }
             }
         }
@@ -133,9 +135,7 @@ void MenuWriter::entryDisplayHandler()
  * files. If so, return true, otherwise return false */
 bool MenuWriter::categoryNotExcluded(Category* c)
 {   
-    if (find(excludeCategories.begin(), excludeCategories.end(), c->name) != 
-            excludeCategories.end())
-        return false;
+    if (c->nodisplay) return false;
     bool visibleFound = false;
     vector<DesktopFile*> entries = c->getEntriesR();
     for (unsigned int x = 0; x < entries.size(); x++)
