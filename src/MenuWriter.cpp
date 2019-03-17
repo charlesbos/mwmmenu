@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
+#include <boost/algorithm/string/replace.hpp>
 #include "MenuWriter.h"
 #include "Category.h"
 
@@ -329,9 +330,8 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
                 nameFormatted = (*it)->name;
                 //If a name has brackets, we need to escape the closing 
                 //bracket or it will be missed out
-                if (nameFormatted.find(string(")").c_str()) != string::npos) 
-                    nameFormatted.insert(static_cast<int>(
-                        nameFormatted.find_last_of(')')), string("\\").c_str());
+                if (nameFormatted.find(string(")").c_str()) != string::npos)
+                    boost::replace_all(nameFormatted, ")", "\\)");
                 nameFormatted = '(' + nameFormatted + ')';
                 for (int x = 0; x < depth; x++) cout << "    ";
                 cout << "        [exec] " << nameFormatted << " " << 
