@@ -151,6 +151,17 @@ bool MenuWriter::categoryNotExcluded(Category* c)
     return true;
 }
 
+/* This function returns the number of visible entries per category */
+int MenuWriter::realMenuSize(vector<DesktopFile*> entries)
+{
+    int size = 0;
+    for (unsigned int x = 0; x < entries.size(); x++)
+    {
+        if (!entries[x]->nodisplay) size++;
+    }
+    return size;
+}
+
 /* This function is called multiple times. Each time, it prints out the submenu
  * for a given category. Some WMs (MWM and FVWM) require a menu which sources
  * the individual category menus. Such a menu will be printed for those window 
@@ -184,6 +195,8 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
     //Variable for knowing how many items (entries and submenus) there are in
     //a menu
     int numOfItems = 0;
+    //Variable for knowing how many entries in a given category have been printed
+    int realPos = 0;
     //Variable for a formatted version of the name, e.g. quotes added
     string nameFormatted;
     //Variable for a formatted version of the exec, e.g. quotes added
@@ -506,17 +519,18 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
                 if (categoryNotExcluded(subCats[x]))
                     writeMenu(subCats[x], x + 1, usedCats, numOfItems);
             }
+            realPos = 0;
             for (vector<DesktopFile*>::iterator it = dfiles.begin(); 
                     it < dfiles.end(); it++)
             {   
                 if ((*it)->nodisplay) continue;
+                realPos++;
                 nameFormatted = '"' + (*it)->name + '"';
                 execFormatted = '"' + (*it)->exec + '"';
                 for (int x = 0; x < depth; x++) cout << "    ";
                 cout << "        (" << nameFormatted << ", " << "EXEC, " << 
                     execFormatted << ")";
-                if ((it - dfiles.begin()) != 
-                        (dfiles.end() - dfiles.begin() - 1))
+                if (realPos < realMenuSize(dfiles))
                     cout << ',' << endl;
                 else 
                     cout << endl;

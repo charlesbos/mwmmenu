@@ -69,6 +69,7 @@ class MenuWriter
 
         void entryDisplayHandler();
         bool categoryNotExcluded(Category* c);
+        int realMenuSize(vector<DesktopFile*> entries);
 
         void writeMenu(Category *cat, int catNumber, 
                 const vector<Category*>& usedCats, 
