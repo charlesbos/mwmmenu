@@ -495,8 +495,15 @@ int main(int argc, char *argv[])
             {
                 for (boost::filesystem::recursive_directory_iterator 
                         i(menuDirs[x]), end; i != end; ++i)
-                    if (!is_directory(i->path())) 
-                        menuPaths.push_back(i->path().string());
+                {
+                    if (!is_directory(i->path()))
+                    { 
+                        std::string thePath = i->path().string();
+                        if (thePath.size() > 5 && 
+                                thePath.substr(thePath.size() - 5, 5) == ".menu")
+                            menuPaths.push_back(thePath);
+                    }
+                }
             }
             catch (boost::filesystem::filesystem_error&) 
             { 
