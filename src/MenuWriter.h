@@ -35,7 +35,7 @@
 #define icewm 8
 
 //Category numbers
-//Any positive category numbers indicate an index in the vector of used
+//Any positive category numbers indicate an index in the std::vector of used
 //categories. These are not defined here. Negative numbers indicate either a
 //main menu (i.e. a category of categories) or a subcategory
 #define MAIN_MENU -1
@@ -51,35 +51,35 @@
 class MenuWriter
 {   
     public:
-        MenuWriter(const string& menuName, int windowmanager, bool useIcons, 
-                vector<string> exclude, vector<string> excludeMatching, 
-                vector<string> excludeCategories, vector<string> include, 
-                vector<string> excludedFilenames, const vector<Category*>& cats);
+        MenuWriter(const std::string& menuName, int windowmanager, bool useIcons, 
+                std::vector<std::string> exclude, std::vector<std::string> excludeMatching, 
+                std::vector<std::string> excludeCategories, std::vector<std::string> include, 
+                std::vector<std::string> excludedFilenames, const std::vector<Category*>& cats);
 
     private:
-        vector<Category*> cats;
-        string menuName;
+        std::vector<Category*> cats;
+        std::string menuName;
         int windowmanager;
         bool useIcons;
-        vector<string> exclude;
-        vector<string> excludeMatching;
-        vector<string> excludeCategories;
-        vector<string> include;
-        vector<string> excludedFilenames;
+        std::vector<std::string> exclude;
+        std::vector<std::string> excludeMatching;
+        std::vector<std::string> excludeCategories;
+        std::vector<std::string> include;
+        std::vector<std::string> excludedFilenames;
 
         void entryDisplayHandler();
         bool categoryNotExcluded(Category* c);
-        int realMenuSize(vector<DesktopFile*> entries);
+        int realMenuSize(std::vector<DesktopFile*> entries);
 
         void writeMenu(Category *cat, int catNumber, 
-                const vector<Category*>& usedCats, 
+                const std::vector<Category*>& usedCats, 
                 int maxCatNumber = DEFAULT_MAX_CAT);
 };
 
 template <typename T> bool myCompare(T *a, T *b)
 {
-    string name_a = a->name;
-    string name_b = b->name;
+    std::string name_a = a->name;
+    std::string name_b = b->name;
     for (unsigned int x = 0; x < name_a.size(); x++) 
         name_a.at(x) = tolower(name_a.at(x));
     for (unsigned int x = 0; x < name_b.size(); x++) 

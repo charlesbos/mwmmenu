@@ -25,12 +25,10 @@
 #include <fstream>
 #include <vector>
 
-using namespace std;
-
 struct IconSpec
-{   string path;
-    string def;
-    string id;
+{   std::string path;
+    std::string def;
+    std::string id;
 };
 
 class Category;
@@ -38,37 +36,37 @@ class Category;
 class DesktopFile
 {
     public:
-        DesktopFile(const char *filename, vector<string> showFromDesktops, 
-                bool useIcons, const vector<IconSpec>& iconpaths, 
-                vector<Category*>& cats, const string& iconsXdgSize, 
-                bool iconsXdgOnly, const string& term);
+        DesktopFile(const char *filename, std::vector<std::string> showFromDesktops, 
+                bool useIcons, const std::vector<IconSpec>& iconpaths, 
+                std::vector<Category*>& cats, const std::string& iconsXdgSize, 
+                bool iconsXdgOnly, const std::string& term);
 
-        string filename;
-        string basename;
-        string name;
-        string exec;
+        std::string filename;
+        std::string basename;
+        std::string name;
+        std::string exec;
         bool nodisplay;
-        string icon;
+        std::string icon;
         bool terminal;
-        vector<string> foundCategories;
+        std::vector<std::string> foundCategories;
 
-        static string getID(const string& line);
-        static string getSingleValue(const string& line);
-        static vector<string> getMultiValue(const string& line);
+        static std::string getID(const std::string& line);
+        static std::string getSingleValue(const std::string& line);
+        static std::vector<std::string> getMultiValue(const std::string& line);
  
     private:
-        ifstream dfile;
+        std::ifstream dfile;
 
-        void populate(const vector<string>& showFromDesktops, bool useIcons, 
-                const vector<IconSpec>& iconpaths, vector<Category*>& cats, 
-                const string& iconsXdgSize, bool iconsXdgOnly, 
-                const string& term);
-        void matchIcon(const string& iconDef, const vector<IconSpec>& iconpaths,
-                const string& iconsXdgSize, bool iconsXdgOnly);
-        void processCategories(vector<Category*>& cats, 
-                vector<string>& foundCategories);
-        void processDesktops(const vector<string>& showFromDesktops, 
-                const vector<string>& onlyShowInDesktops);
+        void populate(const std::vector<std::string>& showFromDesktops, bool useIcons, 
+                const std::vector<IconSpec>& iconpaths, std::vector<Category*>& cats, 
+                const std::string& iconsXdgSize, bool iconsXdgOnly, 
+                const std::string& term);
+        void matchIcon(const std::string& iconDef, const std::vector<IconSpec>& iconpaths,
+                const std::string& iconsXdgSize, bool iconsXdgOnly);
+        void processCategories(std::vector<Category*>& cats, 
+                std::vector<std::string>& foundCategories);
+        void processDesktops(const std::vector<std::string>& showFromDesktops, 
+                const std::vector<std::string>& onlyShowInDesktops);
 };
 
 #endif

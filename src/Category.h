@@ -26,56 +26,56 @@
 class Category
 {
     public:
-        Category(const char *dirFile, const vector<string>& menuFiles, 
-                bool useIcons, const vector<IconSpec>& iconpaths, 
-                const string& iconsXdgSize, bool iconsXdgOnly);
-        Category(vector<string> menuDef, const char *dirFile,
-                bool useIcons, const vector<IconSpec>& iconpaths, 
-                const string& iconsXdgSize, bool iconsXdgOnly, int depth);
-        Category(const string& name, bool useIcons, 
-                const vector<IconSpec>& iconpaths, const string& iconsXdgSize, 
+        Category(const char *dirFile, const std::vector<std::string>& menuFiles, 
+                bool useIcons, const std::vector<IconSpec>& iconpaths, 
+                const std::string& iconsXdgSize, bool iconsXdgOnly);
+        Category(std::vector<std::string> menuDef, const char *dirFile,
+                bool useIcons, const std::vector<IconSpec>& iconpaths, 
+                const std::string& iconsXdgSize, bool iconsXdgOnly, int depth);
+        Category(const std::string& name, bool useIcons, 
+                const std::vector<IconSpec>& iconpaths, const std::string& iconsXdgSize, 
                 bool iconsXdgOnly);
         
-        string name;
-        string icon;
+        std::string name;
+        std::string icon;
         int depth;
         bool nodisplay;
 
-        vector<DesktopFile*> getEntries();
-        vector<DesktopFile*> getEntriesR();
-        vector<Category*> getSubcats();
-        vector<string> getIncludes();
-        vector<string> getExcludes();
+        std::vector<DesktopFile*> getEntries();
+        std::vector<DesktopFile*> getEntriesR();
+        std::vector<Category*> getSubcats();
+        std::vector<std::string> getIncludes();
+        std::vector<std::string> getExcludes();
 
-        static string getID(const string& line);
-        static string getSingleValue(const string& line);
+        static std::string getID(const std::string& line);
+        static std::string getSingleValue(const std::string& line);
 
         bool registerDF(DesktopFile *df, bool force = false);
 
     private:
-        string dirFile;
-        vector<string> menuFiles;
-        ifstream dir_f;
-        ifstream menu_f;
-        vector<string> validNames;
-        vector<IconSpec> iconpaths;
-        string iconsXdgSize;
+        std::string dirFile;
+        std::vector<std::string> menuFiles;
+        std::ifstream dir_f;
+        std::ifstream menu_f;
+        std::vector<std::string> validNames;
+        std::vector<IconSpec> iconpaths;
+        std::string iconsXdgSize;
         bool iconsXdgOnly;
         bool useIcons;
-        vector<DesktopFile*> incEntries;
-        vector<Category*> incCategories;
-        vector<string> incEntryFiles;
-        vector<string> excEntryFiles;
+        std::vector<DesktopFile*> incEntries;
+        std::vector<Category*> incCategories;
+        std::vector<std::string> incEntryFiles;
+        std::vector<std::string> excEntryFiles;
 
         static int registerCount;
-        static vector<DesktopFile*> incEntriesR;
+        static std::vector<DesktopFile*> incEntriesR;
 
         void registerDF(Category *cat, DesktopFile *df, bool force = false);
         void getEntriesR(Category *cat);
 
         void readMenufiles();
         void parseDir();
-        void parseMenu(const vector<string>& menu);
+        void parseMenu(const std::vector<std::string>& menu);
         void getCategoryIcon();
 };
 

@@ -27,7 +27,7 @@
 #include "Category.h"
 
 void usage()
-{   cout << 
+{   std::cout << 
         "mwmmenu - creates application menus for MWM and other window managers.\n\n"
         "Usage:\n"
         "  # Note: all options must be spaced.\n"
@@ -86,28 +86,28 @@ void usage()
 }
 
 //A function to extract a filename from a full path
-string getFilename(const string& path) 
+std::string getFilename(const std::string& path) 
 { 
-    return path.substr(path.find_last_of("/") + 1, string::npos); 
+    return path.substr(path.find_last_of("/") + 1, std::string::npos); 
 }
 
 //Function that attempts to get the user icon theme from ~/.gtkrc-2.0
-string getIconTheme(const string& homedir)
+std::string getIconTheme(const std::string& homedir)
 {
-    ifstream themefile;
-    string path = homedir + "/.gtkrc-2.0";
-    string id = "gtk-icon-theme-name";
+    std::ifstream themefile;
+    std::string path = homedir + "/.gtkrc-2.0";
+    std::string id = "gtk-icon-theme-name";
     themefile.open(path.c_str());
     if (!themefile) return "\0";
     else
     {
-        string line;
+        std::string line;
         char c;
         unsigned int counter = 0;
         while (!themefile.eof())
         {
             getline(themefile, line);
-            vector<char> readChars;
+            std::vector<char> readChars;
             readChars.reserve(10);
             while (counter < line.size())
             {
@@ -116,12 +116,12 @@ string getIconTheme(const string& homedir)
                 readChars.push_back(c);
                 counter++;
             }
-            string read_id = string(readChars.begin(), readChars.end());
+            std::string read_id = std::string(readChars.begin(), readChars.end());
             read_id.erase(remove(read_id.begin(), read_id.end(), ' '), 
                     read_id.end());
             if (id == read_id)
             {
-                vector<char> themeNameChars;
+                std::vector<char> themeNameChars;
                 themeNameChars.reserve(10);
                 while (counter < line.size())
                 { 
@@ -130,7 +130,7 @@ string getIconTheme(const string& homedir)
                     counter ++;
                 }
                 themefile.close();
-                string themename = string(themeNameChars.begin(), 
+                std::string themename = std::string(themeNameChars.begin(), 
                         themeNameChars.end());
                 themename.erase(remove(themename.begin(), 
                         themename.end(), ' '), themename.end());
@@ -143,12 +143,12 @@ string getIconTheme(const string& homedir)
     }
 }
 
-/* Function to split string argument separated by commas into
- * a string vector */
-vector<string> splitCommaArgs(const string& arg)
+/* Function to split std::string argument separated by commas into
+ * a std::string std::vector */
+std::vector<std::string> splitCommaArgs(const std::string& arg)
 {   
-    vector<string> splitArgs;
-    vector<char> buffer;
+    std::vector<std::string> splitArgs;
+    std::vector<char> buffer;
     splitArgs.reserve(5);
     buffer.reserve(10);
 
@@ -156,20 +156,20 @@ vector<string> splitCommaArgs(const string& arg)
     {
         if (arg[x] == ',') 
         {
-            splitArgs.push_back(string(buffer.begin(), buffer.end()));
+            splitArgs.push_back(std::string(buffer.begin(), buffer.end()));
             buffer.clear();
             continue;
         }
         buffer.push_back(arg[x]);
     }
     if (!buffer.empty()) 
-        splitArgs.push_back(string(buffer.begin(), buffer.end()));
+        splitArgs.push_back(std::string(buffer.begin(), buffer.end()));
 
     return splitArgs;
 }
 
 //A function to make sure we only add unique categories to the categories list
-void addCategory(Category *c, vector<Category*> &categories)
+void addCategory(Category *c, std::vector<Category*> &categories)
 {  
     for (unsigned int x = 0; x < categories.size(); x++) 
     {
@@ -190,9 +190,9 @@ void addCategory(Category *c, vector<Category*> &categories)
 //if it isn't already present in the list. Return true if we add the item
 //and false if we do not because it's already in the list. This is useful for 
 //local overrides for XDG desktop entries and icons.
-bool addID(const string& path, vector<string> &ids)
+bool addID(const std::string& path, std::vector<std::string> &ids)
 {  
-    string id = getFilename(path);
+    std::string id = getFilename(path);
     for (unsigned int x = 0; x < ids.size(); x++)
         if (id == ids[x]) return false;
     ids.push_back(id);
@@ -202,21 +202,21 @@ bool addID(const string& path, vector<string> &ids)
 int main(int argc, char *argv[])
 {  
     //Handle args
-    string homedir = getenv("HOME");
-    string term = "xterm -e";
-    string menuName = "Applications";
+    std::string homedir = getenv("HOME");
+    std::string term = "xterm -e";
+    std::string menuName = "Applications";
     int windowmanager = mwm;
     bool useIcons = false;
     bool iconsXdgOnly = false;
-    string iconsXdgSize = "all";
-    string exclude;
-    string excludeMatching;
-    string excludeCategories;
-    string excludedFilenames;
-    string include;
-    string showFromDesktops = "none";
-    string extraDesktopPaths;
-    string extraIconPaths;
+    std::string iconsXdgSize = "all";
+    std::string exclude;
+    std::string excludeMatching;
+    std::string excludeCategories;
+    std::string excludedFilenames;
+    std::string include;
+    std::string showFromDesktops = "none";
+    std::string extraDesktopPaths;
+    std::string extraIconPaths;
     bool noCustomCats = false;
 
     for (int x = 0; x < argc; x++)
@@ -347,15 +347,15 @@ int main(int argc, char *argv[])
         useIcons = false;
     if (iconsXdgSize == "all") iconsXdgSize = "/";
 
-    //Get string vector of paths to .desktop files
-    vector<string> paths;
-    vector<string> pathIDS;
+    //Get std::string std::vector of paths to .desktop files
+    std::vector<std::string> paths;
+    std::vector<std::string> pathIDS;
     paths.reserve(300);
     pathIDS.reserve(300);
-    vector<string> appdirs;
+    std::vector<std::string> appdirs;
     if (extraDesktopPaths != "\0")
     {   
-        vector<string> newDPaths = splitCommaArgs(extraDesktopPaths);
+        std::vector<std::string> newDPaths = splitCommaArgs(extraDesktopPaths);
         for (unsigned int x = 0; x < newDPaths.size(); x++)
             appdirs.push_back(newDPaths[x]);
     }
@@ -379,17 +379,17 @@ int main(int argc, char *argv[])
         }
     }
 
-    //Get string vector of paths to icons
-    vector<IconSpec> iconpaths;
-    vector<string> iconpathIDS;
+    //Get std::string std::vector of paths to icons
+    std::vector<IconSpec> iconpaths;
+    std::vector<std::string> iconpathIDS;
     if (useIcons)
     {   
         iconpaths.reserve(500);
         iconpathIDS.reserve(500);
-        vector<string> icondirs;
+        std::vector<std::string> icondirs;
         if (extraIconPaths != "\0" && !iconsXdgOnly)
         {
-            vector<string> newIPaths = splitCommaArgs(extraIconPaths);
+            std::vector<std::string> newIPaths = splitCommaArgs(extraIconPaths);
             for (unsigned int x = 0; x < newIPaths.size(); x++)
                 icondirs.push_back(newIPaths[x]);
         }
@@ -397,7 +397,7 @@ int main(int argc, char *argv[])
         {
             icondirs.push_back(homedir + "/.icons/hicolor");
             icondirs.push_back(homedir + "/.local/share/icons/hicolor");
-            string themename = getIconTheme(homedir); 
+            std::string themename = getIconTheme(homedir); 
             icondirs.push_back("/usr/share/icons/" + themename);
             if (find(icondirs.begin(), icondirs.end(), 
                     "/usr/share/icons/gnome") != icondirs.end()) 
@@ -415,7 +415,7 @@ int main(int argc, char *argv[])
         { 
             for (unsigned int x = 0; x < icondirs.size(); x++)
             { 
-                if (icondirs[x].find("/share/icons/") != string::npos)
+                if (icondirs[x].find("/share/icons/") != std::string::npos)
                     icondirs[x] = icondirs[x] + "/" + iconsXdgSize;
             }
         }
@@ -428,7 +428,7 @@ int main(int argc, char *argv[])
                 {   
                     if (!is_directory(i->path()))
                     {
-                        string ipath = i->path().string();
+                        std::string ipath = i->path().string();
                         if (!addID(ipath, iconpathIDS)) continue;
                         IconSpec spec;
                         spec.path = ipath;
@@ -456,18 +456,18 @@ int main(int argc, char *argv[])
     const char *baseCatsArr[] = {"Accessories", "Development", "Education",
         "Game", "Graphics", "Multimedia", "Internet", "Office", "Other",
         "Science", "Settings", "System"};
-    vector<string> baseCategories(baseCatsArr, 
+    std::vector<std::string> baseCategories(baseCatsArr, 
             baseCatsArr + sizeof(baseCatsArr) / sizeof(*baseCatsArr));
-    vector<string> catPaths;
+    std::vector<std::string> catPaths;
     catPaths.reserve(10);
-    vector<string> menuPaths;
+    std::vector<std::string> menuPaths;
     menuPaths.reserve(10);
     if (!noCustomCats)
     {   
-        vector<string> catDirs;
+        std::vector<std::string> catDirs;
         catDirs.reserve(10);
         catDirs.push_back("/usr/share/desktop-directories");
-        vector<string> menuDirs;
+        std::vector<std::string> menuDirs;
         menuDirs.reserve(10);
         menuDirs.push_back("/etc/xdg/menus/applications-merged");
         if (homedir.c_str() != NULL) 
@@ -511,7 +511,7 @@ int main(int argc, char *argv[])
             }
         }
     }
-    vector<Category*> cats;
+    std::vector<Category*> cats;
     cats.reserve(20);
     //Create the base categories
     for (unsigned int x = 0; x < baseCategories.size(); x++)
@@ -531,9 +531,9 @@ int main(int argc, char *argv[])
 
     //Create DesktopFile objects, they will associate themselves with the
     //appropriate categories
-    vector<DesktopFile*> files;
+    std::vector<DesktopFile*> files;
     files.reserve(300);
-    for (vector<string>::iterator it = paths.begin(); it < paths.end(); it++)
+    for (std::vector<std::string>::iterator it = paths.begin(); it < paths.end(); it++)
     {   
         DesktopFile *df = new DesktopFile((*it).c_str(), 
                 splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats, 

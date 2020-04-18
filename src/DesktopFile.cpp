@@ -24,10 +24,10 @@
 #include "DesktopFile.h"
 #include "Category.h"
 
-DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops,
-        bool useIcons, const vector<IconSpec>& iconpaths, 
-        vector<Category*>& cats, const string& iconsXdgSize, bool iconsXdgOnly, 
-        const string& term) :
+DesktopFile::DesktopFile(const char *filename, std::vector<std::string> showFromDesktops,
+        bool useIcons, const std::vector<IconSpec>& iconpaths, 
+        std::vector<Category*>& cats, const std::string& iconsXdgSize, bool iconsXdgOnly, 
+        const std::string& term) :
     filename(filename),
     basename(this->filename.substr(this->filename.find_last_of("/") + 1, 
             this->filename.size() - this->filename.find_last_of("/") - 1)),
@@ -47,21 +47,21 @@ DesktopFile::DesktopFile(const char *filename, vector<string> showFromDesktops,
 /* This function fetches the required values (Name, Exec, Categories, 
  * NoDisplay etc) and then assigns the results to the appropriate instance 
  * variables or passes the results to the appropriate function */
-void DesktopFile::populate(const vector<string>& showFromDesktops, 
-        bool useIcons, const vector<IconSpec>& iconpaths, 
-        vector<Category*>& cats, const string& iconsXdgSize, bool iconsXdgOnly, 
-        const string& term)
+void DesktopFile::populate(const std::vector<std::string>& showFromDesktops, 
+        bool useIcons, const std::vector<IconSpec>& iconpaths, 
+        std::vector<Category*>& cats, const std::string& iconsXdgSize, bool iconsXdgOnly, 
+        const std::string& term)
 {  
-    string line;
-    string iconDef;
-    vector<string> onlyShowInDesktops;
+    std::string line;
+    std::string iconDef;
+    std::vector<std::string> onlyShowInDesktops;
     bool started = false;
 
     while (!dfile.eof())
     {   
         getline(dfile, line);
         if (line.size() == 0) continue;
-        string id = getID(line);
+        std::string id = getID(line);
         /* .desktop files can contain more than just desktop entries. On getting
          * the id [Desktop Entry] we know we've started looking at an entry */
         if (id == "[Desktop Entry]")
@@ -91,7 +91,7 @@ void DesktopFile::populate(const vector<string>& showFromDesktops,
         }
         if (id == "NoDisplay")
         {
-            string value = getSingleValue(line);
+            std::string value = getSingleValue(line);
             if (value == "True" || value == "true")
                 nodisplay = true;
             continue;
@@ -108,7 +108,7 @@ void DesktopFile::populate(const vector<string>& showFromDesktops,
         }
         if (id == "Terminal")
         {
-            string value = getSingleValue(line);
+            std::string value = getSingleValue(line);
             if (value == "True" || value == "true")
                 terminal = true;
             continue;
@@ -129,9 +129,9 @@ void DesktopFile::populate(const vector<string>& showFromDesktops,
 
 /* This function is used to get the single value before the = sign.
  * Should be Name, Exec, Categories etc */
-string DesktopFile::getID(const string& line)
+std::string DesktopFile::getID(const std::string& line)
 {  
-    vector<char> readChars;
+    std::vector<char> readChars;
     readChars.reserve(10);
     char c;
     unsigned int counter = 0;
@@ -144,16 +144,16 @@ string DesktopFile::getID(const string& line)
         counter++;
     }
 
-    return string(readChars.begin(), readChars.end());
+    return std::string(readChars.begin(), readChars.end());
 }
 
 /* This function is used to get single values, for example: for the line 
  * Name=Firefox this function will return Firefox */
-string DesktopFile::getSingleValue(const string& line)
+std::string DesktopFile::getSingleValue(const std::string& line)
 {  
-    vector<char> readChars;
+    std::vector<char> readChars;
     readChars.reserve(10);
-    string value;
+    std::string value;
     char c;
     bool startFilling = false;
     unsigned int counter = 0;
@@ -170,9 +170,9 @@ string DesktopFile::getSingleValue(const string& line)
     //remove these
     if (readChars[readChars.size() - 1] == ' ') 
         readChars.erase(readChars.end() - 1);
-    value = string(readChars.begin(), readChars.end());
+    value = std::string(readChars.begin(), readChars.end());
     //Throw away field codes like %F, most WMs don't appear to handle these
-    string::iterator fieldCode = find(value.begin(), value.end(), '%');
+    std::string::iterator fieldCode = find(value.begin(), value.end(), '%');
     if (fieldCode != value.end()) value.erase(fieldCode - 1, value.end());
 
     return value;
@@ -180,11 +180,11 @@ string DesktopFile::getSingleValue(const string& line)
 
 /* This function is used to get multiple semi-colon seperated values.
  * For instance, the line Categories=System;Settings; will return a string
- * vector with the items System and Settings */
-vector<string> DesktopFile::getMultiValue(const string& line)
+ * std::vector with the items System and Settings */
+std::vector<std::string> DesktopFile::getMultiValue(const std::string& line)
 {  
-    vector<string> values;
-    vector<char> readChars;
+    std::vector<std::string> values;
+    std::vector<char> readChars;
     values.reserve(5);
     readChars.reserve(10);
     char c;
@@ -198,7 +198,7 @@ vector<string> DesktopFile::getMultiValue(const string& line)
         if (c == '=') startFilling = true;
         if (c == ';')
         {
-            values.push_back(string(readChars.begin(), readChars.end()));
+            values.push_back(std::string(readChars.begin(), readChars.end()));
             readChars.clear();
         }
         counter++;
@@ -207,7 +207,7 @@ vector<string> DesktopFile::getMultiValue(const string& line)
     //Ensure we get the last category in line if it isn't terminated with a
     //semi-colon
     if (!readChars.empty())
-        values.push_back(string(readChars.begin(), readChars.end()));
+        values.push_back(std::string(readChars.begin(), readChars.end()));
 
     return values;
 }
@@ -215,11 +215,11 @@ vector<string> DesktopFile::getMultiValue(const string& line)
 /* Add the desktop entry to the appropriate categories, based on what was read 
  * from the file. If we can't find a category, add the entry to the Other 
  * category which is the catchall */
-void DesktopFile::processCategories(vector<Category*>& cats, 
-        vector<string>& foundCategories)
+void DesktopFile::processCategories(std::vector<Category*>& cats, 
+        std::vector<std::string>& foundCategories)
 {   
     bool hasCategory = false;
-    vector<string>::iterator it = foundCategories.begin();
+    std::vector<std::string>::iterator it = foundCategories.begin();
 
     //Convert some base categories to more commonly used categories
     while (it < foundCategories.end())
@@ -257,17 +257,17 @@ void DesktopFile::processCategories(vector<Category*>& cats,
 /* Function which attempts to find the full path for a desktop entry by going
  * through a list of icons, attempting to match the icon entry in the entry
  * against each icon path */
-void DesktopFile::matchIcon(const string& iconDef, 
-        const vector<IconSpec>& iconpaths, const string& iconsXdgSize, 
+void DesktopFile::matchIcon(const std::string& iconDef, 
+        const std::vector<IconSpec>& iconpaths, const std::string& iconsXdgSize, 
         bool iconsXdgOnly)
 {   
     //This is a kludge. If the iconDef is a path and it conforms to the 
     //required size then just use that and return
-    if (iconDef.find("/") != string::npos && 
-            iconDef.find(iconsXdgSize) != string::npos)
+    if (iconDef.find("/") != std::string::npos && 
+            iconDef.find(iconsXdgSize) != std::string::npos)
     {   
         if (!iconsXdgOnly || (iconsXdgOnly && 
-                iconDef.find("/share/icons/") != string::npos))
+                iconDef.find("/share/icons/") != std::string::npos))
         {   
             icon = iconDef;
             return;
@@ -291,8 +291,8 @@ void DesktopFile::matchIcon(const string& iconDef,
  * entries from a matching desktop should be displayed then the function will 
  * return and the nodisplay value will be left untouched. If not, it will be set
  * to true */
-void DesktopFile::processDesktops(const vector<string>& showInDesktops, 
-        const vector<string>& onlyShowInDesktops)
+void DesktopFile::processDesktops(const std::vector<std::string>& showInDesktops, 
+        const std::vector<std::string>& onlyShowInDesktops)
 {   
     //First check for all or none
     for (unsigned int x = 0; x < showInDesktops.size(); x++)

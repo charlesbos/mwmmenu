@@ -22,12 +22,12 @@
 #include "Category.h"
 
 int Category::registerCount = 0;
-vector<DesktopFile*> Category::incEntriesR = vector<DesktopFile*>();
+std::vector<DesktopFile*> Category::incEntriesR = std::vector<DesktopFile*>();
 
 //Constructor for custom categories
-Category::Category(const char *dirFile, const vector<string>& menuFiles, 
-        bool useIcons, const vector<IconSpec>& iconpaths, 
-        const string& iconsXdgSize, bool iconsXdgOnly) :
+Category::Category(const char *dirFile, const std::vector<std::string>& menuFiles, 
+        bool useIcons, const std::vector<IconSpec>& iconpaths, 
+        const std::string& iconsXdgSize, bool iconsXdgOnly) :
     depth(0),
     nodisplay(false),
     dirFile(dirFile),
@@ -50,9 +50,9 @@ Category::Category(const char *dirFile, const vector<string>& menuFiles,
 }
 
 //Constructor for subcategories
-Category::Category(vector<string> menuDef, const char *dirFile, 
-        bool useIcons, const vector<IconSpec>& iconpaths, 
-        const string& iconsXdgSize, bool iconsXdgOnly, int depth) :
+Category::Category(std::vector<std::string> menuDef, const char *dirFile, 
+        bool useIcons, const std::vector<IconSpec>& iconpaths, 
+        const std::string& iconsXdgSize, bool iconsXdgOnly, int depth) :
     depth(depth),
     nodisplay(false),
     dirFile(dirFile),
@@ -67,8 +67,8 @@ Category::Category(vector<string> menuDef, const char *dirFile,
 }
 
 //Constructor for base categories
-Category::Category(const string& name, bool useIcons, 
-        const vector<IconSpec>& iconpaths, const string& iconsXdgSize, 
+Category::Category(const std::string& name, bool useIcons, 
+        const std::vector<IconSpec>& iconpaths, const std::string& iconsXdgSize, 
         bool iconsXdgOnly) :
     name(name),
     depth(0),
@@ -86,28 +86,28 @@ Category::Category(const string& name, bool useIcons,
  * icon definition */
 void Category::parseDir()
 {   
-    string line;
+    std::string line;
 
     while (!dir_f.eof())
     {
         getline(dir_f, line);
-        string id = DesktopFile::getID(line);
+        std::string id = DesktopFile::getID(line);
         if (id == "Name") name = DesktopFile::getSingleValue(line);
         if (id == "Icon") icon = DesktopFile::getSingleValue(line);
     }
 }
 
-/* A function to read each menu file, creating a vector of strings for each
- * menufile where each string is a line. For each vector, we then call
+/* A function to read each menu file, creating a std::vector of strings for each
+ * menufile where each std::string is a line. For each std::vector, we then call
  * parseMenu */
 void Category::readMenufiles()
 {
-    vector<string> menuVec;
+    std::vector<std::string> menuVec;
     for (unsigned int x = 0; x < menuFiles.size(); x++)
     {
         menu_f.open(menuFiles[x].c_str());
         if (!menu_f) continue;
-        string line;
+        std::string line;
         while (!menu_f.eof())
         { 
             getline(menu_f, line);
@@ -121,11 +121,11 @@ void Category::readMenufiles()
 
 /* A function to parse an xdg menu files to get includes/excludes 
  * and submenus */
-void Category::parseMenu(const vector<string>& menu)
+void Category::parseMenu(const std::vector<std::string>& menu)
 {   
-    string line;
-    string dirLine;
-    vector<string> subMenu;
+    std::string line;
+    std::string dirLine;
+    std::vector<std::string> subMenu;
     bool started = false;
     bool including = false;
     bool menuStarted = false;
@@ -134,10 +134,10 @@ void Category::parseMenu(const vector<string>& menu)
     for (unsigned int x = 0; x < menu.size(); x++)
     {
         line = menu[x];
-        string id = getID(line);
+        std::string id = getID(line);
         if (id == "<Directory>")
         { 
-            string dir = getSingleValue(line);
+            std::string dir = getSingleValue(line);
             dirLine = line;
             if (dir == dirFile.substr(dirFile.find_last_of("/") + 1, 
                     dirFile.size() - dirFile.find_last_of("/") - 1))
@@ -165,7 +165,7 @@ void Category::parseMenu(const vector<string>& menu)
                 Category *c = new Category(subMenu, dirFile.c_str(), useIcons, iconpaths, 
                         iconsXdgSize, iconsXdgOnly, depth + 1);
                 bool replaced = false;
-                vector<Category*> currentCats = this->getSubcats();
+                std::vector<Category*> currentCats = this->getSubcats();
                 for (unsigned int y = 0; y < currentCats.size(); y++)
                 {
                     Category *curCat = currentCats[y];
@@ -199,17 +199,17 @@ void Category::parseMenu(const vector<string>& menu)
 }
 
 /* Return all DesktopFiles associated with this category */
-vector<DesktopFile*> Category::getEntries()
+std::vector<DesktopFile*> Category::getEntries()
 {
     return incEntries;
 }
 
 /* Return all DesktopFiles associated with this category plus all
  * associate subcategories */
-vector<DesktopFile*> Category::getEntriesR()
+std::vector<DesktopFile*> Category::getEntriesR()
 {
     getEntriesR(this);
-    vector<DesktopFile*> result(Category::incEntriesR);
+    std::vector<DesktopFile*> result(Category::incEntriesR);
     Category::incEntriesR.clear();
     return result;
 }
@@ -223,18 +223,18 @@ void Category::getEntriesR(Category *cat)
 }
 
 /* Return all subcategories associated with this category */
-vector<Category*> Category::getSubcats()
+std::vector<Category*> Category::getSubcats()
 {
     return incCategories;
 }
 
 /* Return a list of filenames included/excluded from this category */
-vector<string> Category::getIncludes()
+std::vector<std::string> Category::getIncludes()
 {
     return incEntryFiles;
 }
 
-vector<string> Category::getExcludes()
+std::vector<std::string> Category::getExcludes()
 {
     return excEntryFiles;
 }
@@ -242,9 +242,9 @@ vector<string> Category::getExcludes()
 /* An xdg .menu file specific function for getting the line
  * id. In this case, the id will be tags like <Directory>
  * or <Include> */
-string Category::getID(const string& line)
+std::string Category::getID(const std::string& line)
 {   
-    vector<char> readChars;
+    std::vector<char> readChars;
     readChars.reserve(10);
     char c;
     unsigned int counter = 0;
@@ -263,16 +263,16 @@ string Category::getID(const string& line)
         counter++;
     }
 
-    return string(readChars.begin(), readChars.end());
+    return std::string(readChars.begin(), readChars.end());
 }
 
 /* An xdg .menu file specific function for getting the line
  * value. This should be a value between two enclosing tags.
  * For instance, for the line <tag>value</tag> then this
- * should return the string "value" */
-string Category::getSingleValue(const string& line)
+ * should return the std::string "value" */
+std::string Category::getSingleValue(const std::string& line)
 {   
-    vector<char> readChars;
+    std::vector<char> readChars;
     readChars.reserve(10);
     char c;
     unsigned int counter = 0;
@@ -292,7 +292,7 @@ string Category::getSingleValue(const string& line)
         counter++;
     }
 
-    return string(readChars.begin(), readChars.end());
+    return std::string(readChars.begin(), readChars.end());
 }
 
 /* Add a DesktopFile to the list of included entries if its specified category
@@ -354,19 +354,19 @@ void Category::getCategoryIcon()
 {   
     //If it's a base category, we want to get the icon from the freedesktop 
     //categories directory
-    string nameGuard = "categories";
+    std::string nameGuard = "categories";
     //The icon definition, from which we try to determine a path to an icon
-    string iconDef;
+    std::string iconDef;
 
     /* This is a kludge. If we already have an icon definition and it is a full
      * path instead of a true definition, then check if it conforms to the 
      * required size and is an xdg directory if that has been requested. 
      * If so, exit here. Otherwise, clear the definition and carry on */
-    if (icon != "\0" && icon.find("/") != string::npos && 
-            icon.find(iconsXdgSize) != string::npos) 
+    if (icon != "\0" && icon.find("/") != std::string::npos && 
+            icon.find(iconsXdgSize) != std::string::npos) 
     {   
         if (!iconsXdgOnly || (iconsXdgOnly && 
-                icon.find("/share/icons/") != string::npos))
+                icon.find("/share/icons/") != std::string::npos))
             return;
         else
             icon = "\0";
@@ -394,8 +394,8 @@ void Category::getCategoryIcon()
     iconDef.at(0) = tolower(iconDef.at(0));
     for (unsigned int x = 0; x < iconpaths.size(); x++)
     {  
-        if (iconpaths[x].path.find(nameGuard) != string::npos && 
-                iconpaths[x].path.find(iconDef) != string::npos)
+        if (iconpaths[x].path.find(nameGuard) != std::string::npos && 
+                iconpaths[x].path.find(iconDef) != std::string::npos)
         {   
             icon = iconpaths[x].path;
             return;
