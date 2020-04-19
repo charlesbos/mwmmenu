@@ -543,10 +543,59 @@ int main(int argc, char *argv[])
     }
 
     //Create a MenuWriter which will write the menu out to the console
-    MenuWriter(menuName, windowmanager, useIcons, 
-            splitCommaArgs(exclude), splitCommaArgs(excludeMatching), 
-            splitCommaArgs(excludeCategories), splitCommaArgs(include),
-            splitCommaArgs(excludedFilenames), cats);
+    switch (windowmanager)
+    {
+        case mwm:
+            MwmMenuWriter(menuName, useIcons, windowmanager,
+                    splitCommaArgs(exclude), splitCommaArgs(excludeMatching), 
+                    splitCommaArgs(excludeCategories), splitCommaArgs(include),
+                    splitCommaArgs(excludedFilenames), cats);
+            break;
+        case fvwm:
+        case fvwm_dynamic:
+            FvwmMenuWriter(menuName, useIcons, windowmanager,
+                    splitCommaArgs(exclude), splitCommaArgs(excludeMatching), 
+                    splitCommaArgs(excludeCategories), splitCommaArgs(include),
+                    splitCommaArgs(excludedFilenames), cats);
+            break;
+        case fluxbox:
+            FluxboxMenuWriter(menuName, useIcons, windowmanager,
+                    splitCommaArgs(exclude), splitCommaArgs(excludeMatching), 
+                    splitCommaArgs(excludeCategories), splitCommaArgs(include),
+                    splitCommaArgs(excludedFilenames), cats);
+            break;
+        case openbox:
+        case openbox_pipe:
+            OpenboxMenuWriter(menuName, useIcons, windowmanager,
+                    splitCommaArgs(exclude), splitCommaArgs(excludeMatching), 
+                    splitCommaArgs(excludeCategories), splitCommaArgs(include),
+                    splitCommaArgs(excludedFilenames), cats);
+            break;
+        case olvwm:
+            OlvwmMenuWriter(menuName, useIcons, windowmanager,
+                    splitCommaArgs(exclude), splitCommaArgs(excludeMatching), 
+                    splitCommaArgs(excludeCategories), splitCommaArgs(include),
+                    splitCommaArgs(excludedFilenames), cats);
+            break;
+        case windowmaker:
+            WmakerMenuWriter(menuName, useIcons, windowmanager,
+                    splitCommaArgs(exclude), splitCommaArgs(excludeMatching), 
+                    splitCommaArgs(excludeCategories), splitCommaArgs(include),
+                    splitCommaArgs(excludedFilenames), cats);
+            break;
+        case icewm:
+            IcewmMenuWriter(menuName, useIcons, windowmanager,
+                    splitCommaArgs(exclude), splitCommaArgs(excludeMatching), 
+                    splitCommaArgs(excludeCategories), splitCommaArgs(include),
+                    splitCommaArgs(excludedFilenames), cats);
+            break;
+        default:
+            MwmMenuWriter(menuName, useIcons, windowmanager,
+                    splitCommaArgs(exclude), splitCommaArgs(excludeMatching), 
+                    splitCommaArgs(excludeCategories), splitCommaArgs(include),
+                    splitCommaArgs(excludedFilenames), cats);
+            break;
+    }
 
     for (unsigned int x = 0; x < cats.size(); x++) delete cats[x];
     for (unsigned int x = 0; x < files.size(); x++) delete files[x];
