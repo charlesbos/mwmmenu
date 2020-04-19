@@ -51,153 +51,26 @@
 class MenuWriter
 {   
     public:
-        MenuWriter(const std::string& menuName, bool useIcons, int windowmanager,
+        MenuWriter(const std::string& menuName, int windowmanager, bool useIcons, 
                 std::vector<std::string> exclude, std::vector<std::string> excludeMatching, 
                 std::vector<std::string> excludeCategories, std::vector<std::string> include, 
                 std::vector<std::string> excludedFilenames, const std::vector<Category*>& cats);
 
-    protected:
+    private:
+        std::vector<Category*> cats;
         std::string menuName;
-        bool useIcons;
         int windowmanager;
+        bool useIcons;
         std::vector<std::string> exclude;
         std::vector<std::string> excludeMatching;
         std::vector<std::string> excludeCategories;
         std::vector<std::string> include;
         std::vector<std::string> excludedFilenames;
-        std::vector<Category*> cats;
 
         void entryDisplayHandler();
         bool categoryNotExcluded(Category* c);
         int realMenuSize(std::vector<DesktopFile*> entries);
 
-        virtual void writeMenu(Category *cat, int catNumber, 
-                const std::vector<Category*>& usedCats, 
-                int maxCatNumber = DEFAULT_MAX_CAT) = 0;
-
-        //writeMenu variables
-        //Variable for the std::vector of categories
-        std::vector<Category*> usedCats;
-        //Variable for the number of used categories
-        int maxCatNumber;
-        //Variable for the std::vector of desktop entries
-        std::vector<DesktopFile*> dfiles; 
-        //Variable for the category name
-        std::string category; 
-        //Variable for the category icon
-        std::string catIcon;
-        //Variable for category depth
-        int depth;
-        //Variable for std::vector of subcategories
-        std::vector<Category*> subCats;
-        //Variable for knowing how many items (entries and submenus) there are in
-        //a menu
-        int numOfItems;
-        //Variable for knowing how many entries in a given category have been printed
-        int realPos;
-        //Variable for a formatted version of the name, e.g. quotes added
-        std::string nameFormatted;
-        //Variable for a formatted version of the exec, e.g. quotes added
-        std::string execFormatted;
-        //Variable for a formatted version of the category name, e.g. quotes added
-        std::string catFormatted;
-        //Variable for a formatted version of the menu, e.g. quotes added
-        std::string menuFormatted;
-};
-
-class MwmMenuWriter : MenuWriter
-{
-    public:
-        MwmMenuWriter(const std::string& menuName, bool useIcons, int windowmanager,
-                std::vector<std::string> exclude, std::vector<std::string> excludeMatching, 
-                std::vector<std::string> excludeCategories, std::vector<std::string> include, 
-                std::vector<std::string> excludedFilenames, const std::vector<Category*>& cats);
-
-    private:
-        void writeMenu(Category *cat, int catNumber, 
-                const std::vector<Category*>& usedCats, 
-                int maxCatNumber = DEFAULT_MAX_CAT);
-};
-
-class FvwmMenuWriter : MenuWriter
-{
-    public:
-        FvwmMenuWriter(const std::string& menuName, bool useIcons, int windowmanager,
-                std::vector<std::string> exclude, std::vector<std::string> excludeMatching, 
-                std::vector<std::string> excludeCategories, std::vector<std::string> include, 
-                std::vector<std::string> excludedFilenames, const std::vector<Category*>& cats);
-
-    private:
-        void writeMenu(Category *cat, int catNumber, 
-                const std::vector<Category*>& usedCats, 
-                int maxCatNumber = DEFAULT_MAX_CAT);
-};
-
-class FluxboxMenuWriter : MenuWriter
-{
-    public:
-        FluxboxMenuWriter(const std::string& menuName, bool useIcons, int windowmanager,
-                std::vector<std::string> exclude, std::vector<std::string> excludeMatching, 
-                std::vector<std::string> excludeCategories, std::vector<std::string> include, 
-                std::vector<std::string> excludedFilenames, const std::vector<Category*>& cats);
-
-    private:
-        void writeMenu(Category *cat, int catNumber, 
-                const std::vector<Category*>& usedCats, 
-                int maxCatNumber = DEFAULT_MAX_CAT);
-};
-
-class OpenboxMenuWriter : MenuWriter
-{
-    public:
-        OpenboxMenuWriter(const std::string& menuName, bool useIcons, int windowmanager,
-                std::vector<std::string> exclude, std::vector<std::string> excludeMatching, 
-                std::vector<std::string> excludeCategories, std::vector<std::string> include, 
-                std::vector<std::string> excludedFilenames, const std::vector<Category*>& cats);
-
-    private:
-        void writeMenu(Category *cat, int catNumber, 
-                const std::vector<Category*>& usedCats, 
-                int maxCatNumber = DEFAULT_MAX_CAT);
-};
-
-class OlvwmMenuWriter : MenuWriter
-{
-    public:
-        OlvwmMenuWriter(const std::string& menuName, bool useIcons, int windowmanager,
-                std::vector<std::string> exclude, std::vector<std::string> excludeMatching, 
-                std::vector<std::string> excludeCategories, std::vector<std::string> include, 
-                std::vector<std::string> excludedFilenames, const std::vector<Category*>& cats);
-
-    private:
-        void writeMenu(Category *cat, int catNumber, 
-                const std::vector<Category*>& usedCats, 
-                int maxCatNumber = DEFAULT_MAX_CAT);
-};
-
-class WmakerMenuWriter : MenuWriter
-{
-    public:
-        WmakerMenuWriter(const std::string& menuName, bool useIcons, int windowmanager,
-                std::vector<std::string> exclude, std::vector<std::string> excludeMatching, 
-                std::vector<std::string> excludeCategories, std::vector<std::string> include, 
-                std::vector<std::string> excludedFilenames, const std::vector<Category*>& cats);
-
-    private:
-        void writeMenu(Category *cat, int catNumber, 
-                const std::vector<Category*>& usedCats, 
-                int maxCatNumber = DEFAULT_MAX_CAT);
-};
-
-class IcewmMenuWriter : MenuWriter
-{
-    public:
-        IcewmMenuWriter(const std::string& menuName, bool useIcons, int windowmanager,
-                std::vector<std::string> exclude, std::vector<std::string> excludeMatching, 
-                std::vector<std::string> excludeCategories, std::vector<std::string> include, 
-                std::vector<std::string> excludedFilenames, const std::vector<Category*>& cats);
-
-    private:
         void writeMenu(Category *cat, int catNumber, 
                 const std::vector<Category*>& usedCats, 
                 int maxCatNumber = DEFAULT_MAX_CAT);
