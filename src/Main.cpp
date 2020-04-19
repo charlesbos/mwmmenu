@@ -369,9 +369,14 @@ int main(int argc, char *argv[])
         {
             for (boost::filesystem::recursive_directory_iterator i(appdirs[x]),
                     end; i != end; ++i)
-                if (!is_directory(i->path()) && addID(i->path().string(), 
-                        pathIDS)) 
-                    paths.push_back(i->path().string());
+                if (!is_directory(i->path()))
+                {
+                    std::string thePath = i->path().string();
+                    if (thePath.size() > 8 && 
+                            thePath.substr(thePath.size() - 8, 8) == ".desktop" &&
+                            addID(i->path().string(), pathIDS)) 
+                        paths.push_back(i->path().string());
+                }
         }
         catch (boost::filesystem::filesystem_error&) 
         { 
@@ -481,8 +486,13 @@ int main(int argc, char *argv[])
             {
                 for (boost::filesystem::recursive_directory_iterator 
                         i(catDirs[x]), end; i != end; ++i)
-                    if (!is_directory(i->path())) 
-                        catPaths.push_back(i->path().string());
+                    if (!is_directory(i->path()))
+                    {
+                        std::string thePath = i->path().string();
+                        if (thePath.size() > 10 &&
+                                thePath.substr(thePath.size() - 10, 19) == ".directory")
+                            catPaths.push_back(i->path().string());
+                    }
             }
             catch (boost::filesystem::filesystem_error&) 
             { 
