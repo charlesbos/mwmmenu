@@ -169,46 +169,24 @@ int MenuWriter::realMenuSize(std::vector<DesktopFile*> entries)
 void MenuWriter::writeMenu(Category *cat, int catNumber, 
         const std::vector<Category*>& usedCats, int maxCatNumber)
 {   
-    //Variable for the std::vector of desktop entries
     std::vector<DesktopFile*> dfiles; 
     if (cat != NULL) 
     {
         dfiles = cat->getEntries();
         sort(dfiles.begin(), dfiles.end(), myCompare<DesktopFile>);
     }
-    //Variable for the category name
-    std::string category; 
-    if (cat != NULL) category = cat->name;
-    //Variable for the category icon
-    std::string catIcon;
-    if (cat != NULL) catIcon = cat->icon;
-    //Variable for category depth
-    int depth = 0;
-    if (cat != NULL) depth = cat->depth;
-    //Variable for std::vector of subcategories
+
     std::vector<Category*> subCats;
     if (cat != NULL) 
     {
         subCats = cat->getSubcats();
         sort(subCats.begin(), subCats.end(), myCompare<Category>);
     }
-    //Variable for knowing how many items (entries and submenus) there are in
-    //a menu
-    int numOfItems = 0;
-    //Variable for knowing how many entries in a given category have been printed
-    int realPos = 0;
-    //Variable for a formatted version of the name, e.g. quotes added
-    std::string nameFormatted;
-    //Variable for a formatted version of the exec, e.g. quotes added
-    std::string execFormatted;
-    //Variable for a formatted version of the category name, e.g. quotes added
-    std::string catFormatted;
-    //Variable for a formatted version of the menu, e.g. quotes added
-    std::string menuFormatted;
 
     switch(windowmanager)
     {
         case mwm :
+        {
             if (cat != NULL)
             {  
                 for (unsigned int x = 0; x < subCats.size(); x++)
@@ -216,18 +194,15 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
                     if (categoryNotExcluded(subCats[x]))
                         writeMenu(subCats[x], SUB_MENU, usedCats);
                 }  
-                catFormatted = '"' + category + '"';
-                std::cout << "menu " << catFormatted << std::endl << "{" << std::endl;
-                std::cout << "    " << catFormatted << " " << "f.title" << std::endl;
+                std::cout << "menu \"" << cat->name << '"' << std::endl << "{" << std::endl;
+                std::cout << "    \"" << cat->name << "\" " << "f.title" << std::endl;
                 writeMenu(NULL, SUB_MENU, subCats);
                 for (std::vector<DesktopFile*>::iterator it = dfiles.begin(); 
                         it < dfiles.end(); it++)
                 {
                     if ((*it)->nodisplay) continue;
-                    nameFormatted = '"' + (*it)->name + '"';
-                    execFormatted = "\"exec " + (*it)->exec + " &" + '"';
-                    std::cout << "    " << nameFormatted << " " << "f.exec " << 
-                        execFormatted << std::endl;
+                    std::cout << "    \"" << (*it)->name << "\" " << "f.exec " << 
+                        "\"exec " << (*it)->exec << " &\"" << std::endl;
                 }
                 std::cout << "}" << std::endl << std::endl;
             }
@@ -235,23 +210,23 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
             {  
                 if (catNumber == MAIN_MENU)
                 { 
-                    menuFormatted = '"' + menuName + '"';
-                    std::cout << "menu " << menuFormatted << std::endl << "{" << std::endl;
-                    std::cout << "    " << menuFormatted << " " << "f.title" << std::endl;
+                    std::cout << "menu \"" << menuName << '"' << std::endl << "{" << std::endl;
+                    std::cout << "    \"" << menuName << "\" " << "f.title" << std::endl;
                 }
                 for (unsigned int x = 0; x < usedCats.size(); x++)
                 {  
                     if (catNumber == SUB_MENU)
                         if (!categoryNotExcluded(usedCats[x])) continue;
-                    catFormatted = '"' + std::string(usedCats[x]->name) + '"';
-                    std::cout << "    " << catFormatted << " " << "f.menu " <<
-                        catFormatted << std::endl;
+                    std::cout << "    \"" << usedCats[x]->name << "\" " << "f.menu " <<
+                        '"' << usedCats[x]->name << '"' << std::endl;
                 }
                 if (catNumber == MAIN_MENU) std::cout << "}" << std::endl << std::endl;
             }
             break;
+        }
         case fvwm :
         case fvwm_dynamic :
+        {
             if (cat != NULL)
             {
                 for (unsigned int x = 0; x < subCats.size(); x++)
@@ -259,25 +234,28 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
                     if (categoryNotExcluded(subCats[x]))
                         writeMenu(subCats[x], SUB_MENU, usedCats);
                 }  
-                catFormatted = '"' + category + '"';
                 if (windowmanager == fvwm)
-                    std::cout << "DestroyMenu " << catFormatted << std::endl;
+                    std::cout << "DestroyMenu \"" << cat->name << '"' << std::endl;
                 else
-                    std::cout << "DestroyMenu recreate " << catFormatted << std::endl;
-                std::cout << "AddToMenu " << catFormatted << " " << 
-                    catFormatted << " Title" << std::endl;
+                    std::cout << "DestroyMenu recreate \"" << cat->name << '"' << std::endl;
+                std::cout << "AddToMenu \"" << cat->name << "\" " << 
+                    '"' << cat->name << "\" Title" << std::endl;
                 writeMenu(NULL, SUB_MENU, subCats);
                 for (std::vector<DesktopFile*>::iterator it = dfiles.begin(); 
                         it < dfiles.end(); it++)
                 {   
                     if ((*it)->nodisplay) continue;
-                    if (useIcons && (*it)->icon != "\0") 
-                        nameFormatted = '"' + (*it)->name + " %" + 
-                            (*it)->icon + "%" + '"';
-                    else nameFormatted = '"' + (*it)->name + '"';
-                    execFormatted = (*it)->exec;
-                    std::cout << "+ " << nameFormatted << " " << "Exec exec " << 
-                        execFormatted << std::endl;
+                    if (useIcons && (*it)->icon != "\0")
+                    {
+                        std::cout << "+ \"" << (*it)->name << " %" << 
+                            (*it)->icon << "%\" Exec exec " << 
+                            (*it)->exec << std::endl;
+                    }
+                    else
+                    {
+                        std::cout << "+ \"" << (*it)->name << "\" " << "Exec exec " << 
+                            (*it)->exec << std::endl;
+                    }
                 }
                 std::cout << std::endl;
             }
@@ -285,48 +263,46 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
             {   
                 if (catNumber == MAIN_MENU)
                 {
-                    menuFormatted = '"' + menuName + '"';
                     if (windowmanager == fvwm)
-                        std::cout << "DestroyMenu " << menuFormatted << std::endl;
+                        std::cout << "DestroyMenu \"" << menuName << '"' << std::endl;
                     else
-                        std::cout << "DestroyMenu recreate " << menuFormatted << std::endl;
-                    std::cout << "AddToMenu " << menuFormatted << " " << 
-                        menuFormatted << " Title" << std::endl;
+                        std::cout << "DestroyMenu recreate \"" << menuName << '"' << std::endl;
+                    std::cout << "AddToMenu \"" << menuName << "\" " << 
+                        '"' << menuName << "\" Title" << std::endl;
                 }
                 for (unsigned int x = 0; x < usedCats.size(); x++)
                 {   
-                    if (catNumber == SUB_MENU)
-                        if (!categoryNotExcluded(usedCats[x])) continue;
-                    if (useIcons)
+                    if (catNumber == SUB_MENU && !categoryNotExcluded(usedCats[x])) continue;
+                    if (useIcons && usedCats[x]->icon != "\0")
                     {
-                        catIcon = usedCats[x]->icon;
-                        if (catIcon != "\0") 
-                            catFormatted = '"' +  std::string(usedCats[x]->name) + 
-                                " %" + catIcon + "%" + '"';
-                        else 
-                            catFormatted = '"' + std::string(usedCats[x]->name) + '"';
+                        std::cout << "+ \"" << usedCats[x]->name << " %" << 
+                            usedCats[x]->icon << "%\" Popup " << 
+                            '"' + usedCats[x]->name + '"' << std::endl;
                     }
-                    else 
-                        catFormatted = '"' + std::string(usedCats[x]->name) + '"';
-                    std::cout << "+ " << catFormatted << " " << "Popup " << 
-                        '"' + usedCats[x]->name + '"' << std::endl;
+                    else
+                    {
+                        std::cout << "+ \"" << usedCats[x]->name << "\" " << "Popup " << 
+                            '"' + usedCats[x]->name + '"' << std::endl;
+                    }
                 }
                 if (catNumber == MAIN_MENU) std::cout << std::endl;
             }
             break;
+        }
         case fluxbox :
+        {
             if (catNumber == 0) 
                 std::cout << "[submenu] (" << menuName << ')' << std::endl;
-            if (useIcons)
-            {   
-                if (catIcon != "\0") 
-                    catFormatted = '(' + category + ") <" + catIcon + '>';
-                else 
-                    catFormatted = '(' + category + ')';
+            for (int x = 0; x < cat->depth; x++) std::cout << "    ";
+            if (useIcons && cat->icon != "\0")
+            {
+                std::cout << "    [submenu] (" << cat->name << ") <" << cat->icon 
+                    << "> {}" << std::endl;
             }
-            else catFormatted = '(' + category + ')';
-            for (int x = 0; x < depth; x++) std::cout << "    ";
-            std::cout << "    [submenu] " + catFormatted + " {}" << std::endl;
+            else
+            {
+                std::cout << "    [submenu] (" << cat->name << ") {}" << std::endl;
+            }
             for (unsigned int x = 0; x < subCats.size(); x++)
             {
                 if (categoryNotExcluded(subCats[x]))
@@ -336,26 +312,26 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
                     it < dfiles.end(); it++)
             {   
                 if ((*it)->nodisplay) continue;
-                if (useIcons && (*it)->icon != "\0") 
-                    execFormatted = 
-                        '{' + (*it)->exec + "} <" + (*it)->icon + ">";
-                else execFormatted = '{' + (*it)->exec + '}';
-                nameFormatted = (*it)->name;
-                //If a name has brackets, we need to escape the closing 
+                for (int x = 0; x < cat->depth; x++) std::cout << "    ";
+                std::string theName = (*it)->name;
+                //If a name has brackets, we need to escape the closing
                 //bracket or it will be missed out
-                if (nameFormatted.find(std::string(")").c_str()) != std::string::npos)
-                    boost::replace_all(nameFormatted, ")", "\\)");
-                nameFormatted = '(' + nameFormatted + ')';
-                for (int x = 0; x < depth; x++) std::cout << "    ";
-                std::cout << "        [exec] " << nameFormatted << " " << 
-                    execFormatted << std::endl;
+                boost::replace_all(theName, ")", "\\)");
+                std::cout << "        [exec] (" << theName << ") " << 
+                    "{" << (*it)->exec << "}";
+                if (useIcons && (*it)->icon != "\0")
+                    std::cout << " <" << (*it)->icon << ">" << std::endl;
+                else
+                    std::cout << std::endl;
             }
-            for (int x = 0; x < depth; x++) std::cout << "    ";
+            for (int x = 0; x < cat->depth; x++) std::cout << "    ";
             std::cout << "    [end]" << std::endl;
             if (catNumber == maxCatNumber) std::cout << "[end]" << std::endl;
             break;
+        }
         case openbox :
         case openbox_pipe :
+        {
             if (windowmanager == openbox_pipe && catNumber == 0) 
                 std::cout << 
                     "<openbox_pipe_menu xmlns=\"http://openbox.org/3.4/menu\">"
@@ -370,31 +346,30 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
                             writeMenu(subCats[x], SUB_MENU, usedCats);
                     }
                 }  
-                catFormatted = '"' + category + '"';
                 if (useIcons)
                 {
-                    if (catIcon != "\0")
+                    if (cat->icon != "\0")
                     {
                         if (windowmanager == openbox_pipe)
-                           for (int x = 0; x < depth; x++) std::cout << "    ";
-                        std::cout << "<menu id=" << catFormatted << " label=" << 
-                            catFormatted << " icon=" << '"' + catIcon + '"' << 
+                           for (int x = 0; x < cat->depth; x++) std::cout << "    ";
+                        std::cout << "<menu id=\"" << cat->name << "\" label=\"" << 
+                            cat->name << "\" icon=" << '"' + cat->icon + '"' << 
                             ">" << std::endl;
                     }
                     else
                     {
                         if (windowmanager == openbox_pipe)
-                            for (int x = 0; x < depth; x++) std::cout << "    ";
-                        std::cout << "<menu id=" << catFormatted << " label=" << 
-                            catFormatted << ">" << std::endl;
+                            for (int x = 0; x < cat->depth; x++) std::cout << "    ";
+                        std::cout << "<menu id=\"" << cat->name << "\" label=\"" << 
+                            cat->name << "\">" << std::endl;
                     }
                 }
                 else 
                 {
                     if (windowmanager == openbox_pipe)
-                        for (int x = 0; x < depth; x++) std::cout << "    ";
-                    std::cout << "<menu id=" << catFormatted << " label=" << 
-                        catFormatted << ">" << std::endl;
+                        for (int x = 0; x < cat->depth; x++) std::cout << "    ";
+                    std::cout << "<menu id=\"" << cat->name << "\" label=\"" << 
+                        cat->name << "\">" << std::endl;
                 }
                 if (windowmanager == openbox) writeMenu(NULL, SUB_MENU, subCats);
                 if (windowmanager == openbox_pipe)
@@ -409,31 +384,34 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
                         it < dfiles.end(); it++)
                 {   
                     if ((*it)->nodisplay) continue;
-                    if (useIcons && (*it)->icon != "\0") 
-                        nameFormatted = '"' + (*it)->name + '"' + 
-                            " icon=\"" + (*it)->icon + "\">";
-                    else nameFormatted = '"' + (*it)->name + "\">";
-                    execFormatted = (*it)->exec;
                     if (windowmanager == openbox_pipe)
-                        for (int x = 0; x < depth; x++) std::cout << "    ";
-                    std::cout << "    <item label=" << nameFormatted << std::endl;
+                        for (int x = 0; x < cat->depth; x++) std::cout << "    ";
+                    if (useIcons && (*it)->icon != "\0")
+                    {
+                        std::cout << "    <item label=\"" << (*it)->name << "\" icon=\""
+                           << (*it)->icon << "\">" << std::endl;
+                    }
+                    else
+                    {
+                        std::cout << "    <item label=\"" << (*it)->name << "\">" << std::endl;
+                    }
                     if (windowmanager == openbox_pipe)
-                        for (int x = 0; x < depth; x++) std::cout << "    ";
+                        for (int x = 0; x < cat->depth; x++) std::cout << "    ";
                     std::cout << "        <action name=\"Execute\">" << std::endl;
                     if (windowmanager == openbox_pipe)
-                        for (int x = 0; x < depth; x++) std::cout << "    ";
-                    std::cout << "            <execute>" << execFormatted << 
+                        for (int x = 0; x < cat->depth; x++) std::cout << "    ";
+                    std::cout << "            <execute>" << (*it)->exec << 
                         "</execute>" << std::endl;
                     if (windowmanager == openbox_pipe)
-                        for (int x = 0; x < depth; x++) std::cout << "    ";
+                        for (int x = 0; x < cat->depth; x++) std::cout << "    ";
                     std::cout << "        </action>" << std::endl;
                     if (windowmanager == openbox_pipe)
-                        for (int x = 0; x < depth; x++) std::cout << "    ";
+                        for (int x = 0; x < cat->depth; x++) std::cout << "    ";
                     std::cout << "    </item>" << std::endl;
                 }
                 if (windowmanager == openbox_pipe) 
-                    for (int x = 0; x < depth; x++) std::cout << "    ";
-                if (windowmanager == openbox_pipe && depth != 0)
+                    for (int x = 0; x < cat->depth; x++) std::cout << "    ";
+                if (windowmanager == openbox_pipe && cat->depth != 0)
                     std::cout << "</menu>" << std::endl;
                 else std::cout << "</menu>" << std::endl << std::endl;
                 if (windowmanager == openbox_pipe && catNumber == maxCatNumber)
@@ -443,37 +421,32 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
             {  
                 if (catNumber == MAIN_MENU)
                 { 
-                    menuFormatted = '"' + menuName + '"';
-                    std::cout << "<menu id=" << menuFormatted << " label=" << 
-                        menuFormatted << ">" << std::endl;
+                    std::cout << "<menu id=\"" << menuName << "\" label=\"" << 
+                        menuName << "\">" << std::endl;
                 }
                 for (unsigned int x = 0; x < usedCats.size(); x++)
                 {   
-                    if (catNumber == SUB_MENU)
-                        if (!categoryNotExcluded(usedCats[x])) continue;
-                    if (useIcons)
+                    if (catNumber == SUB_MENU && !categoryNotExcluded(usedCats[x])) continue;
+                    if (useIcons && usedCats[x]->icon != "\0")
                     {
-                        catIcon = usedCats[x]->icon;
-                        if (catIcon != "\0") 
-                            catFormatted = '"' + std::string(usedCats[x]->name) + 
-                                '"' + " icon=\"" + catIcon + "\"/>";
-                        else 
-                            catFormatted = '"' + std::string(usedCats[x]->name) + 
-                                "\"/>";
+                        std::cout << "    <menu id=\"" << usedCats[x]->name << "\" icon=\""
+                           << usedCats[x]->icon << "\"/>" << std::endl;
                     }
-                    else 
-                        catFormatted = '"' + std::string(usedCats[x]->name) + "\"/>";
-                    std::cout << "    <menu id=" << catFormatted << std::endl;
+                    else
+                    {
+                        std::cout << "    <menu id=\"" << usedCats[x]->name << "\"/>" << std::endl;
+                    }
                 }
                 if (catNumber == MAIN_MENU) std::cout << "</menu>" << std::endl << std::endl;
             }
             break;
+        }
         case olvwm :
+        {
             if (catNumber == 0) 
-                std::cout << '"' + menuName + '"' << " MENU" << std::endl << std::endl;
-            catFormatted = '"' + category + '"';
-            for (int x = 0; x < depth; x++) std::cout << "    ";
-            std::cout << catFormatted << " MENU" << std::endl;
+                std::cout << '"' << menuName << "\" MENU" << std::endl << std::endl;
+            for (int x = 0; x < cat->depth; x++) std::cout << "    ";
+            std::cout << '"' << cat->name << "\" MENU" << std::endl;
             for (unsigned int x = 0; x < subCats.size(); x++)
             {
                 if (categoryNotExcluded(subCats[x]))
@@ -483,27 +456,28 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
                     it < dfiles.end(); it++)
             {   
                 if ((*it)->nodisplay) continue;
-                nameFormatted = '"' + (*it)->name + '"';
-                execFormatted = (*it)->exec;
-                for (int x = 0; x < depth; x++) std::cout << "    ";
-                std::cout << nameFormatted << " " << execFormatted << std::endl;
+                for (int x = 0; x < cat->depth; x++) std::cout << "    ";
+                std::cout << '"' << (*it)->name << "\" " << (*it)->exec << std::endl;
             }
-            for (int x = 0; x < depth; x++) std::cout << "    ";
-            if (depth == 0)
-                std::cout << catFormatted << " END PIN" << std::endl << std::endl;
+            for (int x = 0; x < cat->depth; x++) std::cout << "    ";
+            if (cat->depth == 0)
+                std::cout << '"' << cat->name << "\" END PIN" << std::endl << std::endl;
             else
-                std::cout << catFormatted << " END PIN" << std::endl;
+                std::cout << '"' << cat->name << "\" END PIN" << std::endl;
             if (catNumber == maxCatNumber) 
-                std::cout << '"' + menuName + '"' << " END PIN" << std::endl;
-            break;     
-        case windowmaker :
-            if (catNumber == 0 && depth == 0) 
-                std::cout << "(\n    " << '"' << menuName << '"' << ',' << std::endl;
-            catFormatted = '"' + category + '"';
-            for (int x = 0; x < depth; x++) std::cout << "    ";
+                std::cout << '"' << menuName << "\" END PIN" << std::endl;
+            break;
+        }
+        case windowmaker : 
+        {
+            int numOfItems = 0;
+            int realPos = 0;
+            if (catNumber == 0 && cat->depth == 0) 
+                std::cout << "(\n    \"" << menuName << "\"," << std::endl;
+            for (int x = 0; x < cat->depth; x++) std::cout << "    ";
             std::cout << "    (" << std::endl;
-            for (int x = 0; x < depth; x++) std::cout << "    ";
-            std::cout << "        " << catFormatted << ',' << std::endl;
+            for (int x = 0; x < cat->depth; x++) std::cout << "    ";
+            std::cout << "        \"" << cat->name << "\"," << std::endl;
             if (subCats.size() > 0)
             {
                 //For Windowmaker we have to exactly how many items there are
@@ -525,11 +499,9 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
             {   
                 if ((*it)->nodisplay) continue;
                 realPos++;
-                nameFormatted = '"' + (*it)->name + '"';
-                execFormatted = '"' + (*it)->exec + '"';
-                for (int x = 0; x < depth; x++) std::cout << "    ";
-                std::cout << "        (" << nameFormatted << ", " << "EXEC, " << 
-                    execFormatted << ")";
+                for (int x = 0; x < cat->depth; x++) std::cout << "    ";
+                std::cout << "        (\"" << (*it)->name << "\", " << "EXEC, \"" << 
+                    (*it)->exec << "\")";
                 if (realPos < realMenuSize(dfiles))
                     std::cout << ',' << std::endl;
                 else 
@@ -537,30 +509,34 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
             }
             if (catNumber != maxCatNumber) 
             {
-                for (int x = 0; x < depth; x++) std::cout << "    ";
+                for (int x = 0; x < cat->depth; x++) std::cout << "    ";
                 std::cout << "    )," << std::endl;
             }
             else 
             {
-                if (depth == 0) std::cout << "    )\n)" << std::endl;
+                if (cat->depth == 0) std::cout << "    )\n)" << std::endl;
                 else
                 {
-                    for (int x = 0; x < depth; x++) std::cout << "    ";
+                    for (int x = 0; x < cat->depth; x++) std::cout << "    ";
                     std::cout << "    )" << std::endl;
                 }
             }
             break;
+        }
         case icewm :
+        {
+            for (int x = 0; x < cat->depth; x++) std::cout << "    ";
             if (useIcons)
-            {   
-                if (catIcon != "\0") 
-                    catFormatted = '"' + category + "\" " + catIcon;
-                else 
-                    catFormatted = '"' + category + "\" -";
+            {
+                if (cat->icon != "\0")
+                    std::cout << "menu \"" << cat->name << "\" " << cat->icon << " {" << std::endl;
+                else
+                    std::cout << "menu \"" << cat->name << "\" - {" << std::endl;
             }
-            else catFormatted = '"' + category + "\" folder";
-            for (int x = 0; x < depth; x++) std::cout << "    ";
-            std::cout << "menu " << catFormatted << " {" << std::endl;
+            else
+            {
+                std::cout << "menu \"" << cat->name << "\" folder {" << std::endl;
+            }
             for (unsigned int x = 0; x < subCats.size(); x++)
             {
                 if (categoryNotExcluded(subCats[x]))
@@ -570,18 +546,22 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
                     it < dfiles.end(); it++)
             {   
                 if ((*it)->nodisplay) continue;
-                if (useIcons && (*it)->icon != "\0") 
-                    nameFormatted = '"' + (*it)->name + '"' + " " + 
-                        (*it)->icon;
-                else nameFormatted = '"' + (*it)->name + "\" -";
-                execFormatted = (*it)->exec;
-                for (int x = 0; x < depth; x++) std::cout << "    ";
-                std::cout << "    prog " + nameFormatted + " " + execFormatted << 
-                    std::endl;
+                for (int x = 0; x < cat->depth; x++) std::cout << "    ";
+                if (useIcons && (*it)->icon != "\0")
+                {
+                    std::cout << "    prog \"" << (*it)->name << "\" " << 
+                        (*it)->icon << " " << (*it)->exec << std::endl;
+                }
+                else
+                {
+                    std::cout << "    prog \"" + (*it)->name + "\" - " << 
+                        (*it)->exec << std::endl;
+                }
             }
-            for (int x = 0; x < depth; x++) std::cout << "    ";
-            if (depth == 0) std::cout << "}\n" << std::endl;
+            for (int x = 0; x < cat->depth; x++) std::cout << "    ";
+            if (cat->depth == 0) std::cout << "}\n" << std::endl;
             else std::cout << "}\n";
             break;
+        }
     }
 }
