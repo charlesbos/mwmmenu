@@ -201,6 +201,7 @@ void Category::parseMenu(const std::vector<std::string>& menu)
 /* Return all DesktopFiles associated with this category */
 std::vector<DesktopFile*> Category::getEntries()
 {
+    sort(incEntries.begin(), incEntries.end(), myCompare<DesktopFile>);
     return incEntries;
 }
 
@@ -225,6 +226,7 @@ void Category::getEntriesR(Category *cat)
 /* Return all subcategories associated with this category */
 std::vector<Category*> Category::getSubcats()
 {
+    sort(incCategories.begin(), incCategories.end(), myCompare<Category>);
     return incCategories;
 }
 

@@ -170,18 +170,10 @@ void MenuWriter::writeMenu(Category *cat, int catNumber,
         const std::vector<Category*>& usedCats, int maxCatNumber)
 {   
     std::vector<DesktopFile*> dfiles; 
-    if (cat != NULL) 
-    {
-        dfiles = cat->getEntries();
-        sort(dfiles.begin(), dfiles.end(), myCompare<DesktopFile>);
-    }
+    if (cat != NULL) dfiles = cat->getEntries();
 
     std::vector<Category*> subCats;
-    if (cat != NULL) 
-    {
-        subCats = cat->getSubcats();
-        sort(subCats.begin(), subCats.end(), myCompare<Category>);
-    }
+    if (cat != NULL) subCats = cat->getSubcats();
 
     switch(windowmanager)
     {
