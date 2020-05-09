@@ -34,29 +34,20 @@
 #define windowmaker 7
 #define icewm 8
 
-//Category numbers
-//Any positive category numbers indicate an index in the std::vector of used
-//categories. These are not defined here. Negative numbers indicate either a
-//main menu (i.e. a category of categories) or a subcategory
-#define MAIN_MENU -1
-#define SUB_MENU -2
+#define WRITER_CONSTRUCT const std::string& menuName, int windowmanager,\
+        bool useIcons, std::vector<std::string> exclude, std::vector<std::string> excludeMatching,\
+        std::vector<std::string> excludeCategories, std::vector<std::string> include,\
+        std::vector<std::string> excludedFilenames, const std::vector<Category*>& cats
 
-//The real maximum category number will be positive. The default here is just
-//used for cases where the real maximum is irrelavent, i.e. if we're printing
-// a subcategory we don't need to know how many base categories there are. The
-//default max must be negative and must not conflict with any category numbers
-//defined above
-#define DEFAULT_MAX_CAT -1000
+#define WRITER_PARAMS menuName, windowmanager, useIcons, exclude, excludeMatching,\
+        excludeCategories, include, excludedFilenames, cats
 
 class MenuWriter
 {   
     public:
-        MenuWriter(const std::string& menuName, int windowmanager, bool useIcons, 
-                std::vector<std::string> exclude, std::vector<std::string> excludeMatching, 
-                std::vector<std::string> excludeCategories, std::vector<std::string> include, 
-                std::vector<std::string> excludedFilenames, const std::vector<Category*>& cats);
+        MenuWriter(WRITER_CONSTRUCT);
 
-    private:
+    protected:
         std::vector<Category*> cats;
         std::string menuName;
         int windowmanager;
@@ -67,13 +58,80 @@ class MenuWriter
         std::vector<std::string> include;
         std::vector<std::string> excludedFilenames;
 
+        std::vector<Category*> usedCats;
+
         void entryDisplayHandler();
         bool categoryNotExcluded(Category* c);
-        int realMenuSize(std::vector<DesktopFile*> entries);
+        int realNumEntries(std::vector<DesktopFile*>);
+        int realNumCats(std::vector<Category*>);
 
-        void writeMenu(Category *cat, int catNumber, 
-                const std::vector<Category*>& usedCats, 
-                int maxCatNumber = DEFAULT_MAX_CAT);
+        virtual void writeMenu(Category*, int, int) = 0;
+};
+
+class MwmMenuWriter : MenuWriter
+{
+    public:
+        MwmMenuWriter(WRITER_CONSTRUCT);
+
+    private:
+        void writeMenu(Category*, int = -1, int = -1);
+        void writeMainMenu();
+};
+
+class FvwmMenuWriter : MenuWriter
+{
+    public:
+        FvwmMenuWriter(WRITER_CONSTRUCT);
+
+    private:
+        void writeMenu(Category*, int = -1, int = -1);
+        void writeMainMenu();
+};
+
+class FluxboxMenuWriter : MenuWriter
+{
+    public:
+        FluxboxMenuWriter(WRITER_CONSTRUCT);
+
+    private:
+        void writeMenu(Category*, int = -1, int = -1);
+};
+
+class OpenboxMenuWriter : MenuWriter
+{
+    public:
+        OpenboxMenuWriter(WRITER_CONSTRUCT);
+
+    private:
+        void writeMenu(Category*, int = -1, int = -1);
+        void writeMainMenu();
+};
+
+class OlvwmMenuWriter : MenuWriter
+{
+    public:
+        OlvwmMenuWriter(WRITER_CONSTRUCT);
+
+    private:
+        void writeMenu(Category*, int = -1, int = -1);
+};
+
+class WmakerMenuWriter : MenuWriter
+{
+    public:
+        WmakerMenuWriter(WRITER_CONSTRUCT);
+
+    private:
+        void writeMenu(Category*, int = -1, int = -1);
+};
+
+class IcewmMenuWriter : MenuWriter
+{
+    public:
+        IcewmMenuWriter(WRITER_CONSTRUCT);
+
+    private:
+        void writeMenu(Category*, int = -1, int = -1);
 };
 
 #endif

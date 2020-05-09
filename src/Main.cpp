@@ -26,6 +26,11 @@
 #include "MenuWriter.h"
 #include "Category.h"
 
+#define WRITER_ARGS menuName, windowmanager, useIcons,\
+        splitCommaArgs(exclude), splitCommaArgs(excludeMatching),\
+        splitCommaArgs(excludeCategories), splitCommaArgs(include),\
+        splitCommaArgs(excludedFilenames), cats
+
 void usage()
 {   std::cout << 
         "mwmmenu - creates application menus for MWM and other window managers.\n\n"
@@ -553,10 +558,32 @@ int main(int argc, char *argv[])
     }
 
     //Create a MenuWriter which will write the menu out to the console
-    MenuWriter(menuName, windowmanager, useIcons, 
-            splitCommaArgs(exclude), splitCommaArgs(excludeMatching), 
-            splitCommaArgs(excludeCategories), splitCommaArgs(include),
-            splitCommaArgs(excludedFilenames), cats);
+    switch (windowmanager)
+    {
+        case mwm:
+            MwmMenuWriter(WRITER_ARGS);
+            break;
+        case fvwm:
+        case fvwm_dynamic:
+            FvwmMenuWriter(WRITER_ARGS);
+            break;
+        case fluxbox:
+            FluxboxMenuWriter(WRITER_ARGS);
+            break;
+        case openbox:
+        case openbox_pipe:
+            OpenboxMenuWriter(WRITER_ARGS);
+            break;
+        case olvwm:
+            OlvwmMenuWriter(WRITER_ARGS);
+            break;
+        case windowmaker:
+            WmakerMenuWriter(WRITER_ARGS);
+            break;
+        case icewm:
+            IcewmMenuWriter(WRITER_ARGS);
+            break;
+    }
 
     for (unsigned int x = 0; x < cats.size(); x++) delete cats[x];
     for (unsigned int x = 0; x < files.size(); x++) delete files[x];
