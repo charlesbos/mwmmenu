@@ -23,6 +23,7 @@
 
 int Category::registerCount = 0;
 std::vector<DesktopFile*> Category::incEntriesR = std::vector<DesktopFile*>();
+std::vector<Category*> Category::incSubcatsR = std::vector<Category*>();
 
 //Constructor for custom categories
 Category::Category(const char *dirFile, const std::vector<std::string>& menuFiles, 
@@ -228,6 +229,24 @@ std::vector<Category*> Category::getSubcats()
 {
     sort(incCategories.begin(), incCategories.end(), myCompare<Category>);
     return incCategories;
+}
+
+/* Return all subcategories associated with this category plus all
+ * subcategories of the subcategories */
+std::vector<Category*> Category::getSubcatsR()
+{
+    getSubcatsR(this);
+    std::vector<Category*> result(Category::incSubcatsR);
+    Category::incSubcatsR.clear();
+    return result;
+}
+
+void Category::getSubcatsR(Category *cat)
+{
+    for (unsigned int x = 0; x < cat->incCategories.size(); x++)
+        Category::incSubcatsR.push_back(cat->incCategories[x]);
+    for (unsigned int x = 0; x < cat->incCategories.size(); x++)
+        getSubcatsR(cat->incCategories[x]);
 }
 
 /* Return a list of filenames included/excluded from this category */

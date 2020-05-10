@@ -102,7 +102,7 @@ void MenuWriter::entryDisplayHandler()
                 cats[w]->nodisplay = true;
                 continue;
             }
-            std::vector<Category*> subCats = cats[w]->getSubcats();
+            std::vector<Category*> subCats = cats[w]->getSubcatsR();
             for (unsigned int x = 0; x < subCats.size(); x++)
             {
                 Category *subCat = subCats[x];
@@ -123,13 +123,20 @@ bool MenuWriter::categoryNotExcluded(Category* c)
 {   
     if (c->nodisplay) return false;
     bool visibleFound = false;
-    std::vector<DesktopFile*> entries = c->getEntriesR();
-    for (unsigned int x = 0; x < entries.size(); x++)
+    std::vector<Category*> cats = c->getSubcatsR();
+    cats.push_back(c);
+    for (unsigned int x = 0; x < cats.size(); x++)
     {
-        if (entries[x]->nodisplay == false)
+        Category *subCat = cats[x];
+        if (subCat->nodisplay) continue;
+        std::vector<DesktopFile*> entries = subCat->getEntries();
+        for (unsigned int y = 0; y < entries.size(); y++)
         {
-            visibleFound = true;
-            break;
+            if (entries[y]->nodisplay == false)
+            {
+                visibleFound = true;
+                break;
+            }
         }
     }
     if (!visibleFound) return false;

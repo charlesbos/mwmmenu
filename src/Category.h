@@ -44,6 +44,7 @@ class Category
         std::vector<DesktopFile*> getEntries();
         std::vector<DesktopFile*> getEntriesR();
         std::vector<Category*> getSubcats();
+        std::vector<Category*> getSubcatsR();
         std::vector<std::string> getIncludes();
         std::vector<std::string> getExcludes();
 
@@ -69,9 +70,11 @@ class Category
 
         static int registerCount;
         static std::vector<DesktopFile*> incEntriesR;
+        static std::vector<Category*> incSubcatsR;
 
         void registerDF(Category *cat, DesktopFile *df, bool force = false);
         void getEntriesR(Category *cat);
+        void getSubcatsR(Category *cat);
 
         void readMenufiles();
         void parseDir();
