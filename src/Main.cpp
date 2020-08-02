@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
     std::string homedir = getenv("HOME");
     std::string term = "xterm -e";
     std::string menuName = "Applications";
-    int windowmanager = mwm;
+    WindowManager windowmanager = mwm;
     bool useIcons = false;
     bool iconsXdgOnly = false;
     std::string iconsXdgSize = "all";

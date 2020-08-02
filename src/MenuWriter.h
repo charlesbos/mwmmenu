@@ -24,17 +24,20 @@
 #include "DesktopFile.h"
 
 //WM id numbers
-#define mwm 0
-#define fvwm 1
-#define fvwm_dynamic 2
-#define fluxbox 3
-#define openbox 4
-#define openbox_pipe 5
-#define olvwm 6
-#define windowmaker 7
-#define icewm 8
+enum WindowManager
+{
+    mwm = 0,
+    fvwm,
+    fvwm_dynamic,
+    fluxbox,
+    openbox,
+    openbox_pipe,
+    olvwm,
+    windowmaker,
+    icewm
+};
 
-#define WRITER_CONSTRUCT const std::string& menuName, int windowmanager,\
+#define WRITER_CONSTRUCT const std::string& menuName, WindowManager windowmanager,\
         bool useIcons, std::vector<std::string> exclude, std::vector<std::string> excludeMatching,\
         std::vector<std::string> excludeCategories, std::vector<std::string> include,\
         std::vector<std::string> excludedFilenames, const std::vector<Category*>& cats
@@ -50,7 +53,7 @@ class MenuWriter
     protected:
         std::vector<Category*> cats;
         std::string menuName;
-        int windowmanager;
+        WindowManager windowmanager;
         bool useIcons;
         std::vector<std::string> exclude;
         std::vector<std::string> excludeMatching;
