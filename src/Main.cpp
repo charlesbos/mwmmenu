@@ -32,7 +32,8 @@
         splitCommaArgs(excludedFilenames), cats
 
 void usage()
-{   std::cout << 
+{   
+    std::cout << 
         "mwmmenu - creates application menus for MWM and other window managers.\n\n"
         "Usage:\n"
         "  # Note: all options must be spaced.\n"
@@ -90,12 +91,6 @@ void usage()
         "  --icewm:               produce menus for IceWM\n";
 }
 
-//A function to extract a filename from a full path
-std::string getFilename(const std::string& path) 
-{ 
-    return path.substr(path.find_last_of("/") + 1, std::string::npos); 
-}
-
 //Function that attempts to get the user icon theme from ~/.gtkrc-2.0
 std::string getIconTheme(const std::string& homedir)
 {
@@ -103,48 +98,22 @@ std::string getIconTheme(const std::string& homedir)
     std::string path = homedir + "/.gtkrc-2.0";
     std::string id = "gtk-icon-theme-name";
     themefile.open(path.c_str());
-    if (!themefile) return "\0";
+    if (!themefile) return "";
     else
     {
         std::string line;
-        char c;
-        unsigned int counter = 0;
         while (!themefile.eof())
         {
             getline(themefile, line);
-            std::vector<char> readChars;
-            readChars.reserve(10);
-            while (counter < line.size())
-            {
-                c = line[counter];
-                if (c == '=') break;
-                readChars.push_back(c);
-                counter++;
-            }
-            std::string read_id = std::string(readChars.begin(), readChars.end());
-            read_id.erase(remove(read_id.begin(), read_id.end(), ' '), 
-                    read_id.end());
+            std::string read_id = DesktopFile::getID(line);
             if (id == read_id)
             {
-                std::vector<char> themeNameChars;
-                themeNameChars.reserve(10);
-                while (counter < line.size())
-                { 
-                    c = line[counter];
-                    if (c != '"' && c != '=') themeNameChars.push_back(c);
-                    counter ++;
-                }
-                themefile.close();
-                std::string themename = std::string(themeNameChars.begin(), 
-                        themeNameChars.end());
-                themename.erase(remove(themename.begin(), 
-                        themename.end(), ' '), themename.end());
+                std::string themename = DesktopFile::getSingleValue(line);
                 return themename;
             }
-            counter = 0;
         }
         themefile.close();
-        return "\0";
+        return "";
     }
 }
 
@@ -183,7 +152,7 @@ void addCategory(Category *c, std::vector<Category*> &categories)
             //Replace default category object with custom object of the same
             //name if the definitions differ
             if (!c->getIncludes().empty() || !c->getExcludes().empty() || 
-                    (c->icon != categories[x]->icon && c->icon != "\0")) 
+                    (c->icon != categories[x]->icon && c->icon != "")) 
                 categories[x] = c;
             return;
         }
@@ -197,7 +166,7 @@ void addCategory(Category *c, std::vector<Category*> &categories)
 //local overrides for XDG desktop entries and icons.
 bool addID(const std::string& path, std::vector<std::string> &ids)
 {  
-    std::string id = getFilename(path);
+    std::string id = boost::filesystem::path(path).stem().string();
     for (unsigned int x = 0; x < ids.size(); x++)
         if (id == ids[x]) return false;
     ids.push_back(id);
@@ -358,7 +327,7 @@ int main(int argc, char *argv[])
     paths.reserve(300);
     pathIDS.reserve(300);
     std::vector<std::string> appdirs;
-    if (extraDesktopPaths != "\0")
+    if (extraDesktopPaths != "")
     {   
         std::vector<std::string> newDPaths = splitCommaArgs(extraDesktopPaths);
         for (unsigned int x = 0; x < newDPaths.size(); x++)
@@ -397,7 +366,7 @@ int main(int argc, char *argv[])
         iconpaths.reserve(500);
         iconpathIDS.reserve(500);
         std::vector<std::string> icondirs;
-        if (extraIconPaths != "\0" && !iconsXdgOnly)
+        if (extraIconPaths != "" && !iconsXdgOnly)
         {
             std::vector<std::string> newIPaths = splitCommaArgs(extraIconPaths);
             for (unsigned int x = 0; x < newIPaths.size(); x++)
@@ -540,7 +509,7 @@ int main(int argc, char *argv[])
     {   
         Category *c = new Category(catPaths[x].c_str(), menuPaths, useIcons, 
                 iconpaths, iconsXdgSize, iconsXdgOnly);
-        if (c->name != "\0") addCategory(c, cats);
+        if (c->name != "") addCategory(c, cats);
     }
     sort(cats.begin(), cats.end(), myCompare<Category>);
 
@@ -553,7 +522,7 @@ int main(int argc, char *argv[])
         DesktopFile *df = new DesktopFile((*it).c_str(), 
                 splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats, 
                 iconsXdgSize, iconsXdgOnly, term);
-        if (df->name != "\0" && df->exec != "\0") files.push_back(df);
+        if (df->name != "" && df->exec != "") files.push_back(df);
         else delete df;
     }
 

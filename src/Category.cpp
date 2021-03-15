@@ -383,23 +383,23 @@ void Category::getCategoryIcon()
      * path instead of a true definition, then check if it conforms to the 
      * required size and is an xdg directory if that has been requested. 
      * If so, exit here. Otherwise, clear the definition and carry on */
-    if (icon != "\0" && icon.find("/") != std::string::npos && 
+    if (icon != "" && icon.find("/") != std::string::npos && 
             icon.find(iconsXdgSize) != std::string::npos) 
     {   
         if (!iconsXdgOnly || (iconsXdgOnly && 
                 icon.find("/share/icons/") != std::string::npos))
             return;
         else
-            icon = "\0";
+            icon = "";
     }
 
     //Set the icon definition, either the one we already have or the 
     //category name
-    if (icon != "\0") iconDef = icon;
+    if (icon != "") iconDef = icon;
     else iconDef = name;
 
     //If we already have a definition, we can get the icon from any directory
-    if (icon != "\0") nameGuard = "/";
+    if (icon != "") nameGuard = "/";
 
     //Workarounds
     //There is no icon for education so use the science one instead

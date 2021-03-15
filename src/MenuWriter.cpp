@@ -234,7 +234,7 @@ void FvwmMenuWriter::writeMenu(Category *cat, int catNumber, int maxCatNumber)
     {   
         if (categoryNotExcluded(subCats[x]))
         {
-            if (useIcons && subCats[x]->icon != "\0")
+            if (useIcons && subCats[x]->icon != "")
             {
                 std::cout << "+ \"" << subCats[x]->name << " %" << 
                     subCats[x]->icon << "%\" Popup " << 
@@ -250,7 +250,7 @@ void FvwmMenuWriter::writeMenu(Category *cat, int catNumber, int maxCatNumber)
     for (std::vector<DesktopFile*>::iterator it = dfiles.begin(); it < dfiles.end(); it++)
     {   
         if ((*it)->nodisplay) continue;
-        if (useIcons && (*it)->icon != "\0")
+        if (useIcons && (*it)->icon != "")
         {
             std::cout << "+ \"" << (*it)->name << " %" << 
                 (*it)->icon << "%\" Exec exec " << 
@@ -275,7 +275,7 @@ void FvwmMenuWriter::writeMainMenu()
         '"' << menuName << "\" Title" << std::endl;
     for (unsigned int x = 0; x < usedCats.size(); x++)
     {   
-        if (useIcons && usedCats[x]->icon != "\0")
+        if (useIcons && usedCats[x]->icon != "")
         {
             std::cout << "+ \"" << usedCats[x]->name << " %" << 
                 usedCats[x]->icon << "%\" Popup " << 
@@ -307,7 +307,7 @@ void FluxboxMenuWriter::writeMenu(Category *cat, int catNumber, int maxCatNumber
     if (catNumber == 0) 
         std::cout << "[submenu] (" << menuName << ')' << std::endl;
     for (int x = 0; x < cat->depth; x++) std::cout << "    ";
-    if (useIcons && cat->icon != "\0")
+    if (useIcons && cat->icon != "")
     {
         std::cout << "    [submenu] (" << cat->name << ") <" << cat->icon 
             << "> {}" << std::endl;
@@ -328,7 +328,7 @@ void FluxboxMenuWriter::writeMenu(Category *cat, int catNumber, int maxCatNumber
         boost::replace_all(theName, ")", "\\)");
         std::cout << "        [exec] (" << theName << ") " << 
             "{" << (*it)->exec << "}";
-        if (useIcons && (*it)->icon != "\0")
+        if (useIcons && (*it)->icon != "")
             std::cout << " <" << (*it)->icon << ">" << std::endl;
         else
             std::cout << std::endl;
@@ -364,7 +364,7 @@ void OpenboxMenuWriter::writeMenu(Category *cat, int catNumber, int maxCatNumber
     }  
     if (useIcons)
     {
-        if (cat->icon != "\0")
+        if (cat->icon != "")
         {
             if (windowmanager == openbox_pipe)
                for (int x = 0; x < cat->depth; x++) std::cout << "    ";
@@ -393,7 +393,7 @@ void OpenboxMenuWriter::writeMenu(Category *cat, int catNumber, int maxCatNumber
         {   
             if (categoryNotExcluded(subCats[x]))
             {
-                if (useIcons && subCats[x]->icon != "\0")
+                if (useIcons && subCats[x]->icon != "")
                 {
                     std::cout << "    <menu id=\"" << subCats[x]->name << "\" icon=\""
                        << subCats[x]->icon << "\"/>" << std::endl;
@@ -415,7 +415,7 @@ void OpenboxMenuWriter::writeMenu(Category *cat, int catNumber, int maxCatNumber
         if ((*it)->nodisplay) continue;
         if (windowmanager == openbox_pipe)
             for (int x = 0; x < cat->depth; x++) std::cout << "    ";
-        if (useIcons && (*it)->icon != "\0")
+        if (useIcons && (*it)->icon != "")
         {
             std::cout << "    <item label=\"" << (*it)->name << "\" icon=\""
                << (*it)->icon << "\">" << std::endl;
@@ -452,7 +452,7 @@ void OpenboxMenuWriter::writeMainMenu()
     std::cout << "<menu id=\"" << menuName << "\" label=\"" << menuName << "\">" << std::endl;
     for (unsigned int x = 0; x < usedCats.size(); x++)
     {   
-        if (useIcons && usedCats[x]->icon != "\0")
+        if (useIcons && usedCats[x]->icon != "")
         {
             std::cout << "    <menu id=\"" << usedCats[x]->name << "\" icon=\""
                << usedCats[x]->icon << "\"/>" << std::endl;
@@ -574,7 +574,7 @@ void IcewmMenuWriter::writeMenu(Category *cat, int catNumber, int maxCatNumber)
     for (int x = 0; x < cat->depth; x++) std::cout << "    ";
     if (useIcons)
     {
-        if (cat->icon != "\0")
+        if (cat->icon != "")
             std::cout << "menu \"" << cat->name << "\" " << cat->icon << " {" << std::endl;
         else
             std::cout << "menu \"" << cat->name << "\" - {" << std::endl;
@@ -589,7 +589,7 @@ void IcewmMenuWriter::writeMenu(Category *cat, int catNumber, int maxCatNumber)
     {   
         if ((*it)->nodisplay) continue;
         for (int x = 0; x < cat->depth; x++) std::cout << "    ";
-        if (useIcons && (*it)->icon != "\0")
+        if (useIcons && (*it)->icon != "")
         {
             std::cout << "    prog \"" << (*it)->name << "\" " << 
                 (*it)->icon << " " << (*it)->exec << std::endl;

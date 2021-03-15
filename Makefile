@@ -5,4 +5,4 @@ all:
 	$(CC) src/Main.cpp src/DesktopFile.cpp src/MenuWriter.cpp src/Category.cpp -o mwmmenu $(CXXFLAGS)
 
 clean:
-	if [ -f mwmmenu ]; then rm mwmmenu; fi
+	rm -f mwmmenu

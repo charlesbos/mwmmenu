@@ -115,11 +115,11 @@ void DesktopFile::populate(const std::vector<std::string>& showFromDesktops,
         }
     }
 
-    if (this->name == "\0" || this->exec == "\0") return;
+    if (this->name == "" || this->exec == "") return;
     else
     {
         processCategories(cats, foundCategories);
-        if (useIcons && iconDef != "\0") 
+        if (useIcons && iconDef != "") 
             matchIcon(iconDef, iconpaths, iconsXdgSize, iconsXdgOnly);
         if (!onlyShowInDesktops.empty()) 
             processDesktops(showFromDesktops, onlyShowInDesktops);
