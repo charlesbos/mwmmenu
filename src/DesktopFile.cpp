@@ -181,7 +181,7 @@ std::string DesktopFile::getSingleValue(const std::string& line)
 /* This function is used to get multiple semi-colon seperated values.
  * For instance, the line Categories=System;Settings; will return a string
  * std::vector with the items System and Settings */
-std::vector<std::string> DesktopFile::getMultiValue(const std::string& line)
+std::vector<std::string> DesktopFile::getMultiValue(const std::string& line, const char separator)
 {  
     std::vector<std::string> values;
     std::vector<char> readChars;
@@ -194,9 +194,9 @@ std::vector<std::string> DesktopFile::getMultiValue(const std::string& line)
     while (counter < line.size())
     {
         c = line[counter];
-        if (startFilling && c != ';') readChars.push_back(c);
+        if (startFilling && c != separator) readChars.push_back(c);
         if (c == '=') startFilling = true;
-        if (c == ';')
+        if (c == separator)
         {
             values.push_back(std::string(readChars.begin(), readChars.end()));
             readChars.clear();
@@ -204,8 +204,6 @@ std::vector<std::string> DesktopFile::getMultiValue(const std::string& line)
         counter++;
     }
 
-    //Ensure we get the last category in line if it isn't terminated with a
-    //semi-colon
     if (!readChars.empty())
         values.push_back(std::string(readChars.begin(), readChars.end()));
 

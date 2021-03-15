@@ -52,7 +52,7 @@ class DesktopFile
 
         static std::string getID(const std::string& line);
         static std::string getSingleValue(const std::string& line);
-        static std::vector<std::string> getMultiValue(const std::string& line);
+        static std::vector<std::string> getMultiValue(const std::string& line, const char separator = ';');
  
     private:
         std::ifstream dfile;

@@ -26,10 +26,12 @@
 #include "MenuWriter.h"
 #include "Category.h"
 
+#define GET_COMMA_VALUES(X) DesktopFile::getMultiValue(X, ',')
+
 #define WRITER_ARGS menuName, windowmanager, useIcons,\
-        splitCommaArgs(exclude), splitCommaArgs(excludeMatching),\
-        splitCommaArgs(excludeCategories), splitCommaArgs(include),\
-        splitCommaArgs(excludedFilenames), cats
+        GET_COMMA_VALUES(exclude), GET_COMMA_VALUES(excludeMatching),\
+        GET_COMMA_VALUES(excludeCategories), GET_COMMA_VALUES(include),\
+        GET_COMMA_VALUES(excludedFilenames), cats
 
 void usage()
 {   
@@ -115,31 +117,6 @@ std::string getIconTheme(const std::string& homedir)
         themefile.close();
         return "";
     }
-}
-
-/* Function to split std::string argument separated by commas into
- * a std::string std::vector */
-std::vector<std::string> splitCommaArgs(const std::string& arg)
-{   
-    std::vector<std::string> splitArgs;
-    std::vector<char> buffer;
-    splitArgs.reserve(5);
-    buffer.reserve(10);
-
-    for (unsigned int x = 0; x < arg.size(); x++)
-    {
-        if (arg[x] == ',') 
-        {
-            splitArgs.push_back(std::string(buffer.begin(), buffer.end()));
-            buffer.clear();
-            continue;
-        }
-        buffer.push_back(arg[x]);
-    }
-    if (!buffer.empty()) 
-        splitArgs.push_back(std::string(buffer.begin(), buffer.end()));
-
-    return splitArgs;
 }
 
 //A function to make sure we only add unique categories to the categories list
@@ -329,7 +306,7 @@ int main(int argc, char *argv[])
     std::vector<std::string> appdirs;
     if (extraDesktopPaths != "")
     {   
-        std::vector<std::string> newDPaths = splitCommaArgs(extraDesktopPaths);
+        std::vector<std::string> newDPaths = GET_COMMA_VALUES(extraDesktopPaths);
         for (unsigned int x = 0; x < newDPaths.size(); x++)
             appdirs.push_back(newDPaths[x]);
     }
@@ -368,7 +345,7 @@ int main(int argc, char *argv[])
         std::vector<std::string> icondirs;
         if (extraIconPaths != "" && !iconsXdgOnly)
         {
-            std::vector<std::string> newIPaths = splitCommaArgs(extraIconPaths);
+            std::vector<std::string> newIPaths = GET_COMMA_VALUES(extraIconPaths);
             for (unsigned int x = 0; x < newIPaths.size(); x++)
                 icondirs.push_back(newIPaths[x]);
         }
@@ -520,7 +497,7 @@ int main(int argc, char *argv[])
     for (std::vector<std::string>::iterator it = paths.begin(); it < paths.end(); it++)
     {   
         DesktopFile *df = new DesktopFile((*it).c_str(), 
-                splitCommaArgs(showFromDesktops), useIcons, iconpaths, cats, 
+                GET_COMMA_VALUES(showFromDesktops), useIcons, iconpaths, cats, 
                 iconsXdgSize, iconsXdgOnly, term);
         if (df->name != "" && df->exec != "") files.push_back(df);
         else delete df;
