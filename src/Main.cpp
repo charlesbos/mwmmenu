@@ -26,7 +26,7 @@
 #include "MenuWriter.h"
 #include "Category.h"
 
-#define GET_COMMA_VALUES(X) DesktopFile::getMultiValue(X, ',')
+#define GET_COMMA_VALUES(X) DesktopFile::getMultiValue(X, ',', '\0')
 
 #define WRITER_ARGS menuName, windowmanager, useIcons,\
         GET_COMMA_VALUES(exclude), GET_COMMA_VALUES(excludeMatching),\
