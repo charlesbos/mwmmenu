@@ -37,6 +37,9 @@ enum WindowManager
     icewm
 };
 
+#define DEFAULT_CAT_NUM -1
+#define DEFAULT_MAX_CAT_NUM -1
+
 #define WRITER_CONSTRUCT const std::string& menuName, WindowManager windowmanager,\
         bool useIcons, std::vector<std::string> exclude, std::vector<std::string> excludeMatching,\
         std::vector<std::string> excludeCategories, std::vector<std::string> include,\
@@ -65,10 +68,10 @@ class MenuWriter
 
         void entryDisplayHandler();
         bool categoryNotExcluded(Category* c);
-        int realNumEntries(std::vector<DesktopFile*>);
-        int realNumCats(std::vector<Category*>);
+        int realNumEntries(std::vector<DesktopFile*> entries);
+        int realNumCats(std::vector<Category*> cats);
 
-        virtual void writeMenu(Category*, int, int) = 0;
+        virtual void writeMenu(Category* cat, int catNumber, int maxCatNumber) = 0;
 };
 
 class MwmMenuWriter : MenuWriter
@@ -77,7 +80,7 @@ class MwmMenuWriter : MenuWriter
         MwmMenuWriter(WRITER_CONSTRUCT);
 
     private:
-        void writeMenu(Category*, int = -1, int = -1);
+        void writeMenu(Category* cat, int catNumber = DEFAULT_CAT_NUM, int = DEFAULT_MAX_CAT_NUM);
         void writeMainMenu();
 };
 
@@ -87,7 +90,7 @@ class FvwmMenuWriter : MenuWriter
         FvwmMenuWriter(WRITER_CONSTRUCT);
 
     private:
-        void writeMenu(Category*, int = -1, int = -1);
+        void writeMenu(Category* cat, int catNumber = DEFAULT_CAT_NUM, int = DEFAULT_MAX_CAT_NUM);
         void writeMainMenu();
 };
 
@@ -97,7 +100,7 @@ class FluxboxMenuWriter : MenuWriter
         FluxboxMenuWriter(WRITER_CONSTRUCT);
 
     private:
-        void writeMenu(Category*, int = -1, int = -1);
+        void writeMenu(Category* cat, int catNumber = DEFAULT_CAT_NUM, int = DEFAULT_MAX_CAT_NUM);
 };
 
 class OpenboxMenuWriter : MenuWriter
@@ -106,7 +109,7 @@ class OpenboxMenuWriter : MenuWriter
         OpenboxMenuWriter(WRITER_CONSTRUCT);
 
     private:
-        void writeMenu(Category*, int = -1, int = -1);
+        void writeMenu(Category* cat, int catNumber = DEFAULT_CAT_NUM, int = DEFAULT_MAX_CAT_NUM);
         void writeMainMenu();
 };
 
@@ -116,7 +119,7 @@ class OlvwmMenuWriter : MenuWriter
         OlvwmMenuWriter(WRITER_CONSTRUCT);
 
     private:
-        void writeMenu(Category*, int = -1, int = -1);
+        void writeMenu(Category* cat, int catNumber = DEFAULT_CAT_NUM, int = DEFAULT_MAX_CAT_NUM);
 };
 
 class WmakerMenuWriter : MenuWriter
@@ -125,7 +128,7 @@ class WmakerMenuWriter : MenuWriter
         WmakerMenuWriter(WRITER_CONSTRUCT);
 
     private:
-        void writeMenu(Category*, int = -1, int = -1);
+        void writeMenu(Category* cat, int catNumber = DEFAULT_CAT_NUM, int = DEFAULT_MAX_CAT_NUM);
 };
 
 class IcewmMenuWriter : MenuWriter
@@ -134,7 +137,7 @@ class IcewmMenuWriter : MenuWriter
         IcewmMenuWriter(WRITER_CONSTRUCT);
 
     private:
-        void writeMenu(Category*, int = -1, int = -1);
+        void writeMenu(Category* cat, int catNumber = DEFAULT_CAT_NUM, int = DEFAULT_MAX_CAT_NUM);
 };
 
 #endif
