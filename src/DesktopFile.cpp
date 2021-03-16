@@ -129,18 +129,20 @@ void DesktopFile::populate(const std::vector<std::string>& showFromDesktops,
 
 /* This function is used to get the single value before the = sign.
  * Should be Name, Exec, Categories etc */
-std::string DesktopFile::getID(const std::string& line)
-{  
+std::string DesktopFile::getID(const std::string& line, const char start, const char end)
+{   
     std::vector<char> readChars;
     readChars.reserve(10);
     char c;
     unsigned int counter = 0;
+    bool startFilling = (start != '\0') ? false : true;
 
     while (counter < line.size())
     {
         c = line[counter];
-        if (c == '=') break;
-        readChars.push_back(c);
+        if (c == end) break;
+        if (startFilling) readChars.push_back(c);
+        if (c == start) startFilling = true;
         counter++;
     }
 
@@ -149,7 +151,7 @@ std::string DesktopFile::getID(const std::string& line)
 
 /* This function is used to get single values, for example: for the line 
  * Name=Firefox this function will return Firefox */
-std::string DesktopFile::getSingleValue(const std::string& line)
+std::string DesktopFile::getSingleValue(const std::string& line, const char start, const char end)
 {  
     std::vector<char> readChars;
     readChars.reserve(10);
@@ -161,8 +163,14 @@ std::string DesktopFile::getSingleValue(const std::string& line)
     while (counter < line.size())
     {
         c = line[counter];
+        if (c == start)
+        {
+            startFilling = true;
+            counter++;
+            continue;
+        }
+        if (startFilling && c == end) break;
         if (startFilling) readChars.push_back(c);
-        if (c == '=') startFilling = true;
         counter++;
     }
 

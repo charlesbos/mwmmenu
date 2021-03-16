@@ -23,6 +23,11 @@
 
 #include "DesktopFile.h"
 
+#define GET_ID_INI(X) DesktopFile::getID(X)
+#define GET_ID_XML(X) DesktopFile::getID(X, '<', '>')
+#define GET_VAL_INI(X) DesktopFile::getSingleValue(X)
+#define GET_VAL_XML(X) DesktopFile::getSingleValue(X, '>', '<')
+
 class Category
 {
     public:
@@ -47,9 +52,6 @@ class Category
         std::vector<Category*> getSubcatsR();
         std::vector<std::string> getIncludes();
         std::vector<std::string> getExcludes();
-
-        static std::string getID(const std::string& line);
-        static std::string getSingleValue(const std::string& line);
 
         bool registerDF(DesktopFile *df, bool force = false);
 

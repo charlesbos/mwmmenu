@@ -50,8 +50,8 @@ class DesktopFile
         bool terminal;
         std::vector<std::string> foundCategories;
 
-        static std::string getID(const std::string& line);
-        static std::string getSingleValue(const std::string& line);
+        static std::string getID(const std::string& line, const char start = '\0', const char end = '=');
+        static std::string getSingleValue(const std::string& line, const char start = '=', const char end = '\0');
         static std::vector<std::string> getMultiValue(const std::string& line, const char separator = ';', const char start = '=');
  
     private:

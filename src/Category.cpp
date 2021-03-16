@@ -92,9 +92,9 @@ void Category::parseDir()
     while (!dir_f.eof())
     {
         getline(dir_f, line);
-        std::string id = DesktopFile::getID(line);
-        if (id == "Name") name = DesktopFile::getSingleValue(line);
-        if (id == "Icon") icon = DesktopFile::getSingleValue(line);
+        std::string id = GET_ID_INI(line);
+        if (id == "Name") name = GET_VAL_INI(line);
+        if (id == "Icon") icon = GET_VAL_INI(line);
     }
 }
 
@@ -135,10 +135,10 @@ void Category::parseMenu(const std::vector<std::string>& menu)
     for (unsigned int x = 0; x < menu.size(); x++)
     {
         line = menu[x];
-        std::string id = getID(line);
+        std::string id = GET_ID_XML(line);
         if (id == "<Directory>")
         { 
-            std::string dir = getSingleValue(line);
+            std::string dir = GET_VAL_XML(line);
             dirLine = line;
             if (dir == dirFile.substr(dirFile.find_last_of("/") + 1, 
                     dirFile.size() - dirFile.find_last_of("/") - 1))
@@ -184,17 +184,17 @@ void Category::parseMenu(const std::vector<std::string>& menu)
                 menuCloseCnt = 0;
             }
         }
-        if (id == "<Name>" && started && !menuStarted) this->name = getSingleValue(line);
+        if (id == "<Name>" && started && !menuStarted) this->name = GET_VAL_XML(line);
         if (id == "<Include>" && started && !menuStarted) including = true;
         if (id == "<Exclude>" && started && !menuStarted) including = false;
         if (started && id == "<Filename>" && !menuStarted) 
         {   
-            if (including) incEntryFiles.push_back(getSingleValue(line));
-            else excEntryFiles.push_back(getSingleValue(line));
+            if (including) incEntryFiles.push_back(GET_VAL_XML(line));
+            else excEntryFiles.push_back(GET_VAL_XML(line));
         }
         if (started && id == "<Category>" && !menuStarted) 
         {   
-            if (including) validNames.push_back(getSingleValue(line));
+            if (including) validNames.push_back(GET_VAL_XML(line));
         }
     }
 }
@@ -258,62 +258,6 @@ std::vector<std::string> Category::getIncludes()
 std::vector<std::string> Category::getExcludes()
 {
     return excEntryFiles;
-}
-
-/* An xdg .menu file specific function for getting the line
- * id. In this case, the id will be tags like <Directory>
- * or <Include> */
-std::string Category::getID(const std::string& line)
-{   
-    std::vector<char> readChars;
-    readChars.reserve(10);
-    char c;
-    unsigned int counter = 0;
-    bool startFilling = false;
-
-    while (counter < line.size())
-    {
-        c = line[counter];
-        if (startFilling) readChars.push_back(c);
-        if (c == '>') break;
-        if (c == '<') 
-        {
-            startFilling = true;
-            readChars.push_back(c);
-        }
-        counter++;
-    }
-
-    return std::string(readChars.begin(), readChars.end());
-}
-
-/* An xdg .menu file specific function for getting the line
- * value. This should be a value between two enclosing tags.
- * For instance, for the line <tag>value</tag> then this
- * should return the std::string "value" */
-std::string Category::getSingleValue(const std::string& line)
-{   
-    std::vector<char> readChars;
-    readChars.reserve(10);
-    char c;
-    unsigned int counter = 0;
-    bool startFilling = false;
-
-    while (counter < line.size())
-    {
-        c = line[counter];
-        if (c == '>')
-        {
-            startFilling = true;
-            counter++;
-            continue;
-        }
-        if (startFilling && c == '<') break;
-        if (startFilling) readChars.push_back(c);
-        counter++;
-    }
-
-    return std::string(readChars.begin(), readChars.end());
 }
 
 /* Add a DesktopFile to the list of included entries if its specified category
